@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eduStreet | Streetwear Tech</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span>edu</span>Street
+                </div>
+                
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="#home" class="nav-link active">Home</a></li>
+                        <li><a href="#drops" class="nav-link">New Drops</a></li>
+                        <li><a href="#shop" class="nav-link">Shop</a></li>
+                        <li><a href="#crew" class="nav-link">The Crew</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header-actions">
+                    <div class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                        <label class="switch">
+                            <input type="checkbox" id="themeToggle">
+                            <span class="slider"></span>
+                        </label>
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    
+                    <a href="#" class="cart-btn" id="cartButton">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" id="home">
+        <div class="carousel-container">
+            <div class="carousel-track">
+                <!-- Slide 1 -->
+                <div class="carousel-slide">
+                    <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')"></div>
+                    <div class="slide-content">
+                        <span class="slide-tag">New Collection</span>
+                        <h2 class="slide-title">Tech Wear Revolution</h2>
+                        <p class="slide-text">Performance meets street style in our latest drop</p>
+                        <a href="#shop" class="btn btn-primary">Shop Now</a>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="carousel-slide">
+                    <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')"></div>
+                    <div class="slide-content">
+                        <span class="slide-tag">Limited Edition</span>
+                        <h2 class="slide-title">Urban Code Collection</h2>
+                        <p class="slide-text">48h only - Don't miss out</p>
+                        <a href="#shop" class="btn btn-primary">Cop It</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="carousel-control prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-control next"><i class="fas fa-chevron-right"></i></button>
+            
+            <div class="carousel-dots"></div>
+        </div>
+    </section>
+
+    <!-- New Drops Section -->
+    <section class="new-drops section-padding" id="drops">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Latest Drops</h2>
+                <p class="section-subtitle">Fresh from the lab</p>
+            </div>
+            
+            <div class="drops-grid">
+                <!-- Drop 1 -->
+                <div class="drop-card">
+                    <div class="drop-image" style="background-image: url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <div class="drop-overlay">
+                            <h3>Tech Pack</h3>
+                            <p>Essentials for the digital age</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Drop 2 -->
+                <div class="drop-card">
+                    <div class="drop-image" style="background-image: url('https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <div class="drop-overlay">
+                            <h3>Code Breakers</h3>
+                            <p>Hacker inspired designs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section class="shop section-padding" id="shop">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Shop The Collection</h2>
+                <p class="section-subtitle">Curated for creators</p>
+            </div>
+            
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="footwear">Footwear</button>
+                <button class="filter-btn" data-category="tops">Tops</button>
+                <button class="filter-btn" data-category="bottoms">Bottoms</button>
+                <button class="filter-btn" data-category="accessories">Accessories</button>
+            </div>
+            
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card" data-id="p1" data-category="footwear">
+                    <div class="product-badge">New Drop</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1600269452121-4f2416e55c28?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Retro Runner Pro</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 399,90</span>
+                            <span class="old-price">R$ 499,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card featured" data-id="p2" data-category="tops">
+                    <div class="product-badge">Bestseller</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">404 Error Tee</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 129,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card" data-id="p3" data-category="bottoms">
+                    <div class="product-badge">Limited</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Tech Joggers</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 249,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card" data-id="p4" data-category="footwear">
+                    <div class="product-badge">Restock</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Urban Pro Sneakers</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 359,90</span>
+                            <span class="old-price">R$ 399,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <!-- Product 5 -->
+                <div class="product-card" data-id="p5" data-category="accessories">
+                    <div class="product-badge">New</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">5-Panel Snapback</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 149,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <!-- Product 6 -->
+                <div class="product-card" data-id="p6" data-category="tops">
+                    <div class="product-badge">Sale</div>
+                    <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80')">
+                        <button class="quick-view">Quick View</button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Binary Code Hoodie</h3>
+                        <div class="product-price">
+                            <span class="current-price">R$ 199,90</span>
+                            <span class="old-price">R$ 279,90</span>
+                        </div>
+                        <button class="btn add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Crew Section -->
+    <section class="crew section-padding" id="crew">
+        <div class="container">
+            <div class="crew-content">
+                <div class="crew-text">
+                    <h2 class="section-title">The Crew</h2>
+                    <p>We're a collective of designers, developers, and creatives pushing the boundaries of what streetwear can be. Born in the concrete jungle, eduStreet blends tech culture with urban vibes.</p>
+                    <p>Each piece is designed to make a statement - whether you're coding the next big thing or just flexing on the streets.</p>
+                    <a href="#" class="btn btn-outline">Join Us</a>
+                </div>
+                <div class="crew-image">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="The Crew">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>Join The Drop</h2>
+                <p>Get exclusive early access to new releases and special offers</p>
+                <form id="newsletterForm">
+                    <input type="email" placeholder="Your best email" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-title">eduStreet</h3>
+                    <p>Streetwear meets tech culture. Limited drops. No compromises.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">Shop</h3>
+                    <ul>
+                        <li><a href="#">All Products</a></li>
+                        <li><a href="#">New Arrivals</a></li>
+                        <li><a href="#">Best Sellers</a></li>
+                        <li><a href="#">Sale</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">Info</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Shipping</a></li>
+                        <li><a href="#">Returns</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">Contact</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contact@edustreet.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, BR</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> eduStreet. All rights reserved.</p>
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-paypal"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Your Cart</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="modal-body" id="cartItems">
+                <!-- Cart items will be inserted here by JavaScript -->
+            </div>
+            
+            <div class="modal-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cartTotal">R$ 0,00</span>
+                </div>
+                <button class="btn btn-primary checkout-btn">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
