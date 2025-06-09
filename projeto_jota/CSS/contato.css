@@ -1,0 +1,85 @@
+/* CSS/contato.css - Estilos da Página de Contato */
+
+.contact-grid {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xxl);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 
+        "header header"
+        "form info"
+        "form map";
+    gap: var(--space-xl) var(--space-xxl);
+}
+.contact-header { grid-area: header; text-align: center; margin-bottom: var(--space-xl); }
+.contact-header h1 { font-size: 3.5rem; }
+.contact-header p { max-width: 600px; margin: var(--space-sm) auto 0; color: var(--text-secondary); }
+.contact-form { grid-area: form; }
+.contact-info { grid-area: info; }
+#map { grid-area: map; border-radius: 8px; height: 300px; background-color: var(--surface); z-index: 1; }
+
+/* Floating Label Form */
+.form-group { position: relative; margin-bottom: var(--space-lg); }
+.form-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    background: transparent;
+    padding: 0.8rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+}
+.form-input:focus { outline: none; border-color: var(--primary); }
+.form-group label {
+    position: absolute;
+    top: 0.8rem; left: 0;
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: all var(--transition-fast);
+}
+.form-input:focus + label, .form-input:valid + label {
+    top: -1rem;
+    font-size: 0.8rem;
+    color: var(--primary);
+}
+.form-textarea { /* Estilo mais simples para a textarea */
+    width: 100%;
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    resize: vertical;
+}
+.form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.2); }
+
+/* Info Blocks */
+.info-block {
+    background-color: var(--surface);
+    padding: var(--space-lg);
+    border-radius: 8px;
+    margin-bottom: var(--space-md);
+}
+.info-block h4 { font-size: 1.2rem; display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-xs); }
+.info-block i { color: var(--primary); }
+.info-block a { font-weight: 500; transition: color var(--transition-fast); }
+.info-block a:hover { color: var(--primary); }
+.info-block p { font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--space-xs); }
+
+/* Mapa Leaflet - Tema */
+.leaflet-tile-pane {
+    filter: grayscale(1) contrast(1.2);
+}
+[data-theme="dark"] .leaflet-tile-pane {
+    filter: grayscale(1) invert(1) contrast(0.8);
+}
+
+@media (max-width: 992px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas: "header" "form" "info" "map";
+    }
+}
