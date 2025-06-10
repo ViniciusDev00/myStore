@@ -1,17 +1,47 @@
-    /* CSS/home.css - Estilos específicos da página inicial */
+/* CSS/home.css - Estilos específicos da página inicial */
 
 /* ===== HERO SECTION AJUSTES ===== */
-.hero-bg-image {
-    animation: kenburns 20s infinite alternate;
-}
+
+/* Animação de fundo para a imagem do Hero */
+
+
+
 
 @keyframes kenburns {
     from { transform: scale(1); }
     to { transform: scale(1.05); }
 }
 
+/* Regras da seção Hero (já estavam corretas) */
+.hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+  
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+  
+.hero-bg-image {
+    background-image: url('/IMG/tiger.png'); /* Verifique se o caminho e o nome do arquivo estão corretos */
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transform: scale(1.05); /* Mantido o scale inicial da sua animação */
+}
 
-/* ===== THE COLLECTION SECTION ===== */
+,,
 .collection-section {
     background-color: var(--surface);
     padding-top: var(--space-xxl);
@@ -71,6 +101,7 @@
     overflow: hidden;
     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
+
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -86,11 +117,19 @@
     justify-content: center;
 }
 
+/* ================================== */
+/* >>> MUDANÇA AQUI <<<      */
+/* ================================== */
 .product-image-wrapper img {
-    max-height: 100%;
-    width: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem preencha o espaço, mantendo a proporção */
     transition: transform var(--transition-normal);
 }
+/* ================================== */
+/* >>> FIM DA MUDANÇA <<<       */
+/* ================================== */
+
 
 .product-card:hover .product-image-wrapper img {
     transform: scale(1.08) rotate(-3deg);
@@ -130,6 +169,7 @@
     background: var(--surface);
     height: 4px !important;
 }
+
 .swiper-scrollbar-drag {
     background: var(--primary);
 }
