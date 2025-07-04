@@ -3,13 +3,48 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /**
+     * Módulo do Carrossel de Destaque
+     * Inicializa o Swiper para a seção .featured-sneaker.
+     */
+    const FeaturedSliderModule = (() => {
+        function initSwiper() {
+            if (document.querySelector('.featured-image-wrapper.swiper')) {
+                const featuredSwiper = new Swiper('.featured-image-wrapper.swiper', {
+                    effect: 'fade',
+                    fadeEffect: {
+                        crossFade: true
+                    },
+                    loop: true,
+                    autoplay: {
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                });
+            }
+        }
+
+        function init() {
+            initSwiper();
+        }
+
+        return { init };
+    })();
+
+    /**
      * Módulo da Coleção em Destaque
      * Renderiza produtos e inicializa o carrossel Swiper.js.
      */
     const CollectionModule = (() => {
         const productContainer = document.getElementById('collection-products');
         
-        // Em um projeto real, estes seriam os produtos em destaque vindos de uma API.
         const featuredProducts = [
             { id: 'p1', name: 'Retro Runner Pro', brand: 'eduStreet', price: 399.90, image: 'https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=500', category: 'footwear' },
             { id: 'p2', name: '404 Error Tee', brand: 'eduStreet', price: 129.90, image: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=500', category: 'tops' },
@@ -67,5 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     })();
 
+    // Inicia os dois módulos da página
+    FeaturedSliderModule.init();
     CollectionModule.init();
 });

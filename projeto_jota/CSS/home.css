@@ -1,47 +1,93 @@
 /* CSS/home.css - Estilos específicos da página inicial */
 
-/* ===== HERO SECTION AJUSTES ===== */
-
-/* Animação de fundo para a imagem do Hero */
-
-
-
-
-@keyframes kenburns {
-    from { transform: scale(1); }
-    to { transform: scale(1.05); }
-}
-
-/* Regras da seção Hero (já estavam corretas) */
-.hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    color: #fff;
-}
-  
-.hero-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-  
+/* ===== HERO SECTION ===== */
 .hero-bg-image {
-    background-image: url('/IMG/tiger.png'); /* Verifique se o caminho e o nome do arquivo estão corretos */
+    background-image: url('/IMG/tiger.png');
     width: 100%;
     height: 100%;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transform: scale(1.05); /* Mantido o scale inicial da sua animação */
+    transform: scale(1.05);
 }
 
-,,
+/* ===== FEATURED SNEAKER SECTION ===== */
+
+/* Layout da Seção (Imagem à esquerda, Texto à direita) */
+.featured-sneaker-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    align-items: center; 
+}
+
+/* Container do Carrossel */
+.featured-image-wrapper.swiper {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    background-color: #1c1c1c;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    display: flex; /* Garante que o contêiner do slide ocupe todo o espaço */
+}
+
+/* Imagens dentro do Carrossel */
+.featured-sneaker-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz a imagem cobrir todo o slide sem distorcer */
+}
+
+/* Estilos para a Navegação do Carrossel (Setas) */
+.featured-image-wrapper .swiper-button-next,
+.featured-image-wrapper .swiper-button-prev {
+    color: var(--primary);
+    background-color: rgba(10, 10, 10, 0.5);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    transition: var(--transition-fast);
+}
+
+.featured-image-wrapper .swiper-button-next:hover,
+.featured-image-wrapper .swiper-button-prev:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.featured-image-wrapper .swiper-button-next::after,
+.featured-image-wrapper .swiper-button-prev::after {
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+/* Estilos para a Paginação do Carrossel (Pontos) */
+.featured-image-wrapper .swiper-pagination {
+    position: absolute;
+    bottom: 15px !important;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: auto;
+}
+
+.featured-image-wrapper .swiper-pagination-bullet {
+    background-color: var(--text-secondary);
+    width: 10px;
+    height: 10px;
+    opacity: 0.7;
+}
+
+.featured-image-wrapper .swiper-pagination-bullet-active {
+    background-color: var(--primary);
+    opacity: 1;
+}
+
+/* ===== COLLECTION SECTION ("Recém-Chegados") ===== */
+
 .collection-section {
     background-color: var(--surface);
     padding-top: var(--space-xxl);
@@ -81,19 +127,18 @@
     gap: var(--space-sm);
 }
 
-/* Swiper Container */
 .collection-swiper {
     width: 100%;
-    padding-left: calc((100% - 1300px) / 2 + 1.5rem); /* Alinha com o container */
+    padding-left: calc((100% - 1300px) / 2 + 1.5rem);
     padding-right: calc((100% - 1300px) / 2 + 1.5rem);
-    padding-bottom: var(--space-xl); /* Espaço para a scrollbar */
+    padding-bottom: var(--space-xl);
 }
 
-.swiper-slide {
-    width: 320px !important; /* Largura de cada card */
+/* Redefine o width do swiper-slide para a coleção, para não conflitar */
+.collection-swiper .swiper-slide {
+    width: 320px !important;
 }
 
-/* Product Card no Carrossel */
 .product-card {
     background-color: transparent;
     border: 1px solid var(--border-color);
@@ -117,19 +162,12 @@
     justify-content: center;
 }
 
-/* ================================== */
-/* >>> MUDANÇA AQUI <<<      */
-/* ================================== */
 .product-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Garante que a imagem preencha o espaço, mantendo a proporção */
+    object-fit: cover;
     transition: transform var(--transition-normal);
 }
-/* ================================== */
-/* >>> FIM DA MUDANÇA <<<       */
-/* ================================== */
-
 
 .product-card:hover .product-image-wrapper img {
     transform: scale(1.08) rotate(-3deg);
@@ -164,7 +202,6 @@
     color: var(--primary);
 }
 
-/* Swiper Scrollbar */
 .swiper-scrollbar {
     background: var(--surface);
     height: 4px !important;
