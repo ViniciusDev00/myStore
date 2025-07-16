@@ -1,16 +1,3 @@
-/* CSS/home.css - Estilos específicos da página inicial */
-
-/* ===== HERO SECTION ===== */
-.hero-bg-image {
-    background-image: url('/IMG/tiger.png');
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transform: scale(1.05);
-}
-
 /* ===== FEATURED SNEAKER SECTION ===== */
 
 /* Layout da Seção (Imagem à esquerda, Texto à direita) */

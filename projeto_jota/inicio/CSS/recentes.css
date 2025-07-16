@@ -1,0 +1,105 @@
+/* CSS/recentes.css (Versão com área da foto mais horizontal) */
+
+.collection-section {
+    background-color: var(--background);
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.collection-swiper {
+    padding-left: calc((100% - 1300px) / 2 + 1.5rem);
+    padding-right: calc((100% - 1300px) / 2 + 1.5rem);
+    padding-bottom: var(--space-xl);
+}
+
+.collection-swiper .swiper-slide {
+    /* MUDANÇA: Aumentamos a largura do card para dar mais espaço */
+    width: 340px; 
+    height: auto;
+}
+
+.collection-section .product-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.collection-section .product-image-wrapper {
+    background-color: #EAEAEA;
+    padding: 0;
+    /* MUDANÇA: Diminuímos a altura para deixar a área mais retangular */
+    height: 250px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.collection-section .product-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.collection-section .product-info {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.collection-section .product-brand {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.collection-section .product-name {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: var(--space-xs) 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.collection-section .product-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-md);
+}
+
+.collection-section .product-info .btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: auto;
+    background-color: var(--text-primary);
+    color: var(--background);
+    border: 2px solid var(--text-primary);
+}
+
+.collection-section .product-info .btn:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    transform: none;
+    box-shadow: none;
+}
+
+.collection-swiper .swiper-scrollbar {
+    background: var(--surface);
+    height: 4px !important;
+}
+
+.collection-swiper .swiper-scrollbar-drag {
+    background: var(--primary);
+}
