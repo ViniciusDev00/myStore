@@ -659,7 +659,7 @@ body.nav-open .hamburger-icon::after { transform: rotate(-45deg) translate(5px, 
         padding-left: var(--space-md);
         padding-right: var(--space-md);
     }
-    .collection-swiper {
+    .collection-swiper {    
         padding-left: var(--space-md);
         padding-right: var(--space-md);
     }
