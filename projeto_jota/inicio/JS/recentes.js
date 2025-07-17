@@ -1,156 +1,101 @@
-// JS/recentes.js
+document.addEventListener('DOMContentLoaded', () => {
 
-document.addEventListener('DOMContentLoaded', function () {
+    // =======================================================================
+    // CONFIGURAÇÃO FÁCIL DOS PRODUTOS - ADICIONE SEUS TÊNIS AQUI
+    // =======================================================================
 
-    // --- Dados dos Produtos (Exemplo) ---
-    // Em um site real, isso viria de um banco de dados.
-    const products = [
-        {
-            id: 1,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Black Royal Blue"',
-            price: '899,99',
-            imageUrl: '../IMG/recentes/95cdgBranco.webp'
-        },
-        {
-            id: 2,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Pink"',
-            price: '949,99',
-            imageUrl: '../IMG/recentes/95cdgCinzaPreto.webp'
-        },
-        {
-            id: 3,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Tiger"',
-            price: '899,99',
-            imageUrl: '../IMG/recentes/95cdgPreto.webp'
-        },
-        {
-            id: 4,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Hyper Blue"',
-            price: '1.099,99',
-            imageUrl: '../IMG/recentes/dnBlack.webp'
-        },
-        {
-            id: 5,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Black Metallic"',
-            price: '999,99',
-            imageUrl: '../IMG/recentes/dnDarkSmoke.webp'
-        },
-        {
-            id: 6,  
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/dnWhite.webp'
-        },
-        {
-            id: 7,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/driftBlack.webp'
-        },
-        {
-            id: 8,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/driftYingYang.webp'
-        },
-        {
-            id: 9,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/tnBlackSilver.webp'
-        },
-        {
-            id: 10,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/tnLilac.webp'
-        },
-        {
-            id: 11,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/tnRoyal.webp'
-        },
-        {
-            id: 12,
-            brand: 'Nike',
-            name: 'Air Max Plus TN "Sunset"',
-            price: '1.199,99',
-            imageUrl: '../IMG/recentes/tnOreo.webp'
-        },
+    // 1. Defina o caminho base para a pasta de imagens.
+    const imageBasePath = '../IMG/recentes/';
 
+    // 2. Adicione seus produtos na lista abaixo.
+    // Formato: [ 'arquivo.webp', 'Marca', 'Nome do Tênis', 'Preço', 'MODELO' ],
+    // O 'MODELO' é usado para filtrar: '95', 'DN' ou 'TN'.
+    const productSourceData = [
+        // Modelos Air Max 95
+        [ '95cdgBranco.webp',      'Nike', 'Air Max 95 CDG "Branco"',         '899.99', '95' ],
+        [ '95cdgCinzaPreto.webp',  'Nike', 'Air Max 95 CDG "Cinza/Preto"',    '949.99', '95' ],
+        [ '95cdgPreto.webp',       'Nike', 'Air Max 95 CDG "Preto"',          '899.99', '95' ],
+
+        // Modelos Air Max DN
+        [ 'dnBlack.webp',          'Nike', 'Air Max DN "All Black"',          '1099.99', 'DN' ],
+        [ 'dnDarkSmoke.webp',      'Nike', 'Air Max DN "Dark Smoke Grey"',    '999.99', 'DN' ],
+        [ 'dnWhite.webp',          'Nike', 'Air Max DN "All White"',          '1199.99', 'DN' ],
+
+        // Modelos Air Max TN (Plus)
+        [ 'tnBlackSilver.webp',    'Nike', 'Air Max Plus TN "Black Silver"',  '999.99', 'TN' ],
+        [ 'tnLilac.webp',          'Nike', 'Air Max Plus TN "Lilac"',         '1199.99', 'TN' ],
+        [ 'tnRoyal.webp',          'Nike', 'Air Max Plus TN "Royal Blue"',    '1199.99', 'TN' ],
+        [ 'tnOreo.webp',           'Nike', 'Air Max Plus TN "Oreo"',          '1199.99', 'TN' ],
         
+        // Adicione mais produtos aqui, sempre especificando o modelo no final
+        [ 'driftBlack.webp',       'Nike', 'Air Max Drift "Black"',           '1199.99', 'Drift' ], // Este não aparecerá nas 3 fileiras
     ];
 
-    // --- Função para Gerar os Cards e Inserir no HTML ---
-    function renderProducts() {
-        const productContainer = document.getElementById('collection-products');
-        if (!productContainer) return;
+    // =======================================================================
+    // LÓGICA DO SITE - NÃO PRECISA MEXER DAQUI PARA BAIXO
+    // =======================================================================
 
-        let productsHTML = '';
-        products.forEach(product => {
-            productsHTML += `
-                <div class="swiper-slide">
-                    <div class="product-card">
-                        <div class="product-image-wrapper">
-                            <img src="${product.imageUrl}" alt="${product.name}">
-                        </div>
-                        <div class="product-info">
-                            <span class="product-brand">${product.brand}</span>
-                            <h3 class="product-name">${product.name}</h3>
-                            <p class="product-price">R$ ${product.price}</p>
-                            <a href="#" class="btn">Ver Produto</a>
-                        </div>
+    // 1. Processa a lista de produtos para o formato que o site usa
+    const products = productSourceData.map((p, index) => ({
+        id: `p${index + 1}`,
+        image: imageBasePath + p[0],
+        brand: p[1],
+        name: p[2],
+        price: parseFloat(p[3]),
+        model: p[4]
+    }));
+
+    // 2. Função para renderizar os produtos em um container específico
+    const renderProductRow = (productsToRender, containerId) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        if (productsToRender.length === 0) {
+            container.innerHTML = `<p style="padding-left: 1rem; color: var(--text-secondary);">Nenhum produto encontrado.</p>`;
+            return;
+        }
+
+        container.innerHTML = productsToRender.map(product => `
+            <div class="swiper-slide">
+                <div class="product-card" data-id="${product.id}">
+                    <div class="product-image-wrapper">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-brand">${product.brand}</span>
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                        <button class="btn btn-primary add-to-cart-btn">Adicionar ao Carrinho</button>
                     </div>
                 </div>
-            `;
-        });
+            </div>
+        `).join('');
+    };
 
-        productContainer.innerHTML = productsHTML;
-    }
-
-    // --- Função para Inicializar o Carrossel (Swiper) ---
-    function initCollectionSwiper() {
-        new Swiper('.collection-swiper', {
-            // Quantos slides são visíveis. 'auto' respeita a largura definida no CSS.
+    // 3. Função para inicializar um carrossel Swiper
+    const initSwiper = (containerClass, navPrevClass, navNextClass) => {
+        const swiperEl = document.querySelector(containerClass);
+        if (!swiperEl || swiperEl.classList.contains('swiper-initialized')) return;
+        
+        new Swiper(containerClass, {
             slidesPerView: 'auto',
-
-            // Espaço entre os slides
             spaceBetween: 24,
-
-            // Ativa a barra de rolagem
-            scrollbar: {
-                el: '.swiper-scrollbar',
-                draggable: true, // Permite arrastar a barra
-            },
-
-            // Conecta os botões de navegação personalizados
-            navigation: {
-                nextEl: '.collection-next',
-                prevEl: '.collection-prev',
-            },
-
-            // Melhora a usabilidade no desktop
-            mousewheel: {
-                forceToAxis: true,
-            },
-            freeMode: true, // Permite deslizar sem "prender" em cada slide
+            freeMode: true,
+            scrollbar: { el: `${containerClass} .swiper-scrollbar`, draggable: true },
+            navigation: { nextEl: navNextClass, prevEl: navPrevClass },
         });
-    }
+    };
 
-    // --- Execução ---
-    renderProducts();
-    initCollectionSwiper();
+    // 4. Define as seções que queremos criar e as popula
+    const sectionsToBuild = [
+        { model: '95', containerId: 'products-95', swiperClass: '.collection-swiper-95', prev: '.collection-prev-95', next: '.collection-next-95' },
+        { model: 'DN', containerId: 'products-dn', swiperClass: '.collection-swiper-dn', prev: '.collection-prev-dn', next: '.collection-next-dn' },
+        { model: 'TN', containerId: 'products-tn', swiperClass: '.collection-swiper-tn', prev: '.collection-prev-tn', next: '.collection-next-tn' }
+    ];
 
+    sectionsToBuild.forEach(section => {
+        const filteredProducts = products.filter(p => p.model === section.model);
+        renderProductRow(filteredProducts, section.containerId);
+        initSwiper(section.swiperClass, section.prev, section.next);
+    });
 });

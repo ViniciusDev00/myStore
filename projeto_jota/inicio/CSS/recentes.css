@@ -1,105 +1,147 @@
-/* CSS/recentes.css (Versão com área da foto mais horizontal) */
+/* ===================================================
+    CSS/recentes.css - Estilos FINAIS das Coleções
+   =================================================== */
 
+/* --- Layout Geral das Seções de Coleção --- */
 .collection-section {
-    background-color: var(--background);
-    padding-left: 0;
-    padding-right: 0;
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
 }
 
-.collection-swiper {
+.collection-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-xl);
+}
+
+/* --- Títulos das Seções --- */
+.section-titleRECEM {
+    
+    font-size: 5.0rem;
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    padding: 20px;
+    color: rgb(255, 255, 255);
+}
+
+/* --- Botões de Navegação dos Carrosséis --- */
+.collection-nav button,
+[class*="collection-prev-"], 
+[class*="collection-next-"] {
+    width: 50px;
+    height: 50px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: all var(--transition-fast);
+}
+
+.collection-nav button:hover,
+[class*="collection-prev-"]:hover, 
+[class*="collection-next-"]:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.collection-nav button.swiper-button-disabled,
+[class*="collection-prev-"].swiper-button-disabled, 
+[class*="collection-next-"].swiper-button-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.collection-nav {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+/* --- Estrutura dos Carrosséis (Swiper) --- */
+.swiper[class*="collection-swiper"] {
+    width: 100%;
     padding-left: calc((100% - 1300px) / 2 + 1.5rem);
     padding-right: calc((100% - 1300px) / 2 + 1.5rem);
     padding-bottom: var(--space-xl);
 }
 
-.collection-swiper .swiper-slide {
-    /* MUDANÇA: Aumentamos a largura do card para dar mais espaço */
-    width: 340px; 
-    height: auto;
+.swiper[class*="collection-swiper"] .swiper-slide {
+    width: 320px !important; 
 }
 
-.collection-section .product-card {
-    background-color: var(--surface);
+.swiper[class*="collection-swiper"] .swiper-scrollbar {
+    background: var(--surface);
+    height: 4px !important;
+}
+
+.swiper[class*="collection-swiper"] .swiper-scrollbar-drag {
+    background: var(--primary);
+}
+
+
+/* ===== ESTILOS DO CARD DE PRODUTO (Baseado na sua referência) ===== */
+
+.product-card {
+    /* Usando var(--surface) para consistência, mas poderia ser transparent */
+    background-color: var(--surface); 
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-.collection-section .product-image-wrapper {
-    background-color: #EAEAEA;
-    padding: 0;
-    /* MUDANÇA: Diminuímos a altura para deixar a área mais retangular */
-    height: 250px; 
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-color: var(--primary);
+}
+
+.product-image-wrapper {
+    height: 280px; /* Altura ajustada para um bom enquadramento */
+    background-color: #f0f0f0; /* Fundo claro para as imagens */
+    padding: var(--space-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
 }
 
-.collection-section .product-image-wrapper img {
+.product-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
+    object-fit: contain; /* Usando contain para garantir que o tênis inteiro apareça */
+    transition: transform 0.4s ease;
 }
 
-.collection-section .product-info {
+.product-card:hover .product-image-wrapper img {
+    transform: scale(1.05); /* Animação de zoom sutil */
+}
+
+.product-info {
     padding: var(--space-md);
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+    background-color: var(--surface);
 }
 
-.collection-section .product-brand {
+.product-brand {
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--text-secondary);
     text-transform: uppercase;
 }
 
-.collection-section .product-name {
+.product-name {
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 1.1rem;
     color: var(--text-primary);
-    margin: var(--space-xs) 0;
+    margin: 0.25rem 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.collection-section .product-price {
-    font-size: 1.2rem;
+.product-price {
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--primary);
-    margin-bottom: var(--space-md);
-}
-
-.collection-section .product-info .btn {
-    width: 100%;
-    justify-content: center;
-    margin-top: auto;
-    background-color: var(--text-primary);
-    color: var(--background);
-    border: 2px solid var(--text-primary);
-}
-
-.collection-section .product-info .btn:hover {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: #fff;
-    transform: none;
-    box-shadow: none;
-}
-
-.collection-swiper .swiper-scrollbar {
-    background: var(--surface);
-    height: 4px !important;
-}
-
-.collection-swiper .swiper-scrollbar-drag {
-    background: var(--primary);
 }
