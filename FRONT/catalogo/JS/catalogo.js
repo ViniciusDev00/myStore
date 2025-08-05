@@ -1,29 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ===== FONTE DE DADOS DOS PRODUTOS =====
-    const productsData = [
-        { id: 'p1', name: 'Asuna 2.0 “Black/White”', brand: 'Nike', price: 240.00, image: '../IMG/recentes/p1.webp' },
-        { id: 'p2', name: 'Air Max 90 “Triple White”', brand: 'Nike', price: 349.00, image: '../IMG/recentes/p2.webp' },
-        { id: 'p3', name: 'Air Max 90 “Triple Black”', brand: 'Nike', price: 349.00, image: '../IMG/recentes/p3.webp' },
-        { id: 'p4', name: 'Air Max 95 “Triple White”', brand: 'Nike', price: 349.00, image: '../IMG/recentes/p4.webp' },
-        { id: 'p5', name: 'Air Max 97 “Black”', brand: 'Nike', price: 349.00, image: '../IMG/recentes/p5.webp' },
-        { id: 'p6', name: 'Dunk Low “Black/White”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p6.webp' },
-        { id: 'p7', name: 'Dunk Low “Court Purple”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p7.webp' },
-        { id: 'p8', name: 'Dunk Low “Black Pigeon”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p8.webp' },
-        { id: 'p9', name: 'Dunk Low “Mummy”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p9.webp' },
-        { id: 'p10', name: 'Dunk Low “Valentine’s Day”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p10.webp' },
-        { id: 'p11', name: 'Jordan 1 Low x Travis Scott “Triple Black”', brand: 'Air Jordan', price: 379.00, image: '../IMG/recentes/p11.webp' },
-        { id: 'p12', name: 'Jordan 1 Low “Light Smoke Grey”', brand: 'Air Jordan', price: 379.00, image: '../IMG/recentes/p12.webp' },
-        { id: 'p13', name: 'Jordan 3 “Dark Iris”', brand: 'Air Jordan', price: 379.00, image: '../IMG/recentes/p13.webp' },
-        { id: 'p14', name: 'M2K Tekno “Obsidian”', brand: 'Nike', price: 369.00, image: '../IMG/recentes/p14.webp' },
-        { id: 'p15', name: 'VaporMax Plus “Tiger”', brand: 'Nike', price: 309.00, image: '../IMG/recentes/p15.webp' },
-        { id: 'p16', name: 'Yeezy 500 “Utility Black”', brand: 'Adidas', price: 379.00, image: '../IMG/recentes/p16.webp' },
-        { id: 'p17', name: 'Bape Sta “Black Grey”', brand: 'Bape', price: 379.00, image: '../IMG/recentes/p17.webp' },
-        { id: 'p18', name: 'Supreme x Nike Shox Ride 2 “Black”', brand: 'Nike', price: 379.00, image: '../IMG/recentes/p18.webp' },
-        { id: 'p19', name: 'Supreme x Nike Shox Ride 2 “White”', brand: 'Nike', price: 379.00, image: '../IMG/recentes/p19.webp' },
-        { id: 'p20', name: 'Asics Gel NYC “Beige/White/Grey”', brand: 'Asics', price: 379.00, image: '../IMG/recentes/p20.webp' }
-    ];
-
     // ===== LÓGICA GLOBAL (HEADER, MENU, CARRINHO) =====
     // Efeito de scroll no header
     const header = document.querySelector('.main-header');
@@ -31,45 +7,49 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
     }
 
-    // Link de navegação ativo
+    // Marca o link de navegação da página atual como ativo
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     document.querySelectorAll('.main-nav .nav-link').forEach(link => {
-        if (link.getAttribute('href') === currentPage) link.classList.add('active');
+        if (link.getAttribute('href').endsWith(currentPage)) {
+            link.classList.add('active');
+        }
     });
 
-    // Ano atual no footer
+    // Coloca o ano atual no rodapé
     const yearEl = document.getElementById('currentYear');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    // Lógica do carrinho (simplificada, adicione o seu módulo completo se precisar de todas as funções)
+    // Lógica do carrinho (simplificada, apenas para o contador)
     const cartCountEl = document.querySelector('.cart-count');
     document.body.addEventListener('click', e => {
         if (e.target.closest('.add-to-cart-btn')) {
             let currentCount = parseInt(cartCountEl.textContent, 10);
             cartCountEl.textContent = currentCount + 1;
-            // Aqui você adicionaria a lógica completa do seu CartModule para salvar no localStorage, etc.
-            console.log("Produto adicionado ao carrinho!");
+            console.log("Produto adicionado ao carrinho! (Lógica completa em main.js)");
         }
     });
 
-    // ===== LÓGICA ESPECÍFICA DO CATÁLOGO =====
+    // ===== LÓGICA ESPECÍFICA DO CATÁLOGO (CONECTADO COM A API) =====
     const grid = document.getElementById('products-grid');
     if (grid) {
         const loadMoreBtn = document.getElementById('loadMoreBtn');
-        let displayedProducts = 8;
+        let allProducts = []; // Array que vai guardar todos os produtos vindos da API
+        let displayedProducts = 8; // Quantidade inicial de produtos a serem exibidos
 
+        // Função que desenha os cards dos produtos na tela
         const renderGrid = (productsToRender) => {
-            grid.innerHTML = '';
+            grid.innerHTML = ''; // Limpa a grade antes de adicionar os produtos
+            
             productsToRender.slice(0, displayedProducts).forEach(product => {
                 const productCard = `
                     <div class="product-card" data-id="${product.id}">
                         <div class="product-image-wrapper">
-                            <img src="${product.image}" alt="${product.name}">
+                            <img src="${product.imagemUrl || '../IMG/placeholder.webp'}" alt="${product.nome}">
                         </div>
                         <div class="product-info">
-                            <span class="product-brand">${product.brand}</span>
-                            <h3 class="product-name">${product.name}</h3>
-                            <p class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                            <span class="product-brand">${product.marca.nome}</span>
+                            <h3 class="product-name">${product.nome}</h3>
+                            <p class="product-price">R$ ${product.preco.toFixed(2).replace('.', ',')}</p>
                             <button class="btn btn-primary add-to-cart-btn">Adicionar ao Carrinho</button>
                         </div>
                     </div>
@@ -77,31 +57,66 @@ document.addEventListener('DOMContentLoaded', () => {
                 grid.innerHTML += productCard;
             });
 
+            // Mostra ou esconde o botão 'Carregar Mais'
             loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
         };
 
-        const applyFilters = () => {
+        // Função que aplica os filtros e a ordenação com base na interação do usuário
+        const applyFiltersAndRender = () => {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const brand = document.getElementById('brandFilter').value;
-            const sort = document.getElementById('sortFilter').value;
+            const brandFilterValue = document.getElementById('brandFilter').value;
+            const sortOrder = document.getElementById('sortFilter').value;
 
-            let filtered = productsData.filter(p => p.name.toLowerCase().includes(searchTerm));
-            if (brand !== 'all') filtered = filtered.filter(p => p.brand === brand);
-            if (sort === 'price-asc') filtered.sort((a, b) => a.price - b.price);
-            else if (sort === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+            let filtered = [...allProducts];
+
+            // Filtro por nome
+            if (searchTerm) {
+                filtered = filtered.filter(p => p.nome.toLowerCase().includes(searchTerm));
+            }
+            
+            // Filtro por marca
+            if (brandFilterValue !== 'all') {
+                filtered = filtered.filter(p => p.marca.nome === brandFilterValue);
+            }
+
+            // Ordenação por preço
+            if (sortOrder === 'price-asc') {
+                filtered.sort((a, b) => a.preco - b.preco);
+            } else if (sortOrder === 'price-desc') {
+                filtered.sort((a, b) => b.preco - a.preco);
+            }
             
             renderGrid(filtered);
         };
 
-        document.getElementById('searchInput').addEventListener('input', () => { displayedProducts = 8; applyFilters(); });
-        document.getElementById('brandFilter').addEventListener('change', () => { displayedProducts = 8; applyFilters(); });
-        document.getElementById('sortFilter').addEventListener('change', () => { displayedProducts = 8; applyFilters(); });
+        // Função principal que busca os produtos na API do seu back-end
+        const fetchProducts = async () => {
+            try {
+                // A URL aponta para a API de produtos do seu servidor local
+                const response = await fetch('http://localhost:8080/api/produtos');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar produtos. Código: ' + response.status);
+                }
+                const products = await response.json();
+                allProducts = products; // Guarda a lista completa de produtos
+                applyFiltersAndRender(); // Mostra os produtos na tela
+            } catch (error) {
+                console.error('Falha na requisição:', error);
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">Não foi possível carregar os produtos. Verifique se o servidor (back-end) está rodando.</p>`;
+            }
+        };
+
+        // Adiciona os "escutadores" de eventos para os filtros e o botão
+        document.getElementById('searchInput').addEventListener('input', () => { displayedProducts = 8; applyFiltersAndRender(); });
+        document.getElementById('brandFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
+        document.getElementById('sortFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
         
         loadMoreBtn.addEventListener('click', () => {
             displayedProducts += 8;
-            applyFilters();
+            applyFiltersAndRender();
         });
 
-        applyFilters(); // Renderização inicial
+        // Inicia todo o processo buscando os produtos quando a página carrega
+        fetchProducts();
     }
 });
