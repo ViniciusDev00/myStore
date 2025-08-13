@@ -20,6 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    // ... seus outros beans (passwordEncoder, authenticationManager, corsFilter) ...
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,10 +37,18 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Libera os endpoints da API do Swagger
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+
+                        // Suas outras permissões
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/produtos/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Exige autenticação para todo o resto
                         .anyRequest().authenticated()
                 );
         return http.build();

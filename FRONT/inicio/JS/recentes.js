@@ -1,19 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // =======================================================================
-    // LÓGICA DO SITE - AGORA BUSCANDO DADOS DA API
-    // =======================================================================
-
-    // 1. Função que desenha os cards de produtos dentro de um carrossel
+    // ... (O resto do seu código, como as funções renderProductRow e initSwiper, permanece igual) ...
     const renderProductRow = (productsToRender, containerId) => {
         const container = document.getElementById(containerId);
-        if (!container) return; // Se o container não existir, não faz nada
-        
+        if (!container) return;
         if (productsToRender.length === 0) {
             container.innerHTML = `<p style="padding-left: 1rem; color: var(--text-secondary);">Nenhum produto desta categoria encontrado.</p>`;
             return;
         }
-
         container.innerHTML = productsToRender.map(product => `
             <div class="swiper-slide">
                 <div class="product-card" data-id="${product.id}">
@@ -31,39 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
-    // 2. Função que inicializa o carrossel (Swiper)
     const initSwiper = (containerClass, navPrevClass, navNextClass) => {
         const swiperEl = document.querySelector(containerClass);
-        // Verifica se o Swiper já foi inicializado para não duplicar
         if (!swiperEl || swiperEl.classList.contains('swiper-initialized')) return;
-        
         new Swiper(containerClass, {
-            slidesPerView: 'auto', // Mostra quantos slides couberem na tela
-            spaceBetween: 24,      // Espaço entre os slides
-            freeMode: true,        // Permite "arrastar" livremente
+            slidesPerView: 'auto',
+            spaceBetween: 24,
+            freeMode: true,
             scrollbar: { el: `${containerClass} .swiper-scrollbar`, draggable: true },
             navigation: { nextEl: navNextClass, prevEl: navPrevClass },
         });
     };
 
-    // 3. Define as seções que queremos criar e qual categoria pertence a cada uma
     const sectionsToBuild = [
         { categoryName: 'Air Max 95', containerId: 'products-95', swiperClass: '.collection-swiper-95', prev: '.collection-prev-95', next: '.collection-next-95' },
         { categoryName: 'Air Max DN', containerId: 'products-dn', swiperClass: '.collection-swiper-dn', prev: '.collection-prev-dn', next: '.collection-next-dn' },
         { categoryName: 'Air Max TN', containerId: 'products-tn', swiperClass: '.collection-swiper-tn', prev: '.collection-prev-tn', next: '.collection-next-tn' }
     ];
 
-    // 4. Função principal que busca TODOS os produtos e depois os distribui nos carrosséis corretos
+    // --- MUDANÇA AQUI: Usando Axios ---
     const fetchAndDistributeProducts = async () => {
         try {
-            // Busca todos os produtos de uma só vez na sua API
-            const response = await fetch('http://localhost:8080/api/produtos');
-            if (!response.ok) {
-                throw new Error('Erro ao buscar produtos da API.');
-            }
-            const allProducts = await response.json();
+            // Usamos axios.get() e os dados já vêm em formato JSON no 'response.data'
+            const response = await axios.get('http://localhost:8080/api/produtos');
+            const allProducts = response.data;
 
-            // Para cada seção definida, ele filtra os produtos e renderiza o carrossel
             sectionsToBuild.forEach(section => {
                 const filteredProducts = allProducts.filter(p => p.categoria.nome === section.categoryName);
                 renderProductRow(filteredProducts, section.containerId);
@@ -71,15 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
         } catch (error) {
-            console.error('Falha na requisição:', error);
-            // Se der erro, avisa o usuário em todas as seções
+            console.error('Falha na requisição com Axios:', error);
             sectionsToBuild.forEach(section => {
                 const container = document.getElementById(section.containerId);
-                if(container) container.innerHTML = "<p>Não foi possível carregar os produtos.</p>";
+                if(container) container.innerHTML = "<p>Não foi possível carregar os produtos. Verifique se o servidor está rodando.</p>";
             });
         }
     };
 
-    // Chama a função para iniciar todo o processo
     fetchAndDistributeProducts();
 });
