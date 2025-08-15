@@ -27,12 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
         let displayedProducts = 8;
 
         const renderGrid = (productsToRender) => {
-            grid.innerHTML = '';
-            productsToRender.slice(0, displayedProducts).forEach(product => {
-                const productCard = `
+    grid.innerHTML = ''; 
+    
+    productsToRender.slice(0, displayedProducts).forEach(product => {
+            // A MUDANÇA ESTÁ AQUI: Adicionamos a tag <a> a envolver o card
+            const productCard = `
+                <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                     <div class="product-card" data-id="${product.id}">
                         <div class="product-image-wrapper">
-                            <img src="${product.imagemUrl || '../IMG/placeholder.webp'}" alt="${product.nome}">
+                            <img src="${product.imagemUrl}" alt="${product.nome}">
                         </div>
                         <div class="product-info">
                             <span class="product-brand">${product.marca.nome}</span>
@@ -41,11 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="btn btn-primary add-to-cart-btn">Adicionar ao Carrinho</button>
                         </div>
                     </div>
-                `;
-                grid.innerHTML += productCard;
-            });
-            loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
-        };
+                </a>
+            `;
+            grid.innerHTML += productCard;
+        });
+
+        loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
+    };
 
         const applyFiltersAndRender = () => {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();

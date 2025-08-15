@@ -9,17 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         container.innerHTML = productsToRender.map(product => `
             <div class="swiper-slide">
-                <div class="product-card" data-id="${product.id}">
-                    <div class="product-image-wrapper">
-                        <img src="${product.imagemUrl || 'path/to/placeholder.png'}" alt="${product.nome}">
+                <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
+                    <div class="product-card" data-id="${product.id}">
+                        <div class="product-image-wrapper">
+                            <img src="${product.imagemUrl || 'path/to/placeholder.png'}" alt="${product.nome}">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-brand">${product.marca.nome}</span>
+                            <h3 class="product-name">${product.nome}</h3>
+                            <p class="product-price">R$ ${product.preco.toFixed(2).replace('.', ',')}</p>
+                            <button class="btn btn-primary add-to-cart-btn">Adicionar ao Carrinho</button>
+                        </div>
                     </div>
-                    <div class="product-info">
-                        <span class="product-brand">${product.marca.nome}</span>
-                        <h3 class="product-name">${product.nome}</h3>
-                        <p class="product-price">R$ ${product.preco.toFixed(2).replace('.', ',')}</p>
-                        <button class="btn btn-primary add-to-cart-btn">Adicionar ao Carrinho</button>
-                    </div>
-                </div>
+                </a>
             </div>
         `).join('');
     };

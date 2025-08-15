@@ -670,3 +670,9 @@ body.nav-open .hamburger-icon::after { transform: rotate(-45deg) translate(5px, 
     .footer-grid { grid-template-columns: 1fr; }
     .footer-bottom { flex-direction: column; gap: var(--space-md); }
 }
+
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
