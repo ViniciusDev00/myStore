@@ -1,17 +1,10 @@
--- Garante que as tabelas sejam limpas antes de inserir os novos dados
-SET FOREIGN_KEY_CHECKS = 0; -- Desativa a verificação de chaves estrangeiras temporariamente
-TRUNCATE TABLE produtos;
-TRUNCATE TABLE categorias;
-TRUNCATE TABLE marcas;
-SET FOREIGN_KEY_CHECKS = 1; -- Reativa a verificação
-
 -- Inserir Marcas
 INSERT INTO marcas (id, nome) VALUES (1, 'Nike'), (2, 'Air Jordan'), (3, 'Adidas'), (4, 'Bape'), (5, 'Asics');
 
 -- Inserir Categorias
 INSERT INTO categorias (id, nome) VALUES (1, 'Air Max 95'), (2, 'Air Max DN'), (3, 'Air Max TN'), (4, 'Dunk'), (5, 'Jordan'), (6, 'Outros');
 
--- Inserir Produtos (com os IDs 11, 12 e 13 já removidos)
+-- Inserir Produtos
 INSERT INTO produtos (id, nome, descricao, preco, imagem_url, estoque, marca_id, categoria_id) VALUES
 (1, 'Air Max 95 CDG "Branco"', 'Colaboração icônica com a Comme des Garçons.', 899.99, '../../inicio/IMG/recentes/95cdgBranco.webp', 10, 1, 1),
 (2, 'Air Max 95 CDG "Cinza/Preto"', 'Estilo e conforto em um design clássico reinventado.', 949.99, '../../inicio/IMG/recentes/95cdgCinzaPreto.webp', 10, 1, 1),
