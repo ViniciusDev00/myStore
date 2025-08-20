@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="sr-only">Menu</span>
                 <div class="hamburger-icon"></div>
             </button>
-            <a href="${basePath}/index.html" class="logo">Ref<span> Store</span></a>
+            <a href="${basePath}/index.html" class="logo">Japa<span> Universe</span></a>
             <nav class="main-nav" id="main-nav">
                 <ul class="nav-list">
-                    <li><a href="${basePath}/index.html" class="nav-link">Início</a></li>
-                    <li><a href="${basePath}/FRONT/catalogo/HTML/catalogo.html" class="nav-link">Catálogo</a></li>
-                    <li><a href="${basePath}/FRONT/contato/HTML/contato.html" class="nav-link">Contato</a></li>
+                    <li><a href="${basePath}/inicio/HTML/index.html" class="nav-link">Início</a></li>
+                    <li><a href="${basePath}/catalogo/HTML/catalogo.html" class="nav-link">Catálogo</a></li>
+                    <li><a href="${basePath}/contato/HTML/contato.html" class="nav-link">Contato</a></li>
                 </ul>
             </nav>
             <div class="header-actions" id="header-actions"></div>
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     } else {
         actionsHTML += `
-            <a href="${basePath}/FRONT/login/HTML/login.html" class="btn btn-outline">Login</a>
+            <a href="${basePath}/login/HTML/login.html" class="btn btn-outline">Login</a>
         `;
     }
 

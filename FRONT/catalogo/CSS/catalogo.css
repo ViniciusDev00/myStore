@@ -89,7 +89,7 @@ button {
     transform: translateY(-3px);
 }
 
-/* === Header === */
+/* ===== HEADER ===== */
 .main-header {
     position: fixed;
     top: 0;
@@ -98,31 +98,38 @@ button {
     height: var(--header-height);
     z-index: 1000;
     background-color: transparent;
-    transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+    transition: background-color var(--transition-normal), backdrop-filter var(--transition-normal);
 }
+
 .main-header.scrolled {
     background-color: rgba(10, 10, 10, 0.7);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
 }
+
 .main-header .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Este é o segredo para o layout */
     align-items: center;
     height: 100%;
 }
+
 .logo {
     font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: var(--primary);
+    z-index: 1001;
 }
+
 .logo span {
     color: var(--text-primary);
 }
+
 .nav-list {
     display: flex;
-    gap: 2.5rem;
+    gap: 4rem; /* Aumentado para o espaçamento que você pediu */
 }
+
 .nav-link {
     position: relative;
     font-weight: 600;
@@ -130,10 +137,11 @@ button {
     font-size: 0.9rem;
     transition: color var(--transition-fast);
 }
-.nav-link:hover,
-.nav-link.active {
+
+.nav-link:hover, .nav-link.active {
     color: var(--primary);
 }
+
 .nav-link::after {
     content: '';
     position: absolute;
@@ -143,22 +151,32 @@ button {
     width: 0;
     height: 2px;
     background-color: var(--primary);
-    transition: width 0.3s ease;
+    transition: width var(--transition-normal);
 }
-.nav-link:hover::after,
-.nav-link.active::after {
+
+.nav-link:hover::after, .nav-link.active::after {
     width: 100%;
 }
+
 .header-actions {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: 1.25rem; /* Espaçamento aumentado entre o login e o carrinho */
+    flex-direction: row-reverse;
 }
+
+/* Cart Button */
 .cart-btn {
     position: relative;
     color: var(--text-primary);
-    font-size: 1.3rem;
+    font-size: 1.6rem; /* Ícone do carrinho aumentado */
+    transition: color var(--transition-fast);
 }
+
+.cart-btn:hover {
+    color: var(--primary);
+}
+
 .cart-count {
     position: absolute;
     top: -5px;
@@ -173,6 +191,28 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 2px solid var(--background);
+    transition: transform var(--transition-fast);
+}
+
+.cart-count.updated {
+    transform: scale(1.3);
+}
+
+/* Estilos para os novos ícones do header de perfil e logout */
+.nav-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0 0.5rem;
+}
+
+.nav-icon-btn:hover {
+    color: var(--primary);
+    transform: scale(1.1);
 }
 
 /* === Footer === */

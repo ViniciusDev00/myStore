@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('jwtToken', response.data);
             loginMessage.textContent = 'Login bem-sucedido! A redirecionar...';
             loginMessage.className = 'form-message success';
-            setTimeout(() => { window.location.href = '../../index.html'; }, 1500);
+            setTimeout(() => { window.location.href = '../../inicio/HTML/index.html'; }, 1500);
         } catch (error) {
             loginMessage.textContent = 'E-mail ou senha inválidos.';
             loginMessage.className = 'form-message error';
