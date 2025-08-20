@@ -749,3 +749,35 @@ body.nav-open .hamburger-icon::after { transform: rotate(-45deg) translate(5px, 
     color: var(--primary);
     transform: scale(1.1);
 }
+
+/* Adicione este código ao final do arquivo: FRONT/inicio/CSS/style.css */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Aumenta o espaçamento */
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.user-info span {
+    white-space: nowrap;
+}
+
+.user-info .my-account-link {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.user-info .my-account-link:hover {
+    color: var(--primary);
+}
