@@ -676,3 +676,19 @@ body.nav-open .hamburger-icon::after { transform: rotate(-45deg) translate(5px, 
     color: inherit;
     display: block;
 }
+
+/* Estilos para os novos ícones do header de perfil e logout */
+.nav-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 0 0.5rem;
+}
+
+.nav-icon-btn:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}

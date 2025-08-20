@@ -13,28 +13,7 @@
     <link rel="stylesheet" href="../CSS/contato.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="container">
-            <button class="mobile-nav-toggle" aria-controls="main-nav" aria-expanded="false">
-                <span class="sr-only">Menu</span>
-                <div class="hamburger-icon"></div>
-            </button>
-            <a href="index.html" class="logo">Japa<span> Universe</span></a>
-            <nav class="main-nav" id="main-nav">
-                <ul class="nav-list">
-                    <li><a href="../../inicio/HTML/index.html" class="nav-link">Início</a></li>
-                    <li><a href="../../catalogo/HTML/catalogo.html" class="nav-link">Catálogo</a></li>
-                    <li><a href="contato.html" class="nav-link">Contato</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <button class="cart-btn" id="cartButton" aria-label="Abrir carrinho de compras">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span class="cart-count">0</span>
-                </button>
-            </div>
-        </div>
-    </header>
+    <header class="main-header" data-basepath="../.."></header>
 
     <main>
         <section class="page-header section-padding">
@@ -139,6 +118,7 @@
         </div>
     </footer>
 
+    <script src="../../assets/js/header.js"></script>
     <script src="../JS/contato.js"></script>
 </body>
 </html>
