@@ -25,6 +25,16 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @PostMapping("/registrar")
+    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
+        try {
+            UsuarioDTO novoUsuario = usuarioService.registrarUsuario(usuario);
+            return ResponseEntity.ok(novoUsuario);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
