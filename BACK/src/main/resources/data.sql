@@ -16,6 +16,3 @@ INSERT INTO produtos (id, nome, descricao, preco, imagem_url, estoque, marca_id,
 (8, 'Air Max Plus TN "Lilac"', 'Cores vibrantes para um estilo de rua autêntico.', 1199.99, '../../inicio/IMG/recentes/tnLilac.webp', 10, 1, 3),
 (9, 'Air Max Plus TN "Royal Blue"', 'O azul icônico que marcou uma geração.', 1199.99, '../../inicio/IMG/recentes/tnRoyal.webp', 10, 1, 3),
 (10, 'Air Max Plus TN "Oreo"', 'Contraste perfeito entre preto e branco.', 1199.99, '../../inicio/IMG/recentes/tnOreo.webp', 10, 1, 3);
-
--- Adiciona um usuário padrão para testes. E-mail: admin@japauniverse.com, Senha: senha123
-INSERT INTO usuarios (id, nome, email, senha, role) VALUES (1, 'Admin Japa', 'admin@japauniverse.com', '$2a$10$3zHzb.NrnV3F.1q12/z3Be0zYwz02e2.4b.e3m3p.nd2r5.f.a.b.c', 'ROLE_ADMIN');
