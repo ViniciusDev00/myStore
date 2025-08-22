@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
         registerForm.classList.add('active'); loginForm.classList.remove('active');
         showRegisterBtn.classList.add('active'); showLoginBtn.classList.remove('active');
     });
+
+    // Função para salvar dados do usuário logado
+    function salvarUsuarioLogado(token, usuario) {
+        localStorage.setItem('jwtToken', token);
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+    }
+
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         loginMessage.textContent = '';
@@ -26,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const senha = document.getElementById('login-password').value;
         try {
             const response = await axios.post(`${API_URL}/login`, { email, senha });
-            localStorage.setItem('jwtToken', response.data);
+            // Espera que o backend retorne { token, usuario }
+            salvarUsuarioLogado(response.data.token, response.data.usuario);
             loginMessage.textContent = 'Login bem-sucedido! A redirecionar...';
             loginMessage.className = 'form-message success';
             setTimeout(() => { window.location.href = '../../inicio/HTML/index.html'; }, 1500);
@@ -36,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro de login:', error);
         }
     });
+
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         registerMessage.textContent = '';
