@@ -914,3 +914,97 @@ body.nav-open .hamburger-icon::after {
   color: var(--primary);
   transform: scale(1.1);
 }
+
+/* ===================================================
+    ESTILOS DO MENU DE USUÁRIO LOGADO
+   =================================================== */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-account-menu {
+  position: relative;
+  border-left: 1px solid var(--border-color);
+  padding-left: 1.5rem;
+  margin-left: 0.5rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.welcome-text {
+  font-size: 0.8rem;
+  color: rgb(220, 220, 220);
+  text-transform: uppercase;
+}
+
+.my-account-link {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color var(--transition-fast);
+}
+
+.my-account-link:hover {
+  color: var(--primary);
+}
+
+.my-account-link i {
+  font-size: 0.8rem;
+  transition: transform var(--transition-fast);
+}
+
+.account-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 180px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.user-account-menu:hover .account-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-account-menu:hover .my-account-link i {
+    transform: rotate(180deg);
+}
+
+.account-dropdown a,
+.account-dropdown .logout-button {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.account-dropdown a:hover,
+.account-dropdown .logout-button:hover {
+  background-color: var(--primary);
+  color: #fff;
+}

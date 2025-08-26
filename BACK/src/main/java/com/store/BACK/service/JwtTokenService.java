@@ -1,5 +1,6 @@
 package com.store.BACK.service;
 
+import com.store.BACK.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,6 +29,14 @@ public class JwtTokenService {
     // Gera um token para o usuário
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        // *** MUDANÇA PRINCIPAL AQUI ***
+        // Adiciona o nome completo do usuário como um "claim" extra no token
+        if (userDetails instanceof Usuario) {
+            Usuario user = (Usuario) userDetails;
+            claims.put("nome", user.getNome());
+        }
+
         return createToken(claims, userDetails.getUsername());
     }
 
