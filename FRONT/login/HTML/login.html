@@ -1,58 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acesso | Japa Universe</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../CSS/login.css">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../CSS/login.css" />
+  </head>
+  <body>
     <canvas id="background-canvas"></canvas>
 
     <div class="page-container">
-        <a href="../../inicio/HTML/index.html" class="logo">Japa <span>Universe</span></a>
-        <div class="form-box">
-            <div class="toggle-buttons">
-                <button id="showLoginBtn" class="toggle-btn active">Entrar</button>
-                <button id="showRegisterBtn" class="toggle-btn">Registar</button>
-            </div>
-
-            <form id="loginForm" class="form active">
-                <div class="form-group">
-                    <input type="email" id="login-email" required autocomplete="email" placeholder=" ">
-                    <label for="login-email">E-mail</label>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="login-password" required autocomplete="current-password" placeholder=" ">
-                    <label for="login-password">Senha</label>
-                </div>
-                <button type="submit" class="btn-primary">Entrar</button>
-                <p class="form-message" id="loginMessage"></p>
-            </form>
-
-            <form id="registerForm" class="form">
-                 <div class="form-group">
-                    <input type="text" id="register-name" required autocomplete="name" placeholder=" ">
-                    <label for="register-name">Nome Completo</label>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="register-email" required autocomplete="email" placeholder=" ">
-                    <label for="register-email">E-mail</label>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="register-password" required autocomplete="new-password" placeholder=" ">
-                    <label for="register-password">Senha</label>
-                </div>
-                <button type="submit" class="btn-primary">Criar Conta</button>
-                <p class="form-message" id="registerMessage"></p>
-            </form>
+      <a href="../../inicio/HTML/index.html" class="logo"
+        >Japa <span>Universe</span></a
+      >
+      <div class="form-box">
+        <div class="toggle-buttons">
+          <button id="showLoginBtn" class="toggle-btn active">Entrar</button>
+          <button id="showRegisterBtn" class="toggle-btn">Registar</button>
         </div>
-        <a href="../../inicio/HTML/index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para a loja</a>
+
+        <form id="loginForm" class="form active">
+          <div class="form-group">
+            <input
+              type="email"
+              id="login-email"
+              required
+              autocomplete="email"
+              placeholder=" "
+            />
+            <label for="login-email">E-mail</label>
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="login-password"
+              required
+              autocomplete="current-password"
+              placeholder=" "
+            />
+            <label for="login-password">Senha</label>
+          </div>
+          <button type="submit" class="btn-primary">Entrar</button>
+          <p class="form-message" id="loginMessage"></p>
+        </form>
+
+        <form id="registerForm" class="form">
+          <div class="form-group">
+            <input
+              type="text"
+              id="register-name"
+              required
+              autocomplete="name"
+              placeholder=" "
+            />
+            <label for="register-name">Nome Completo</label>
+          </div>
+          <div class="form-group">
+            <input
+              type="email"
+              id="register-email"
+              required
+              autocomplete="email"
+              placeholder=" "
+            />
+            <label for="register-email">E-mail</label>
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="register-password"
+              required
+              autocomplete="new-password"
+              placeholder=" "
+            />
+            <label for="register-password">Senha</label>
+          </div>
+          <button type="submit" class="btn-primary">Criar Conta</button>
+          <p class="form-message" id="registerMessage"></p>
+        </form>
+      </div>
+      <a href="../../inicio/HTML/index.html" class="back-link"
+        ><i class="fas fa-arrow-left"></i> Voltar para a loja</a
+      >
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../JS/login.js"></script>
-</body>
+  </body>
 </html>

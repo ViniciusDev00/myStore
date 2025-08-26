@@ -47,10 +47,4 @@ public class UsuarioService implements UserDetailsService {
         dto.setRole(usuario.getRole());
         return dto;
     }
-
-    // IMPLEMENTAÇÃO SOLICITADA
-    public Usuario buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
-    }
 }
