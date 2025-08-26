@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     actionsHTML += `
             <div class="user-account-menu">
                 <div class="user-info">
-                    <span class="welcome-text">Olá ${userName}</span>
+                    <span class="welcome-text">Olá, ${userName}</span>
                     <a href="#" class="my-account-link">Minha conta <i class="fas fa-chevron-down"></i></a>
                 </div>
                 <div class="account-dropdown">

@@ -1,0 +1,168 @@
+/* Importa variáveis globais */
+@import url('../../inicio/CSS/style.css');
+
+/* Corpo da página com espaçamento para o header */
+body {
+    padding-top: var(--header-height);
+}
+
+.page-title-bar {
+    background-color: var(--surface);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+    color: var(--primary);
+}
+
+.breadcrumb span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.perfil-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--space-lg);
+    align-items: flex-start;
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+}
+
+/* Sidebar de Navegação */
+.perfil-sidebar {
+    background-color: var(--surface);
+    padding: var(--space-md);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.perfil-nav a {
+    display: block;
+    padding: 1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all var(--transition-fast);
+    border-left: 3px solid transparent;
+}
+
+.perfil-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.perfil-nav a.active {
+    color: var(--primary);
+    border-left: 3px solid var(--primary);
+    background-color: rgba(255, 122, 0, 0.1);
+}
+
+/* Conteúdo Principal */
+.perfil-content {
+    background-color: var(--surface);
+    padding: var(--space-xl);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    min-height: 50vh;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.content-header h1 {
+    font-size: 2.2rem;
+}
+
+/* Estilos para "Nenhum item" */
+.empty-state {
+    text-align: center;
+    padding: var(--space-xl) 0;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+    display: block;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-xs);
+}
+
+/* Estilos específicos para Pedidos */
+.order-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.order-header .order-id {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.order-body .item {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.item-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.item-details h4 {
+    font-size: 1rem;
+    font-family: var(--font-body);
+}
+
+/* Estilos específicos para Endereços */
+.address-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--space-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.address-details p {
+    margin: 0;
+    line-height: 1.5;
+}
+.address-actions a {
+    color: var(--text-secondary);
+    margin-left: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.address-actions a:hover {
+    color: var(--primary);
+}
