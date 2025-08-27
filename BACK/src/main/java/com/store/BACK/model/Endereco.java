@@ -1,6 +1,6 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class Endereco {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference("usuario-enderecos")
     private Usuario usuario;
 
     @Column(nullable = false)

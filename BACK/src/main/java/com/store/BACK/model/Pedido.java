@@ -1,5 +1,7 @@
 package com.store.BACK.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +22,11 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonBackReference("usuario-pedidos")
     private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("pedido-itens")
     private List<ItemPedido> itens = new ArrayList<>();
 
     @ManyToOne
@@ -30,6 +34,7 @@ public class Pedido {
     private Endereco enderecoDeEntrega;
 
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @JsonManagedReference("pedido-pagamento")
     private Pagamento pagamento;
 
     @Column(nullable = false)

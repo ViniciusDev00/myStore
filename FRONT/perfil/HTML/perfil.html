@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Compras | Japa Universe</title>
+    <title>Meus Dados | Japa Universe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../CSS/perfil.css">
@@ -14,25 +14,39 @@
 
     <div class="page-title-bar">
         <div class="container breadcrumb">
-            <a href="../../index.html">Página Inicial</a> &nbsp;/&nbsp; <a href="perfil.html">Minha conta</a> &nbsp;/&nbsp; <span>Minhas compras</span>
+            <a href="../../index.html">Página Inicial</a> &nbsp;/&nbsp; <span>Minha conta</span>
         </div>
     </div>
 
     <main class="container perfil-container">
         <aside class="perfil-sidebar">
             <nav class="perfil-nav">
-                <a href="perfil.html" class="active">Minhas compras</a>
-                <a href="enderecos.html">Meus endereços</a>
+                <a href="perfil.html" class="active">Meus Dados</a>
                 <a href="#" id="sidebar-logout">Sair</a>
             </nav>
         </aside>
 
         <section class="perfil-content">
-            <div class="content-header">
-                <h1>Minhas compras</h1>
+            <div class="perfil-section">
+                <h2 class="perfil-section-title">Meus Dados</h2>
+                <div id="user-info-container">
+                    </div>
             </div>
-            <div id="orders-container">
+
+            <div class="perfil-section">
+                 <div class="content-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: var(--space-md);">
+                    <h2 class="perfil-section-title" style="border: none; margin: 0; padding: 0;">Meus Endereços</h2>
+                    <button class="btn btn-primary">Adicionar novo endereço</button>
                 </div>
+                <div id="addresses-container">
+                    </div>
+            </div>
+            
+            <div class="perfil-section">
+                <h2 class="perfil-section-title">Minhas Compras</h2>
+                <div id="orders-container">
+                    </div>
+            </div>
         </section>
     </main>
     

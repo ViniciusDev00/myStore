@@ -1,5 +1,6 @@
 package com.store.BACK.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,15 +31,21 @@ public class Usuario implements UserDetails {
     private String senha;
 
     @Column(nullable = false)
-    private String role = "ROLE_USER"; // "ROLE_USER" ou "ROLE_ADMIN"
+    private String role = "ROLE_USER";
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("usuario-enderecos")
     private List<Endereco> enderecos;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("usuario-pedidos")
     private List<Pedido> pedidos;
 
-    // Métodos da interface UserDetails para integração com Spring Security
+    public String getNome() {
+        return this.nome;
+    }
+
+    // Métodos da interface UserDetails...
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role));

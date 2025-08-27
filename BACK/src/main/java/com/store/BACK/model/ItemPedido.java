@@ -1,6 +1,6 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +28,6 @@ public class ItemPedido {
 
     @ManyToOne
     @JoinColumn(name = "pedido_id")
-    @JsonIgnore
+    @JsonBackReference("pedido-itens")
     private Pedido pedido;
 }

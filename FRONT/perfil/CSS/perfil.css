@@ -166,3 +166,21 @@ body {
 .address-actions a:hover {
     color: var(--primary);
 }
+
+/* Adicionar ao final de perfil.css */
+
+.perfil-section {
+    margin-bottom: var(--space-xl);
+}
+
+.perfil-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.perfil-section-title {
+    font-size: 1.8rem;
+    font-family: var(--font-display);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--space-lg);
+}

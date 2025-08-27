@@ -7,6 +7,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import javax.crypto.SecretKey;
+import io.jsonwebtoken.io.Decoders;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,8 +19,18 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    // CHAVE SECRETA - Em um projeto real, isso deve vir de um arquivo de configuração!
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // --- MUDANÇA PRINCIPAL AQUI ---
+    // Chave secreta fixa e segura. Em um projeto real, isso viria de um arquivo de configuração.
+    // Esta string tem 256 bits, que é o recomendado para HS256.
+    private static final String SECRET_KEY_STRING = "SeuSegredoSuperSecretoQueNinguemPodeDescobrir1234567890";
+    private final SecretKey secretKey;
+
+    public JwtTokenService() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY_STRING);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+    }
+    // --- FIM DA MUDANÇA ---
+
     private final long jwtExpiration = 86400000; // 24 horas
 
     // Extrai o email do token
@@ -30,8 +42,6 @@ public class JwtTokenService {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // *** MUDANÇA PRINCIPAL AQUI ***
-        // Adiciona o nome completo do usuário como um "claim" extra no token
         if (userDetails instanceof Usuario) {
             Usuario user = (Usuario) userDetails;
             claims.put("nome", user.getNome());
