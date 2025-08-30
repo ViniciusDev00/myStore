@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuario") // Nova rota base para dados do usuário logado
-@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     @Autowired

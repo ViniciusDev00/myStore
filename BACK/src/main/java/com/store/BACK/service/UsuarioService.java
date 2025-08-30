@@ -21,8 +21,19 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        System.out.println("\n--- DENTRO DE loadUserByUsername ---");
+        System.out.println("Procurando utilizador com o email: " + email);
+
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
+                .map(usuario -> {
+                    System.out.println(">>> SUCESSO: Utilizador encontrado na base de dados: " + usuario.getUsername());
+                    System.out.println(">>> Permissões do utilizador: " + usuario.getAuthorities());
+                    return usuario;
+                })
+                .orElseThrow(() -> {
+                    System.out.println("!!! FALHA: Utilizador não foi encontrado na base de dados com o email: " + email);
+                    return new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email);
+                });
     }
 
     public UsuarioDTO registrarUsuario(Usuario usuario) {
@@ -31,8 +42,6 @@ public class UsuarioService implements UserDetailsService {
         }
 
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-
-        // Garante que novos registos sejam sempre de utilizadores comuns
         usuario.setRole("ROLE_USER");
 
         Usuario novoUsuario = usuarioRepository.save(usuario);

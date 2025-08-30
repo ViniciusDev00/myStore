@@ -33,11 +33,13 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String role = "ROLE_USER";
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    // --- MUDANÇA CRÍTICA AQUI ---
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference("usuario-enderecos")
     private List<Endereco> enderecos;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    // --- E MUDANÇA CRÍTICA AQUI ---
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference("usuario-pedidos")
     private List<Pedido> pedidos;
 

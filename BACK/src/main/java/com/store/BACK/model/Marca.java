@@ -1,6 +1,6 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +20,6 @@ public class Marca {
     private String nome;
 
     @OneToMany(mappedBy = "marca", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference("marca-produtos") // <-- ATUALIZAÇÃO
+    @JsonIgnore // <-- ATUALIZAÇÃO PARA A FORMA MAIS SIMPLES DE QUEBRAR O CICLO
     private List<Produto> produtos;
 }

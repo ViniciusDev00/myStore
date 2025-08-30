@@ -19,7 +19,6 @@ import java.util.Map; // 3. IMPORTE O MAP PARA A RESPOSTA
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired

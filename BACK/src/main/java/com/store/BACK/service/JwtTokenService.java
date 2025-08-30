@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    // --- ATUALIZAÇÃO: Chave secreta agora é fixa ---
+    // --- ATUALIZAÇÃO: Chave secreta agora é fixa e consistente ---
     private static final String SECRET_KEY_STRING = "ZEdWemEyVnlJR05sY25ScFptbGpZWFJsTFdWNGRISmhZMk52ZFc1MA==";
     private final SecretKey secretKey;
 
