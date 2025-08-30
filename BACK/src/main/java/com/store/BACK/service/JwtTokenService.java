@@ -3,14 +3,12 @@ package com.store.BACK.service;
 import com.store.BACK.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import javax.crypto.SecretKey;
-import io.jsonwebtoken.io.Decoders;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,38 +17,31 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    // --- MUDANÇA PRINCIPAL AQUI ---
-    // Chave secreta fixa e segura. Em um projeto real, isso viria de um arquivo de configuração.
-    // Esta string tem 256 bits, que é o recomendado para HS256.
-    private static final String SECRET_KEY_STRING = "SeuSegredoSuperSecretoQueNinguemPodeDescobrir1234567890";
+    // --- ATUALIZAÇÃO: Chave secreta agora é fixa ---
+    private static final String SECRET_KEY_STRING = "ZEdWemEyVnlJR05sY25ScFptbGpZWFJsTFdWNGRISmhZMk52ZFc1MA==";
     private final SecretKey secretKey;
 
     public JwtTokenService() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY_STRING);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
-    // --- FIM DA MUDANÇA ---
+    // --- FIM DA ATUALIZAÇÃO ---
 
     private final long jwtExpiration = 86400000; // 24 horas
 
-    // Extrai o email do token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Gera um token para o usuário
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-
         if (userDetails instanceof Usuario) {
             Usuario user = (Usuario) userDetails;
             claims.put("nome", user.getNome());
         }
-
         return createToken(claims, userDetails.getUsername());
     }
 
-    // Valida o token
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
@@ -76,7 +67,7 @@ public class JwtTokenService {
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject) // O email do usuário
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey)
