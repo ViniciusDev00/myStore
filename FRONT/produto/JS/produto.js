@@ -143,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const addEventListeners = () => {
+        // Lógica do seletor de tamanho
         const sizeBtns = document.querySelectorAll('.size-btn');
         sizeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -151,6 +152,41 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // --- INÍCIO DA NOVA LÓGICA ---
+        // Lógica para ADICIONAR AO CARRINHO
+        const buyButton = document.querySelector('.buy-button');
+        if(buyButton) {
+            buyButton.addEventListener('click', async () => {
+                const selectedSizeEl = document.querySelector('.size-btn.active');
+                if (!selectedSizeEl) {
+                    alert('Por favor, selecione um tamanho.');
+                    return;
+                }
+                const size = selectedSizeEl.textContent;
+                
+                // Re-buscar os dados do produto para garantir que temos tudo atualizado
+                const response = await axios.get(`${API_URL}/${productId}`);
+                const product = response.data;
+    
+                const productToAdd = {
+                    id: product.id.toString(), // ID como string para consistência
+                    name: product.nome,
+                    price: product.preco,
+                    image: product.imagemUrl,
+                    size: size
+                };
+    
+                // Chama a função global do main.js
+                if (window.addToCart) {
+                    window.addToCart(productToAdd);
+                } else {
+                    console.error("Função addToCart não encontrada.");
+                }
+            });
+        }
+        // --- FIM DA NOVA LÓGICA ---
+
+        // Efeito de zoom na imagem principal
         const mainImageContainer = document.querySelector('.main-image-container');
         const mainImage = document.getElementById('main-product-image');
         if (mainImageContainer && mainImage) {

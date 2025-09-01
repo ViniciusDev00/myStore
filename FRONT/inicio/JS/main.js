@@ -14,7 +14,134 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
     return { init };
-  })();
+  })();document.addEventListener("DOMContentLoaded", () => {
+    // Seus outros módulos como LoadingModule, HeaderModule, AnimationModule continuam aqui...
+    // ...
+
+    /**
+     * Módulo do Carrinho de Compras
+     */
+    const CartModule = (() => {
+        const cartModal = document.getElementById("cartModal");
+        const closeButton = document.getElementById("closeCartBtn");
+        const overlay = document.getElementById("modalOverlay");
+        const cartItemsContainer = document.getElementById("cartItemsContainer");
+        const cartSubtotalEl = document.getElementById("cartSubtotal");
+
+        // Usamos um nome de chave mais específico para o localStorage
+        let cart = JSON.parse(localStorage.getItem("japaUniverseCart")) || [];
+
+        const saveCart = () => {
+            localStorage.setItem("japaUniverseCart", JSON.stringify(cart));
+        };
+        
+        const formatPrice = (price) => `R$ ${price.toFixed(2).replace('.', ',')}`;
+
+        const toggleModal = () => {
+            if (cartModal) cartModal.classList.toggle("active");
+        };
+
+        const updateCart = () => {
+            renderCartItems();
+            updateCartInfo();
+        };
+
+        const renderCartItems = () => {
+            if (!cartItemsContainer) return;
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="empty-cart-message">O seu carrinho está vazio.</p>';
+                return;
+            }
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item" data-id="${item.id}" data-size="${item.size}">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <h4>${item.name}</h4>
+                        <p>Tamanho: ${item.size}</p>
+                        <p class="price">${formatPrice(item.price)}</p>
+                        <div class="cart-item-actions">
+                            <div class="quantity-control">
+                                <button class="quantity-btn quantity-decrease">-</button>
+                                <input class="quantity-input" type="number" value="${item.quantity}" min="1">
+                                <button class="quantity-btn quantity-increase">+</button>
+                            </div>
+                            <button class="remove-item-btn">Remover</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const updateCartInfo = () => {
+            // O cartCountEl é atualizado no header.js, mas podemos atualizar aqui também
+            const cartCountEl = document.querySelector(".cart-count");
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            if (cartCountEl) cartCountEl.textContent = totalItems;
+            if (cartSubtotalEl) cartSubtotalEl.textContent = formatPrice(subtotal);
+        };
+
+        const addToCart = (product) => {
+            const existingItem = cart.find(item => item.id === product.id && item.size === product.size);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            saveCart();
+            updateCart();
+            toggleModal(); // Abre o carrinho ao adicionar um item
+        };
+        
+        const handleCartActions = (e) => {
+            const target = e.target;
+            const cartItemEl = target.closest('.cart-item');
+            if (!cartItemEl) return;
+
+            const id = cartItemEl.dataset.id;
+            const size = cartItemEl.dataset.size;
+            const itemIndex = cart.findIndex(item => item.id === id && item.size === size);
+            
+            if (itemIndex === -1) return;
+
+            if (target.classList.contains('quantity-increase')) {
+                cart[itemIndex].quantity++;
+            } else if (target.classList.contains('quantity-decrease')) {
+                if (cart[itemIndex].quantity > 1) {
+                    cart[itemIndex].quantity--;
+                } else {
+                    cart.splice(itemIndex, 1); // Remove se a quantidade for 1 e clicar em diminuir
+                }
+            } else if (target.classList.contains('remove-item-btn')) {
+                cart.splice(itemIndex, 1);
+            }
+            saveCart();
+            updateCart();
+        };
+        
+        const init = () => {
+            // Adicionar evento de clique ao botão do carrinho no header dinamicamente
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#cartButton')) {
+                    toggleModal();
+                }
+            });
+            
+            if (closeButton) closeButton.addEventListener("click", toggleModal);
+            if (overlay) overlay.addEventListener("click", toggleModal);
+            if (cartItemsContainer) cartItemsContainer.addEventListener('click', handleCartActions);
+            
+            window.addToCart = addToCart;
+            updateCart();
+        }
+
+        return { init };
+    })();
+
+    // Iniciar Módulo do Carrinho
+    CartModule.init();
+});
 
   /**
    * Módulo de Interação do Header
