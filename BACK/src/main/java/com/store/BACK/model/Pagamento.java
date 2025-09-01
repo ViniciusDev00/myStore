@@ -1,6 +1,6 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference; // IMPORTANTE: Mude a importação
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,8 @@ public class Pagamento {
 
     @OneToOne
     @JoinColumn(name = "pedido_id", nullable = false)
-    @JsonIgnore
+    // --- A CORREÇÃO ESTÁ AQUI ---
+    @JsonBackReference("pedido-pagamento") // Troque @JsonIgnore por esta linha
     private Pedido pedido;
 
     @Column(nullable = false)
