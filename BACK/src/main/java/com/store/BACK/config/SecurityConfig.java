@@ -3,6 +3,7 @@ package com.store.BACK.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod; // Adicione esta importação
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,7 +35,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**").permitAll()
-                        .requestMatchers("/api/usuario/**", "/api/pedidos/**").hasAuthority("ROLE_USER") // <-- ATUALIZE AQUI
+
+                        // --- REGRAS ATUALIZADAS PARA O NOVO CONTROLLER ---
+                        .requestMatchers("/api/usuario/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/pedidos/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/enderecos/**").hasAuthority("ROLE_USER") // Protege o novo endpoint de endereços
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -48,8 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const addresses = response.data.enderecos;
 
             if (!addresses || addresses.length === 0) {
-                addressesContainer.innerHTML = '<p>Nenhum endereço cadastrado. Por favor, adicione um endereço no seu perfil.</p>';
-                finalizeBtn.disabled = true;
+                // --- INÍCIO DA MUDANÇA ---
+                addressesContainer.innerHTML = `
+                    <p>Nenhum endereço cadastrado.</p>
+                    <a href="../../perfil/HTML/perfil.html" class="btn btn-primary" style="width: 100%; text-align: center; justify-content: center; margin-top: 1rem;">
+                        Adicionar Endereço
+                    </a>
+                `;
+                finalizeBtn.style.display = 'none'; // Esconde o botão original de finalizar
+                // --- FIM DA MUDANÇA ---
                 return;
             }
 
@@ -60,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
             
-            // Adiciona evento de clique para seleção de endereço
             document.querySelectorAll('.address-card').forEach(card => {
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));

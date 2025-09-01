@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadMoreBtn = document.getElementById('loadMoreBtn');
 
         const renderGrid = (productsToRender) => {
+            // --- INÍCIO DA CORREÇÃO ---
             grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
                     <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
@@ -23,11 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Adicionar ao Carrinho</button>
                 </div>
             `).join('');
+            // --- FIM DA CORREÇÃO ---
 
             loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
         };
-        
-        // --- FUNÇÃO CORRIGIDA ---
+
         const applyFiltersAndRender = () => {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const brandFilterValue = document.getElementById('brandFilter').value;
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await axios.get(API_URL);
                 allProducts = response.data;
-                window.allProducts = allProducts; // Disponibiliza para o listener global do carrinho
+                window.allProducts = allProducts;
                 applyFiltersAndRender();
             } catch (error) {
                 console.error('Falha na requisição com Axios:', error);

@@ -1,8 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const userInfoContainer = document.getElementById('user-info-container');
     const addressesContainer = document.getElementById('addresses-container');
     const ordersContainer = document.getElementById('orders-container');
     const token = localStorage.getItem('jwtToken');
+
+    // Elementos do Modal
+    const addressModal = document.getElementById('address-modal');
+    const modalOverlay = document.getElementById('address-modal-overlay');
+    const openModalBtn = document.querySelector('.btn.btn-primary'); // Botão "Adicionar novo endereço"
+    const closeModalBtn = document.getElementById('close-address-modal');
+    const addressForm = document.getElementById('address-form');
 
     if (!token) {
         window.location.href = '../../login/HTML/login.html';
@@ -14,14 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
-    const renderUserInfo = (user) => {
-        if (!user) return;
-        userInfoContainer.innerHTML = `
-            <p><strong>Nome:</strong> ${user.nome}</p>
-            <p><strong>Email:</strong> ${user.email}</p>
-        `;
-    };
-
     const renderAddresses = (addresses) => {
         if (!addresses || addresses.length === 0) {
             addressesContainer.innerHTML = `<p>Nenhum endereço cadastrado.</p>`;
@@ -32,10 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="address-details">
                     <p><strong>${addr.rua}, ${addr.numero} ${addr.complemento || ''}</strong></p>
                     <p>${addr.cidade}, ${addr.estado} - CEP: ${addr.cep}</p>
-                </div>
-                <div class="address-actions">
-                    <a href="#">Editar</a>
-                    <a href="#">Apagar</a>
                 </div>
             </div>
         `).join('');
@@ -70,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await apiClient.get('/usuario/meus-dados');
             const userData = response.data;
             
-            renderUserInfo(userData);
             renderAddresses(userData.enderecos);
             renderOrders(userData.pedidos);
 
@@ -83,15 +76,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // Logout do botão na sidebar
-    const sidebarLogout = document.getElementById('sidebar-logout');
-    if(sidebarLogout) {
-        sidebarLogout.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('jwtToken');
-            window.location.href = '../../index.html';
-        });
-    }
+    // --- LÓGICA DO MODAL ---
+    const toggleModal = (show) => {
+        if (show) {
+            addressModal.classList.add('active');
+            modalOverlay.classList.add('active');
+        } else {
+            addressModal.classList.remove('active');
+            modalOverlay.classList.remove('active');
+        }
+    };
+
+    openModalBtn.addEventListener('click', () => toggleModal(true));
+    closeModalBtn.addEventListener('click', () => toggleModal(false));
+    modalOverlay.addEventListener('click', () => toggleModal(false));
+
+    addressForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const newAddress = {
+            cep: document.getElementById('cep').value,
+            rua: document.getElementById('rua').value,
+            numero: document.getElementById('numero').value,
+            complemento: document.getElementById('complemento').value,
+            cidade: document.getElementById('cidade').value,
+            estado: document.getElementById('estado').value,
+        };
+
+
+        try {
+            // AQUI FAZEMOS A CHAMADA PARA O NOVO ENDPOINT DO BACKEND
+            await apiClient.post('/enderecos', newAddress); // Alterado de '/usuario/enderecos' para '/enderecos'
+            
+            toggleModal(false); 
+            loadProfileData(); 
+            addressForm.reset(); 
+
+        } catch (error) {
+            console.error('Erro ao adicionar endereço:', error);
+            alert('Não foi possível salvar o endereço. Tente novamente.');
+        }
+
+
+    });
 
     loadProfileData();
 });
