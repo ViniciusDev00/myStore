@@ -20,9 +20,10 @@ public class ProdutoController {
     public List<Produto> listarProdutos(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) Long marcaId,
+            @RequestParam(required = false) Long categoriaId, // Novo parâmetro
             @RequestParam(required = false, defaultValue = "default") String ordenacao) {
 
-        List<Produto> produtos = produtoService.buscarProdutosFiltrados(nome, marcaId);
+        List<Produto> produtos = produtoService.buscarProdutosFiltrados(nome, marcaId, categoriaId); // Novo argumento
 
         if ("price-asc".equals(ordenacao)) {
             produtos.sort(Comparator.comparing(Produto::getPreco));

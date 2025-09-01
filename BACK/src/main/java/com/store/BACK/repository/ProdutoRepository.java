@@ -13,6 +13,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("SELECT p FROM Produto p WHERE " +
             "(:nome IS NULL OR lower(p.nome) LIKE lower(concat('%', :nome, '%'))) AND " +
-            "(:marcaId IS NULL OR p.marca.id = :marcaId)")
-    List<Produto> findWithFilters(@Param("nome") String nome, @Param("marcaId") Long marcaId);
+            "(:marcaId IS NULL OR p.marca.id = :marcaId) AND " + // Adicionar AND
+            "(:categoriaId IS NULL OR p.categoria.id = :categoriaId)") // Nova linha
+    List<Produto> findWithFilters(@Param("nome") String nome,
+                                  @Param("marcaId") Long marcaId,
+                                  @Param("categoriaId") Long categoriaId); // Novo parâmetro
 }

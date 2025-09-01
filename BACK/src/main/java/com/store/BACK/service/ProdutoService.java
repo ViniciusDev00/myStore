@@ -14,8 +14,8 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    public List<Produto> buscarProdutosFiltrados(String nome, Long marcaId) {
-        return produtoRepository.findWithFilters(nome, marcaId);
+    public List<Produto> buscarProdutosFiltrados(String nome, Long marcaId, Long categoriaId) { // Novo parâmetro
+        return produtoRepository.findWithFilters(nome, marcaId, categoriaId); // Novo argumento
     }
 
     public Optional<Produto> buscarPorId(Long id) {

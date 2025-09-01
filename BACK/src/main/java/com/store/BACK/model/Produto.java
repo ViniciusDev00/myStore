@@ -1,6 +1,5 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +24,9 @@ public class Produto {
     @Column(nullable = false)
     private BigDecimal preco;
 
+    // NOVO CAMPO ADICIONADO AQUI
+    private BigDecimal precoOriginal;
+
     private String imagemUrl;
 
     @Column(nullable = false)
@@ -32,11 +34,9 @@ public class Produto {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "marca_id", nullable = false)
-    @JsonManagedReference("marca-produtos") // <-- ATUALIZAÇÃO
     private Marca marca;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id", nullable = false)
-    @JsonManagedReference("categoria-produtos") // <-- ATUALIZAÇÃO
     private Categoria categoria;
 }

@@ -8,20 +8,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
-    <link rel="stylesheet" href="../../inicio/CSS/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <link rel="stylesheet" href="../CSS/produto.css">
 </head>
 <body>
     
     <header class="main-header" data-basepath="../.."></header>
 
-    <main>
-        <div class="container product-detail-container" id="product-detail">
+    <main class="container">
+        <div id="product-detail-container">
             <p class="loading-message">A carregar detalhes do produto...</p>
         </div>
+
+        <section class="related-products-section">
+            <h2 class="related-products-title">Talvez você goste</h2>
+            <div class="swiper related-products-swiper">
+                <div class="swiper-wrapper" id="related-products-grid">
+                    </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
     </main>
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script src="../JS/produto.js"></script>
     <script src="../../assets/js/header.js"></script>
 </body>
