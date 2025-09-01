@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (grid) {
         let allProducts = [];
+        let displayedProducts = 8;
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
 
         const renderGrid = (productsToRender) => {
-            grid.innerHTML = productsToRender.map(product => `
+            grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
                     <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                         <div class="product-image-wrapper">
@@ -21,46 +23,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Adicionar ao Carrinho</button>
                 </div>
             `).join('');
-        };
 
+            loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
+        };
+        
+        // --- FUNÇÃO CORRIGIDA ---
         const applyFiltersAndRender = () => {
-            // ... (lógica de filtros continua a mesma)
-            renderGrid(filteredProducts);
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const brandFilterValue = document.getElementById('brandFilter').value;
+            const sortOrder = document.getElementById('sortFilter').value;
+            let filtered = [...allProducts];
+
+            if (searchTerm) {
+                filtered = filtered.filter(p => p.nome.toLowerCase().includes(searchTerm));
+            }
+            if (brandFilterValue !== 'all') {
+                filtered = filtered.filter(p => p.marca.nome === brandFilterValue);
+            }
+            if (sortOrder === 'price-asc') {
+                filtered.sort((a, b) => a.preco - b.preco);
+            } else if (sortOrder === 'price-desc') {
+                filtered.sort((a, b) => b.preco - a.preco);
+            }
+            renderGrid(filtered);
         };
 
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(API_URL);
                 allProducts = response.data;
-                window.allProducts = allProducts; // Disponibiliza para o listener
+                window.allProducts = allProducts; // Disponibiliza para o listener global do carrinho
                 applyFiltersAndRender();
             } catch (error) {
                 console.error('Falha na requisição com Axios:', error);
-                grid.innerHTML = `<p>Não foi possível carregar os produtos.</p>`;
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1 / -1; text-align: center;">Não foi possível carregar os produtos.</p>`;
             }
         };
 
-        // Adiciona um event listener único para os botões do catálogo
-        grid.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-to-cart-btn')) {
-                const productId = e.target.dataset.productId;
-                const product = allProducts.find(p => p.id.toString() === productId);
-                if (product) {
-                    const productToAdd = {
-                        id: product.id.toString(),
-                        name: product.nome,
-                        price: product.preco,
-                        image: product.imagemUrl,
-                        size: '39' // Tamanho padrão
-                    };
-                    if (window.addToCart) {
-                        window.addToCart(productToAdd);
-                    }
-                }
-            }
+        document.getElementById('searchInput').addEventListener('input', () => { displayedProducts = 8; applyFiltersAndRender(); });
+        document.getElementById('brandFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
+        document.getElementById('sortFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
+        loadMoreBtn.addEventListener('click', () => {
+            displayedProducts += 8;
+            applyFiltersAndRender();
         });
-        
-        // ... (seus outros event listeners para filtros continuam aqui)
+
         fetchProducts();
     }
 });

@@ -70,7 +70,7 @@
                 <div class="footer-col">
                     <h3 class="footer-title">Suporte</h3>
                     <ul>
-                        <li><a href="contato.html">Contato</a></li>
+                        <li><a href="../../contato/HTML/contato.html">Contato</a></li>
                         <li><a href="#">Envios & Devoluções</a></li>
                     </ul>
                 </div>
@@ -92,9 +92,27 @@
         </div>
     </footer>
 
-    <script src="../../assets/JS/header.js"></script>
+    <div class="cart-modal" id="cartModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <aside class="modal-content">
+            <div class="modal-header">
+                <h3>Seu Carrinho</h3>
+                <button class="close-modal" id="closeCartBtn" aria-label="Fechar carrinho">&times;</button>
+            </div>
+            <div class="modal-body" id="cartItemsContainer"></div>
+            <div class="modal-footer">
+                <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal">R$ 0,00</span>
+                </div>
+                <p class="shipping-note">O frete será calculado no checkout.</p>
+                <button class="btn btn-primary checkout-btn">Finalizar Compra</button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="../../assets/js/header.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="../JS/catalogo.js"></script>
-</head>
+    <script src="../../inicio/JS/main.js"></script> <script src="../JS/catalogo.js"></script>
 </body>
 </html>

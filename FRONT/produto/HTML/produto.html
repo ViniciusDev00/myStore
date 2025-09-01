@@ -7,9 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
     <link rel="stylesheet" href="../CSS/produto.css">
 </head>
 <body>
@@ -24,18 +22,36 @@
         <section class="related-products-section">
             <h2 class="related-products-title">Talvez você goste</h2>
             <div class="swiper related-products-swiper">
-                <div class="swiper-wrapper" id="related-products-grid">
-                    </div>
+                <div class="swiper-wrapper" id="related-products-grid"></div>
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
             </div>
         </section>
-</main>
+    </main>
     
+    <div class="cart-modal" id="cartModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <aside class="modal-content">
+            <div class="modal-header">
+                <h3>Seu Carrinho</h3>
+                <button class="close-modal" id="closeCartBtn" aria-label="Fechar carrinho">&times;</button>
+            </div>
+            <div class="modal-body" id="cartItemsContainer"></div>
+            <div class="modal-footer">
+                <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal">R$ 0,00</span>
+                </div>
+                <p class="shipping-note">O frete será calculado no checkout.</p>
+                <button class="btn btn-primary checkout-btn">Finalizar Compra</button>
+            </div>
+        </aside>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
     <script src="../../assets/js/header.js"></script>
-    <script src="../../inicio/JS/main.js"></script> <script src="../JS/produto.js"></script>
+    <script src="../../inicio/JS/main.js"></script> 
+    <script src="../JS/produto.js"></script>
 </body>
 </html>

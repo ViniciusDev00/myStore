@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**").permitAll()
-                        .requestMatchers("/api/usuario/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/api/usuario/**", "/api/pedidos/**").hasAuthority("ROLE_USER") // <-- ATUALIZE AQUI
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
