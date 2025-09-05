@@ -1,2 +1,3 @@
-porta: 5432
-senha:root
+admin@japaunder.com
+
+admin123
