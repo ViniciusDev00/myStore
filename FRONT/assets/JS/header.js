@@ -4,7 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const parseJwt = (token) => {
     try {
-      return JSON.parse(atob(token.split(".")[1]));
+      // Decodificação segura do JWT para evitar erros com caracteres especiais
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
     } catch (e) {
       return null;
     }
@@ -15,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const isLoggedIn = userData !== null;
   const basePath = headerElement.dataset.basepath || ".";
 
-  // --- ESTRUTURA BASE DO HEADER COM LINKS CORRIGIDOS ---
   headerElement.innerHTML = `
         <div class="container">
             <button class="mobile-nav-toggle" aria-controls="main-nav" aria-expanded="false">
@@ -47,8 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isLoggedIn) {
     const userName = userData.nome ? userData.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
+    
+    // --- LÓGICA MODIFICADA PARA ADICIONAR LINK DO ADMIN ---
+    const isAdmin = userData.authorities && userData.authorities.includes('ROLE_ADMIN');
+    const adminLink = isAdmin ? `<a href="${basePath}/admin/HTML/admin.html">Painel Admin</a>` : '';
 
-    // --- ESTRUTURA LOGADO COM LINKS CORRIGIDOS ---
     actionsHTML += `
             <div class="user-account-menu">
                 <div class="user-info">
@@ -56,13 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     <a href="${basePath}/perfil/HTML/perfil.html" class="my-account-link">Minha conta <i class="fas fa-chevron-down"></i></a>
                 </div>
                 <div class="account-dropdown">
+                    ${adminLink}
                     <a href="${basePath}/perfil/HTML/perfil.html">Meus Dados</a>
                     <button id="logoutBtn" class="logout-button">Sair</button>
                 </div>
             </div>
         `;
   } else {
-    // --- LINK DE LOGIN CORRIGIDO ---
     actionsHTML += `
             <a href="${basePath}/login/HTML/login.html" class="btn btn-outline">Login</a>
         `;
@@ -74,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("jwtToken");
-      // CORREÇÃO: Redirecionamento de logout para a página inicial correta
       window.location.href = `${basePath}/inicio/HTML/index.html`; 
     });
   }
