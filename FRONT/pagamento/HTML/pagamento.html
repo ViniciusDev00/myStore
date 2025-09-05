@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento PIX | Japa Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/pagamento.css">
+</head>
+<body>
+    <header class="main-header" data-basepath="../.."></header>
+
+    <main class="container">
+        <div class="pix-container">
+            <h1>Pague com PIX para finalizar seu pedido</h1>
+            <p class="pix-instructions">Abra o app do seu banco e escaneie o código abaixo, ou use o "PIX Copia e Cola".</p>
+            
+            <div id="pix-details">
+                <div class="spinner"></div>
+            </div>
+
+            <p class="waiting-payment">Aguardando confirmação de pagamento...</p>
+            <a href="../../perfil/HTML/perfil.html" class="btn btn-outline">Ver meus pedidos</a>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../JS/pagamento.js"></script>
+</body>
+</html>

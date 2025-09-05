@@ -1,0 +1,90 @@
+@import url('../../inicio/CSS/style.css');
+
+body {
+    padding-top: var(--header-height);
+    background-color: var(--background);
+}
+
+main.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - var(--header-height));
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+}
+
+.pix-container {
+    background-color: var(--surface);
+    padding: var(--space-xl);
+    border-radius: 12px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid var(--border-color);
+}
+
+.pix-container h1 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    margin-bottom: var(--space-sm);
+}
+
+.pix-instructions {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+#pix-details {
+    margin-bottom: var(--space-lg);
+}
+
+.qr-code-img {
+    max-width: 250px;
+    width: 100%;
+    border: 5px solid white;
+    border-radius: 8px;
+    margin: 0 auto;
+}
+
+.copia-cola-container {
+    margin-top: var(--space-lg);
+}
+
+.copia-cola-text {
+    background-color: var(--background);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md);
+    border-radius: 6px;
+    word-wrap: break-word;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-sm);
+}
+
+.copy-btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.waiting-payment {
+    font-weight: 500;
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border-left-color: var(--primary);
+    animation: spin 1s ease infinite;
+    margin: var(--space-xl) auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

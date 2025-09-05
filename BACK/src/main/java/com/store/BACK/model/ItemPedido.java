@@ -26,6 +26,9 @@ public class ItemPedido {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
+    @Column(nullable = false)
+    private String tamanho; // NOVO CAMPO ADICIONADO
+
     @ManyToOne
     @JoinColumn(name = "pedido_id")
     @JsonBackReference("pedido-itens")

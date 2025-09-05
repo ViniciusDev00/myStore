@@ -36,10 +36,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**").permitAll()
 
-                        // --- REGRAS ATUALIZADAS PARA O NOVO CONTROLLER ---
                         .requestMatchers("/api/usuario/**").hasAuthority("ROLE_USER")
                         .requestMatchers("/api/pedidos/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/api/enderecos/**").hasAuthority("ROLE_USER") // Protege o novo endpoint de endereços
+                        .requestMatchers("/api/enderecos/**").hasAuthority("ROLE_USER")
+
+                        // --- NOVA REGRA DE SEGURANÇA ADICIONADA AQUI ---
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated()
                 )

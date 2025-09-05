@@ -42,6 +42,7 @@ public class PedidoService {
         for (Map<String, Object> item : cartItems) {
             Long produtoId = Long.parseLong(item.get("id").toString());
             int quantidade = Integer.parseInt(item.get("quantity").toString());
+            String tamanho = (String) item.get("size"); // LINHA ADICIONADA
 
             Produto produto = produtoRepository.findById(produtoId)
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + produtoId));
@@ -50,6 +51,7 @@ public class PedidoService {
             itemPedido.setProduto(produto);
             itemPedido.setQuantidade(quantidade);
             itemPedido.setPrecoUnitario(produto.getPreco());
+            itemPedido.setTamanho(tamanho); // LINHA ADICIONADA
             itemPedido.setPedido(pedido);
             itensDoPedido.add(itemPedido);
 

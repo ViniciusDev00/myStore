@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSummary = () => {
         if (cart.length === 0) {
             summaryItemsContainer.innerHTML = '<p>Seu carrinho está vazio.</p>';
+            finalizeBtn.disabled = true;
+            finalizeBtn.textContent = 'Carrinho Vazio';
             return;
         }
 
@@ -48,25 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const addresses = response.data.enderecos;
 
             if (!addresses || addresses.length === 0) {
-                // --- INÍCIO DA MUDANÇA ---
-                addressesContainer.innerHTML = `
-                    <p>Nenhum endereço cadastrado.</p>
-                    <a href="../../perfil/HTML/perfil.html" class="btn btn-primary" style="width: 100%; text-align: center; justify-content: center; margin-top: 1rem;">
-                        Adicionar Endereço
-                    </a>
-                `;
-                finalizeBtn.style.display = 'none'; // Esconde o botão original de finalizar
-                // --- FIM DA MUDANÇA ---
+                addressesContainer.innerHTML = '<p>Nenhum endereço cadastrado. Por favor, <a href="../../perfil/HTML/perfil.html">adicione um endereço no seu perfil</a> para continuar.</p>';
+                finalizeBtn.disabled = true;
                 return;
             }
 
-            addressesContainer.innerHTML = addresses.map((addr, index) => `
+            addressesContainer.innerHTML = addresses.map((addr) => `
                 <div class="address-card" data-address-id="${addr.id}">
                     <p><strong>${addr.rua}, ${addr.numero}</strong></p>
                     <p>${addr.cidade}, ${addr.estado} - CEP: ${addr.cep}</p>
                 </div>
             `).join('');
             
+            // Adiciona evento de clique para seleção de endereço
             document.querySelectorAll('.address-card').forEach(card => {
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
@@ -93,16 +89,19 @@ document.addEventListener('DOMContentLoaded', () => {
         finalizeBtn.disabled = true;
 
         try {
-            // Apenas enviamos os dados do carrinho, o backend associa o endereço
+            // Envia o pedido para o backend para ser criado
             const response = await apiClient.post('/pedidos', cart);
+            const novoPedido = response.data;
             
-            messageEl.textContent = 'Pedido realizado com sucesso! A redirecionar...';
+            messageEl.textContent = 'Pedido realizado com sucesso! A redirecionar para pagamento...';
             messageEl.style.color = 'green';
 
-            // Limpa o carrinho e redireciona
+            // Limpa o carrinho
             localStorage.removeItem('japaUniverseCart');
+            
+            // Redireciona para a página de pagamento com o ID do novo pedido
             setTimeout(() => {
-                window.location.href = '../../perfil/HTML/perfil.html';
+                window.location.href = `../../pagamento/HTML/pagamento.html?pedidoId=${novoPedido.id}`;
             }, 2000);
 
         } catch (error) {
