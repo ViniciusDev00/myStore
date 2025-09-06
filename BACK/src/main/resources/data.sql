@@ -1,8 +1,7 @@
--- Apagar dados existentes para garantir um estado limpo
+-- Apagar dados existentes para garantir um estado limpo (exceto usuários)
 DELETE FROM produtos;
 DELETE FROM categorias;
 DELETE FROM marcas;
-DELETE FROM usuarios;
 
 -- Inserir Marcas
 INSERT INTO marcas (id, nome) VALUES (1, 'Nike'), (2, 'Air Jordan'), (3, 'Adidas'), (4, 'Bape'), (5, 'Asics') ON DUPLICATE KEY UPDATE nome=nome;
@@ -22,5 +21,3 @@ INSERT INTO produtos (id, nome, descricao, preco, preco_original, imagem_url, es
 (8, 'Air Max Plus TN "Lilac"', 'Cores vibrantes para um estilo de rua autêntico. O gradiente lilás no cabedal traz uma energia renovada a este ícone, combinado com o amortecimento Tuned Air para conforto superior.', 1199.99, 1499.99, '../../inicio/IMG/recentes/tnLilac.webp', 10, 1, 3),
 (9, 'Air Max Plus TN "Royal Blue"', 'O azul icônico que marcou uma geração. O gradiente vibrante e as linhas de design inspiradas na natureza fazem deste um dos modelos mais reconhecíveis e amados de todos os tempos.', 1199.99, 1499.99, '../../inicio/IMG/recentes/tnRoyal.webp', 10, 1, 3),
 (10, 'Air Max Plus TN "Oreo"', 'Contraste perfeito entre preto e branco. Este esquema de cores clássico realça o design agressivo do TN, oferecendo um visual que é ao mesmo tempo atemporal e moderno.', 1199.99, 1399.99, '../../inicio/IMG/recentes/tnOreo.webp', 10, 1, 3);
-
--- A LINHA DE INSERÇÃO DO USUÁRIO ADMIN FOI REMOVIDA DAQUI

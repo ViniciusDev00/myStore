@@ -41,12 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Elementos do DOM ---
     const pedidosSection = document.getElementById('pedidos-section');
     const produtosSection = document.getElementById('produtos-section');
+    const mensagensSection = document.getElementById('mensagens-section');
     const navPedidos = document.getElementById('nav-pedidos');
     const navProdutos = document.getElementById('nav-produtos');
+    const navMensagens = document.getElementById('nav-mensagens');
     const pedidosTableBody = document.getElementById('pedidos-table-body');
     const produtosTableBody = document.getElementById('produtos-table-body');
+    const mensagensTableBody = document.getElementById('mensagens-table-body');
     
-    // --- Elementos do Modal ---
+    // --- Elementos do Modal de Produto ---
     const productModal = document.getElementById('product-modal');
     const modalTitle = document.getElementById('modal-title');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -54,12 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const productForm = document.getElementById('product-form');
     const brandSelect = document.getElementById('product-brand');
     const categorySelect = document.getElementById('product-category');
-
-    // Elementos da pré-visualização de imagem
     const productImageInput = document.getElementById('product-image');
     const imagePreview = document.getElementById('image-preview');
     const imagePreviewText = document.getElementById('image-preview-text');
 
+    // --- Elementos do Modal de Mensagem ---
+    const messageModal = document.getElementById('message-modal');
+    const closeMessageModalBtn = document.getElementById('close-message-modal-btn');
+    const messageModalBody = document.getElementById('message-modal-body');
+    const messageModalTitle = document.getElementById('message-modal-title');
+    let adminMessages = [];
 
     // --- Funções de Carregamento de Dados ---
     const populateSelect = (selectElement, items, placeholder) => {
@@ -123,6 +130,24 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
+    const renderMensagens = (mensagens) => {
+        adminMessages = mensagens;
+        mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
+
+        mensagensTableBody.innerHTML = mensagens.map(msg => `
+            <tr>
+                <td>${msg.id}</td>
+                <td>${msg.nome}</td>
+                <td>${msg.email}</td>
+                <td>${msg.assunto}</td>
+                <td>${new Date(msg.dataEnvio).toLocaleString('pt-BR')}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm view-message-btn" data-message-id="${msg.id}">Visualizar</button>
+                </td>
+            </tr>
+        `).join('');
+    };
+
     const fetchPedidos = async () => {
         try {
             const response = await apiClient.get('/pedidos');
@@ -143,33 +168,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const fetchMensagens = async () => {
+        try {
+            const response = await apiClient.get('/contatos');
+            renderMensagens(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar mensagens:", error);
+            mensagensTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar as mensagens.</td></tr>';
+        }
+    };
+
     // --- Navegação ---
     const switchView = (view) => {
+        pedidosSection.classList.remove('active');
+        produtosSection.classList.remove('active');
+        mensagensSection.classList.remove('active');
+        navPedidos.classList.remove('active');
+        navProdutos.classList.remove('active');
+        navMensagens.classList.remove('active');
+
         if (view === 'pedidos') {
             pedidosSection.classList.add('active');
-            produtosSection.classList.remove('active');
             navPedidos.classList.add('active');
-            navProdutos.classList.remove('active');
             fetchPedidos();
         } else if (view === 'produtos') {
             produtosSection.classList.add('active');
-            pedidosSection.classList.remove('active');
             navProdutos.classList.add('active');
-            navPedidos.classList.remove('active');
             fetchProdutos();
+        } else if (view === 'mensagens') {
+            mensagensSection.classList.add('active');
+            navMensagens.classList.add('active');
+            fetchMensagens();
         }
     };
 
     navPedidos.addEventListener('click', (e) => { e.preventDefault(); switchView('pedidos'); });
     navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
+    navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
 
-    // --- Lógica do Modal de Produto ---
+    // --- Lógica dos Modais ---
     const openModal = (produto = null) => {
         productForm.reset();
-        productImageInput.value = ''; // Limpa o campo de arquivo
-        imagePreview.classList.add('hidden'); // Esconde a pré-visualização
-        imagePreview.src = '#'; // Reseta a URL da imagem
-        imagePreviewText.textContent = 'Nenhuma imagem selecionada.'; // Reseta o texto
+        productImageInput.value = '';
+        imagePreview.classList.add('hidden');
+        imagePreview.src = '#';
+        imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
         
         if (produto) {
             modalTitle.textContent = 'Editar Produto';
@@ -182,9 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-stock').value = produto.estoque;
             document.getElementById('product-description').value = produto.descricao;
 
-            // Mostra a imagem atual do produto para edição
             if (produto.imagemUrl) {
-                imagePreview.src = `http://localhost:8080${produto.imagemUrl}`; // Assume que as imagens são servidas pelo backend
+                imagePreview.src = `http://localhost:8080${produto.imagemUrl}`;
                 imagePreview.classList.remove('hidden');
                 imagePreviewText.textContent = 'Imagem atual do produto.';
             } else {
@@ -203,12 +245,32 @@ document.addEventListener('DOMContentLoaded', () => {
         productModal.style.display = 'none';
     };
 
+    const openMessageModal = (message) => {
+        messageModalTitle.textContent = `Mensagem de: ${message.nome}`;
+        messageModalBody.innerHTML = `
+            <p class="message-info"><strong>De:</strong> ${message.nome} (${message.email})</p>
+            <p class="message-info"><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p>
+            <h4>Assunto: ${message.assunto}</h4>
+            <p>${message.mensagem}</p>
+        `;
+        messageModal.style.display = 'flex';
+    };
+
+    const closeMessageModal = () => {
+        messageModal.style.display = 'none';
+    };
+    
     addProductBtn.addEventListener('click', () => openModal());
     closeModalBtn.addEventListener('click', closeModal);
     productModal.addEventListener('click', (e) => {
         if (e.target === productModal) closeModal();
     });
-
+    
+    closeMessageModalBtn.addEventListener('click', closeMessageModal);
+    messageModal.addEventListener('click', (e) => {
+        if (e.target === messageModal) closeMessageModal();
+    });
+    
     // --- Lógica de Pré-visualização da Imagem ---
     productImageInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -221,12 +283,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             reader.readAsDataURL(file);
         } else {
-            // Se nenhum arquivo for selecionado, verifique se estamos em modo de edição
             const productId = document.getElementById('product-id').value;
-            if (productId) {
-                 // No modo de edição, manter a imagem atual se não for selecionada uma nova
-                 // openModal já trata de carregar a imagem existente
-            } else {
+            if (!productId) {
                 imagePreview.classList.add('hidden');
                 imagePreview.src = '#';
                 imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
@@ -235,9 +293,63 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Lógica de Ações ---
-    pedidosTableBody.addEventListener('click', async (e) => { /* ... (sem alterações) ... */ });
+    pedidosTableBody.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('update-status-btn')) {
+            const pedidoId = e.target.dataset.pedidoId;
+            const select = document.querySelector(`.status-select[data-pedido-id="${pedidoId}"]`);
+            const newStatus = select.value;
+
+            try {
+                await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: newStatus });
+                alert(`Status do pedido #${pedidoId} atualizado para ${newStatus}.`);
+                fetchPedidos();
+            } catch (error) {
+                console.error("Erro ao atualizar status do pedido:", error);
+                alert('Falha ao atualizar o status do pedido.');
+            }
+        }
+    });
     
-    produtosTableBody.addEventListener('click', async (e) => { /* ... (sem alterações) ... */ });
+    produtosTableBody.addEventListener('click', async (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const productId = target.dataset.productId;
+
+        if (target.classList.contains('btn-edit')) {
+            try {
+                const response = await publicApiClient.get(`/produtos/${productId}`);
+                openModal(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar dados do produto para edição:", error);
+                alert('Não foi possível carregar os dados do produto.');
+            }
+        }
+
+        if (target.classList.contains('btn-delete')) {
+            if (confirm(`Tem certeza que deseja excluir o produto com ID ${productId}?`)) {
+                try {
+                    await apiClient.delete(`/produtos/${productId}`);
+                    alert('Produto excluído com sucesso!');
+                    fetchProdutos();
+                } catch (error) {
+                    console.error("Erro ao excluir produto:", error);
+                    alert('Falha ao excluir o produto.');
+                }
+            }
+        }
+    });
+
+    mensagensTableBody.addEventListener('click', (e) => {
+        const target = e.target.closest('.view-message-btn');
+        if (target) {
+            const messageId = parseInt(target.dataset.messageId, 10);
+            const message = adminMessages.find(m => m.id === messageId);
+            if (message) {
+                openMessageModal(message);
+            }
+        }
+    });
 
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -259,23 +371,26 @@ document.addEventListener('DOMContentLoaded', () => {
             precoOriginal: document.getElementById('product-original-price').value ? parseFloat(document.getElementById('product-original-price').value) : null,
             estoque: parseInt(document.getElementById('product-stock').value),
             descricao: document.getElementById('product-description').value,
-            // A imagemUrl não é mais enviada diretamente aqui
         };
 
         const formData = new FormData();
         formData.append('produto', JSON.stringify(produtoData));
         
-        const imageFile = productImageInput.files[0]; // Referência direta ao input
+        const imageFile = productImageInput.files[0];
         if (imageFile) {
             formData.append('imagem', imageFile);
         }
 
         try {
             if (id) {
-                await apiClient.put(`/produtos/${id}`, formData);
+                await apiClient.put(`/produtos/${id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 alert('Produto atualizado com sucesso!');
             } else {
-                await apiClient.post('/produtos', formData);
+                await apiClient.post('/produtos', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
                 alert('Produto adicionado com sucesso!');
             }
             closeModal();

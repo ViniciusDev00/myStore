@@ -49,7 +49,7 @@ body {
     font-weight: 600;
     margin-bottom: var(--space-sm);
     transition: all var(--transition-fast);
-    text-decoration: none; /* Adicionado para garantir */
+    text-decoration: none;
 }
 
 .nav-item i {
@@ -160,32 +160,34 @@ body {
     color: #fff;
 }
 .btn-primary:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-light);
 }
 
 .btn-sm {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
-    margin-left: 0.5rem;
-    background: none; /* Botões de ação da tabela sem fundo */
-    border: none;
-    cursor: pointer;
 }
 .btn-edit {
     color: #ffc107; /* Amarelo */
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 .btn-edit:hover {
     color: #e0a800; /* Amarelo mais escuro */
 }
 .btn-delete {
     color: #f44336; /* Vermelho */
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 .btn-delete:hover {
     color: #d32f2f; /* Vermelho mais escuro */
 }
 
-/* --- Estilos do Modal de Produto --- */
-#product-modal.modal-overlay {
+/* --- ESTILOS GENÉRICOS DE MODAL --- */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -198,20 +200,19 @@ body {
     z-index: 1000;
 }
 
-#product-modal .modal-content {
+.modal-content {
     background-color: var(--surface);
     padding: var(--space-lg);
     border-radius: 8px;
     width: 90%;
     max-width: 800px;
     border: 1px solid var(--border-color);
-    position: static;
-    transform: none;
-    height: auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Adiciona sombra */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1001;
 }
 
-#product-modal .modal-header {
+.modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -219,12 +220,12 @@ body {
     margin-bottom: var(--space-lg);
     border-bottom: 1px solid var(--border-color);
 }
-#product-modal .modal-header h3 {
+.modal-header h3 {
     font-size: 1.8rem;
     font-family: var(--font-display);
     color: var(--text-primary);
 }
-#product-modal .close-modal {
+.close-modal {
     background: none;
     border: none;
     font-size: 2.5rem;
@@ -232,32 +233,40 @@ body {
     cursor: pointer;
     transition: color var(--transition-fast);
 }
-#product-modal .close-modal:hover {
+.close-modal:hover {
     color: var(--text-primary);
 }
 
-#product-modal .form-grid {
+.modal-footer {
+    padding-top: var(--space-lg);
+    margin-top: var(--space-lg);
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+
+/* --- Estilos Específicos do Modal de Produto --- */
+#product-form .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Duas colunas */
-    gap: var(--space-md) var(--space-lg); /* Espaçamento entre as colunas e linhas */
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md) var(--space-lg);
     margin-bottom: var(--space-lg);
 }
-#product-modal .form-group {
+#product-form .form-group {
     display: flex;
     flex-direction: column;
 }
-#product-modal .form-group.full-width {
-    grid-column: 1 / -1; /* Ocupa todas as colunas */
+#product-form .form-group.full-width {
+    grid-column: 1 / -1;
 }
-#product-modal .form-group label {
+#product-form .form-group label {
     margin-bottom: 0.5rem;
     font-weight: 500;
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
-#product-modal .form-group input, 
-#product-modal .form-group textarea,
-#product-modal .form-group select {
+#product-form .form-group input, 
+#product-form .form-group textarea,
+#product-form .form-group select {
     background-color: var(--background);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
@@ -267,21 +276,18 @@ body {
     font-size: 1rem;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
-#product-modal .form-group input:focus,
-#product-modal .form-group textarea:focus,
-#product-modal .form-group select:focus {
+#product-form .form-group input:focus,
+#product-form .form-group textarea:focus,
+#product-form .form-group select:focus {
     border-color: var(--primary);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
 }
-
-/* Estiliza o input file */
-#product-modal .form-group input[type="file"] {
-    padding: 0; /* Remove padding padrão */
-    border: none; /* Remove a borda padrão do input file */
+#product-form .form-group input[type="file"] {
+    padding: 0;
+    border: none;
 }
-/* Estilo para o botão de "Escolher arquivo" e o nome do arquivo */
-#product-modal .form-group input[type="file"]::file-selector-button {
+#product-form .form-group input[type="file"]::file-selector-button {
     background-color: var(--primary);
     color: #fff;
     border: none;
@@ -293,11 +299,10 @@ body {
     font-family: var(--font-body);
     font-size: 0.9rem;
 }
-#product-modal .form-group input[type="file"]::file-selector-button:hover {
-    background-color: var(--primary-dark);
+#product-form .form-group input[type="file"]::file-selector-button:hover {
+    background-color: var(--primary-light);
 }
 
-/* Estilos para a pré-visualização da imagem */
 .image-preview-container {
     display: flex;
     align-items: center;
@@ -309,7 +314,7 @@ body {
 #image-preview {
     width: 100px;
     height: 100px;
-    object-fit: contain; /* Ajusta a imagem sem cortar */
+    object-fit: contain;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--background);
@@ -323,10 +328,56 @@ body {
     color: var(--text-secondary);
 }
 
+/* --- Estilos Específicos do Modal de Mensagem (APRIMORADO) --- */
+#message-modal-title { /* Ajuste do título para corresponder ao header do modal */
+    font-size: 1.8rem;
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    margin: 0; /* Remover margem padrão */
+}
 
-#product-modal .modal-footer {
-    padding-top: var(--space-lg);
-    margin-top: var(--space-lg);
-    border-top: 1px solid var(--border-color);
-    text-align: right;
+.modal-body-view {
+    padding: var(--space-md) 0;
+    line-height: 1.7;
+    max-height: 60vh;
+    overflow-y: auto;
+    font-size: 1rem; /* Tamanho base da fonte */
+    color: var(--text-primary); /* Cor do texto principal */
+}
+
+.modal-body-view .message-info {
+    display: block; /* Garante que cada item de info fique em sua própria linha */
+    margin-bottom: var(--space-sm); /* Espaçamento entre as linhas de informação */
+    font-size: 0.95rem; /* Um pouco menor para as informações */
+    color: var(--text-secondary); /* Cor secundária para detalhes */
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.modal-body-view .message-info strong {
+    color: var(--text-primary); /* Deixar o label em cor primária */
+    font-weight: 600; /* Negrito mais forte */
+}
+
+.modal-body-view h4 { /* Assunto da mensagem */
+    font-size: 1.4rem; /* Um pouco maior para o assunto */
+    margin-top: var(--space-lg); /* Espaço antes do assunto */
+    margin-bottom: var(--space-md); /* Espaço depois do assunto */
+    font-family: var(--font-display);
+    color: var(--primary); /* Destacar o assunto com a cor primária */
+    border-bottom: 1px solid var(--border-color); /* Linha para separar o assunto */
+    padding-bottom: var(--space-sm);
+}
+
+.modal-body-view p:not(.message-info) { /* Mensagem em si */
+    background-color: var(--background);
+    padding: var(--space-md);
+    border-radius: 6px; /* Borda mais arredondada */
+    border: 1px solid var(--border-color-light); /* Borda mais clara */
+    white-space: pre-wrap;
+    margin-bottom: 0; /* Remover margem extra no final */
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.8; /* Melhorar legibilidade do corpo da mensagem */
 }

@@ -1,13 +1,15 @@
 package com.store.BACK.service;
 
+import com.store.BACK.model.Contato;
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Produto;
+import com.store.BACK.repository.ContatoRepository;
 import com.store.BACK.repository.PedidoRepository;
 import com.store.BACK.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile; // Importar
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,7 +19,8 @@ public class AdminService {
 
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
-    private final FileStorageService fileStorageService; // Injetar o novo serviço
+    private final FileStorageService fileStorageService;
+    private final ContatoRepository contatoRepository; // Dependência adicionada
 
     public List<Pedido> listarTodosOsPedidos() {
         return pedidoRepository.findAll();
@@ -25,6 +28,11 @@ public class AdminService {
 
     public List<Produto> listarTodosOsProdutos() {
         return produtoRepository.findAll();
+    }
+
+    // Novo método para buscar todas as mensagens de contato
+    public List<Contato> listarTodasAsMensagens() {
+        return contatoRepository.findAll();
     }
 
     @Transactional
@@ -35,7 +43,6 @@ public class AdminService {
         return pedidoRepository.save(pedido);
     }
 
-    // MÉTODO MODIFICADO
     @Transactional
     public Produto adicionarProduto(Produto produto, MultipartFile imagemFile) {
         if (imagemFile != null && !imagemFile.isEmpty()) {
@@ -45,7 +52,6 @@ public class AdminService {
         return produtoRepository.save(produto);
     }
 
-    // MÉTODO MODIFICADO
     @Transactional
     public Produto atualizarProduto(Long id, Produto produtoDetails, MultipartFile imagemFile) {
         Produto produto = produtoRepository.findById(id)
