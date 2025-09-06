@@ -54,7 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const userName = userData.nome ? userData.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
     
     // --- LÓGICA MODIFICADA PARA ADICIONAR LINK DO ADMIN ---
-    const isAdmin = userData.authorities && userData.authorities.includes('ROLE_ADMIN');
+    // VERSÃO CORRIGIDA
+    const isAdmin = userData.authorities && userData.authorities.some(auth => auth.authority === 'ROLE_ADMIN');
     const adminLink = isAdmin ? `<a href="${basePath}/admin/HTML/admin.html">Painel Admin</a>` : '';
 
     actionsHTML += `

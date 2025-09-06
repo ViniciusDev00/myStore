@@ -7,6 +7,7 @@ import com.store.BACK.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile; // Importar
 
 import java.util.List;
 
@@ -16,9 +17,14 @@ public class AdminService {
 
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
+    private final FileStorageService fileStorageService; // Injetar o novo serviço
 
     public List<Pedido> listarTodosOsPedidos() {
         return pedidoRepository.findAll();
+    }
+
+    public List<Produto> listarTodosOsProdutos() {
+        return produtoRepository.findAll();
     }
 
     @Transactional
@@ -29,20 +35,31 @@ public class AdminService {
         return pedidoRepository.save(pedido);
     }
 
+    // MÉTODO MODIFICADO
     @Transactional
-    public Produto adicionarProduto(Produto produto) {
+    public Produto adicionarProduto(Produto produto, MultipartFile imagemFile) {
+        if (imagemFile != null && !imagemFile.isEmpty()) {
+            String imagemUrl = fileStorageService.store(imagemFile);
+            produto.setImagemUrl(imagemUrl);
+        }
         return produtoRepository.save(produto);
     }
 
+    // MÉTODO MODIFICADO
     @Transactional
-    public Produto atualizarProduto(Long id, Produto produtoDetails) {
+    public Produto atualizarProduto(Long id, Produto produtoDetails, MultipartFile imagemFile) {
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (imagemFile != null && !imagemFile.isEmpty()) {
+            String imagemUrl = fileStorageService.store(imagemFile);
+            produto.setImagemUrl(imagemUrl);
+        }
+
         produto.setNome(produtoDetails.getNome());
         produto.setDescricao(produtoDetails.getDescricao());
         produto.setPreco(produtoDetails.getPreco());
         produto.setPrecoOriginal(produtoDetails.getPrecoOriginal());
-        produto.setImagemUrl(produtoDetails.getImagemUrl());
         produto.setEstoque(produtoDetails.getEstoque());
         produto.setMarca(produtoDetails.getMarca());
         produto.setCategoria(produtoDetails.getCategoria());

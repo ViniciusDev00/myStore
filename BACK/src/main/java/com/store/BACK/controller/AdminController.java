@@ -1,12 +1,15 @@
 package com.store.BACK.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper; // Importar
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Produto;
 import com.store.BACK.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile; // Importar
 
+import java.io.IOException; // Importar
 import java.util.List;
 import java.util.Map;
 
@@ -16,8 +19,9 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
+    private final ObjectMapper objectMapper; // Injetar ObjectMapper
 
-    // Endpoints de Pedidos
+    // Endpoints de Pedidos (sem alterações)
     @GetMapping("/pedidos")
     public ResponseEntity<List<Pedido>> getAllPedidos() {
         return ResponseEntity.ok(adminService.listarTodosOsPedidos());
@@ -29,15 +33,32 @@ public class AdminController {
         return ResponseEntity.ok(adminService.atualizarStatusPedido(pedidoId, status));
     }
 
-    // Endpoints de Produtos
-    @PostMapping("/produtos")
-    public ResponseEntity<Produto> createProduto(@RequestBody Produto produto) {
-        return ResponseEntity.ok(adminService.adicionarProduto(produto));
+    @GetMapping("/produtos")
+    public ResponseEntity<List<Produto>> getAllProdutos() {
+        return ResponseEntity.ok(adminService.listarTodosOsProdutos());
     }
 
+    // ENDPOINT DE CRIAR PRODUTO MODIFICADO
+    @PostMapping("/produtos")
+    public ResponseEntity<Produto> createProduto(
+            @RequestParam("produto") String produtoJson,
+            @RequestParam(value = "imagem", required = false) MultipartFile imagemFile) throws IOException {
+
+        Produto produto = objectMapper.readValue(produtoJson, Produto.class);
+        Produto produtoSalvo = adminService.adicionarProduto(produto, imagemFile);
+        return ResponseEntity.ok(produtoSalvo);
+    }
+
+    // ENDPOINT DE ATUALIZAR PRODUTO MODIFICADO
     @PutMapping("/produtos/{id}")
-    public ResponseEntity<Produto> updateProduto(@PathVariable Long id, @RequestBody Produto produto) {
-        return ResponseEntity.ok(adminService.atualizarProduto(id, produto));
+    public ResponseEntity<Produto> updateProduto(
+            @PathVariable Long id,
+            @RequestParam("produto") String produtoJson,
+            @RequestParam(value = "imagem", required = false) MultipartFile imagemFile) throws IOException {
+
+        Produto produtoDetails = objectMapper.readValue(produtoJson, Produto.class);
+        Produto produtoAtualizado = adminService.atualizarProduto(id, produtoDetails, imagemFile);
+        return ResponseEntity.ok(produtoAtualizado);
     }
 
     @DeleteMapping("/produtos/{id}")

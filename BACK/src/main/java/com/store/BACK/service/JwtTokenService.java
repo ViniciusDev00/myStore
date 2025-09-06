@@ -33,8 +33,16 @@ public class JwtTokenService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // Dentro da classe JwtTokenService
+
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        // --- INÍCIO DA CORREÇÃO ---
+        // Adiciona as permissões (roles) do usuário ao token
+        claims.put("authorities", userDetails.getAuthorities());
+        // --- FIM DA CORREÇÃO ---
+
         if (userDetails instanceof Usuario) {
             Usuario user = (Usuario) userDetails;
             claims.put("nome", user.getNome());

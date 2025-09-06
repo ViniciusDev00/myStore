@@ -23,9 +23,4 @@ INSERT INTO produtos (id, nome, descricao, preco, preco_original, imagem_url, es
 (9, 'Air Max Plus TN "Royal Blue"', 'O azul icônico que marcou uma geração. O gradiente vibrante e as linhas de design inspiradas na natureza fazem deste um dos modelos mais reconhecíveis e amados de todos os tempos.', 1199.99, 1499.99, '../../inicio/IMG/recentes/tnRoyal.webp', 10, 1, 3),
 (10, 'Air Max Plus TN "Oreo"', 'Contraste perfeito entre preto e branco. Este esquema de cores clássico realça o design agressivo do TN, oferecendo um visual que é ao mesmo tempo atemporal e moderno.', 1199.99, 1399.99, '../../inicio/IMG/recentes/tnOreo.webp', 10, 1, 3);
 
-
--- --- USUÁRIO ADMIN CORRIGIDO ---
--- E-mail: admin@japaunder.com
--- Senha: admin123
-INSERT INTO usuarios (id, nome, email, senha, role) VALUES
-(99, 'Admin Japa', 'admin@japaunder.com', '$2a$10$3g5v1a4G.DBd52s/32x0g.23k.t.3J.bf.pI5.J.i7J9I5.a3zJ/q', 'ROLE_ADMIN') ON DUPLICATE KEY UPDATE nome=nome;
+-- A LINHA DE INSERÇÃO DO USUÁRIO ADMIN FOI REMOVIDA DAQUI

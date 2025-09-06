@@ -83,12 +83,12 @@
                         <input type="text" id="product-name" required>
                     </div>
                     <div class="form-group">
-                        <label for="product-brand">Marca ID</label>
-                        <input type="number" id="product-brand" required>
+                        <label for="product-brand">Marca</label>
+                        <select id="product-brand" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="product-category">Categoria ID</label>
-                        <input type="number" id="product-category" required>
+                        <label for="product-category">Categoria</label>
+                        <select id="product-category" required></select>
                     </div>
                     <div class="form-group">
                         <label for="product-price">Preço (ex: 999.99)</label>
@@ -102,10 +102,16 @@
                         <label for="product-stock">Estoque</label>
                         <input type="number" id="product-stock" required>
                     </div>
+                    
                     <div class="form-group full-width">
-                        <label for="product-image-url">URL da Imagem</label>
-                        <input type="text" id="product-image-url" required>
+                        <label for="product-image">Imagem do Produto (deixe em branco para manter a atual)</label>
+                        <input type="file" id="product-image" accept="image/*">
+                        <div class="image-preview-container">
+                            <img id="image-preview" src="#" alt="Pré-visualização da Imagem" class="hidden">
+                            <span id="image-preview-text" class="image-preview-text">Nenhuma imagem selecionada.</span>
+                        </div>
                     </div>
+
                     <div class="form-group full-width">
                         <label for="product-description">Descrição</label>
                         <textarea id="product-description" rows="4"></textarea>

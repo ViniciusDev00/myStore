@@ -49,6 +49,7 @@ body {
     font-weight: 600;
     margin-bottom: var(--space-sm);
     transition: all var(--transition-fast);
+    text-decoration: none; /* Adicionado para garantir */
 }
 
 .nav-item i {
@@ -145,20 +146,46 @@ body {
     border-radius: 4px;
 }
 
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: #fff;
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
 .btn-sm {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
     margin-left: 0.5rem;
+    background: none; /* Botões de ação da tabela sem fundo */
+    border: none;
+    cursor: pointer;
 }
 .btn-edit {
-    color: #ffc107;
+    color: #ffc107; /* Amarelo */
+}
+.btn-edit:hover {
+    color: #e0a800; /* Amarelo mais escuro */
 }
 .btn-delete {
-    color: #f44336;
+    color: #f44336; /* Vermelho */
+}
+.btn-delete:hover {
+    color: #d32f2f; /* Vermelho mais escuro */
 }
 
-/* --- Modal --- */
-.modal-overlay {
+/* --- Estilos do Modal de Produto --- */
+#product-modal.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -171,16 +198,20 @@ body {
     z-index: 1000;
 }
 
-.modal-content {
+#product-modal .modal-content {
     background-color: var(--surface);
     padding: var(--space-lg);
     border-radius: 8px;
     width: 90%;
     max-width: 800px;
     border: 1px solid var(--border-color);
+    position: static;
+    transform: none;
+    height: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Adiciona sombra */
 }
 
-.modal-header {
+#product-modal .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -188,44 +219,112 @@ body {
     margin-bottom: var(--space-lg);
     border-bottom: 1px solid var(--border-color);
 }
-.modal-header h3 {
+#product-modal .modal-header h3 {
     font-size: 1.8rem;
+    font-family: var(--font-display);
+    color: var(--text-primary);
 }
-.close-modal {
+#product-modal .close-modal {
     background: none;
     border: none;
     font-size: 2.5rem;
     color: var(--text-secondary);
     cursor: pointer;
+    transition: color var(--transition-fast);
+}
+#product-modal .close-modal:hover {
+    color: var(--text-primary);
 }
 
-.form-grid {
+#product-modal .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
+    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    gap: var(--space-md) var(--space-lg); /* Espaçamento entre as colunas e linhas */
+    margin-bottom: var(--space-lg);
 }
-.form-group {
+#product-modal .form-group {
     display: flex;
     flex-direction: column;
 }
-.form-group.full-width {
-    grid-column: 1 / -1;
+#product-modal .form-group.full-width {
+    grid-column: 1 / -1; /* Ocupa todas as colunas */
 }
-.form-group label {
+#product-modal .form-group label {
     margin-bottom: 0.5rem;
     font-weight: 500;
     font-size: 0.9rem;
+    color: var(--text-secondary);
 }
-.form-group input, .form-group textarea {
+#product-modal .form-group input, 
+#product-modal .form-group textarea,
+#product-modal .form-group select {
     background-color: var(--background);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 0.8rem;
+    padding: 0.8rem 1rem;
     border-radius: 4px;
     font-family: var(--font-body);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+#product-modal .form-group input:focus,
+#product-modal .form-group textarea:focus,
+#product-modal .form-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
 }
 
-.modal-footer {
+/* Estiliza o input file */
+#product-modal .form-group input[type="file"] {
+    padding: 0; /* Remove padding padrão */
+    border: none; /* Remove a borda padrão do input file */
+}
+/* Estilo para o botão de "Escolher arquivo" e o nome do arquivo */
+#product-modal .form-group input[type="file"]::file-selector-button {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    margin-right: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+}
+#product-modal .form-group input[type="file"]::file-selector-button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Estilos para a pré-visualização da imagem */
+.image-preview-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+}
+#image-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: contain; /* Ajusta a imagem sem cortar */
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--background);
+    padding: 5px;
+}
+#image-preview.hidden {
+    display: none;
+}
+.image-preview-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+
+#product-modal .modal-footer {
     padding-top: var(--space-lg);
     margin-top: var(--space-lg);
     border-top: 1px solid var(--border-color);

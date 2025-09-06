@@ -36,11 +36,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**").permitAll()
 
-                        .requestMatchers("/api/usuario/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/api/pedidos/**").hasAuthority("ROLE_USER")
-                        .requestMatchers("/api/enderecos/**").hasAuthority("ROLE_USER")
+                                .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                                .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                                .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
-                        // --- NOVA REGRA DE SEGURANÇA ADICIONADA AQUI ---
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
                         .anyRequest().authenticated()
