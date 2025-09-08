@@ -569,3 +569,21 @@ input[type=number]::-webkit-outer-spin-button {
   width: 100%;
   justify-content: center;
 }
+
+@media (max-width: 768px) {
+    .catalog-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-wrapper {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    .page-title {
+        font-size: 3rem;
+    }
+}

@@ -187,3 +187,28 @@ body {
 .back-link:hover {
     color: var(--primary);
 }
+
+@media (max-width: 600px) {
+    .page-container {
+        gap: var(--space-md);
+    }
+    .logo {
+        font-size: 2rem;
+    }
+    .form-box {
+        padding: var(--space-md);
+    }
+    .toggle-buttons {
+        margin-bottom: var(--space-md);
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .btn-primary {
+        font-size: 1rem;
+        padding: 0.9rem;
+    }
+    .back-link {
+        margin-top: var(--space-md);
+    }
+}

@@ -262,3 +262,25 @@ body {
     justify-content: center;
     margin-top: 1rem;
 }
+
+@media (max-width: 900px) {
+    .perfil-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+    .perfil-sidebar {
+        display: none;
+    }
+    .perfil-content {
+        padding: var(--space-md);
+    }
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+    .content-header .btn {
+        width: 100%;
+        margin-top: 1rem;
+    }
+}

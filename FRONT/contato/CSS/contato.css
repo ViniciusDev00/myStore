@@ -361,12 +361,10 @@ button {
         grid-row: 1;
         margin-bottom: var(--space-xl);
     }
-}
-@media (max-width: 768px) {
-    .nav-list {
-        display: none;
+    .contact-form-wrapper {
+        grid-row: 2;
     }
-    .mobile-nav-toggle {
-        display: block;
+    .page-title {
+        font-size: 3rem;
     }
 }

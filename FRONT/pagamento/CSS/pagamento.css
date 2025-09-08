@@ -88,3 +88,18 @@ main.container {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+@media (max-width: 600px) {
+    .pix-container {
+        padding: var(--space-md);
+    }
+    .pix-container h1 {
+        font-size: 1.8rem;
+    }
+    .qr-code-img {
+        max-width: 200px;
+    }
+    .copia-cola-text {
+        font-size: 0.8rem;
+    }
+}

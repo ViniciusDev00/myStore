@@ -77,6 +77,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // ==============================================================
+  // NOVA LÓGICA DE LOGIN COM GOOGLE
+  // ==============================================================
+  const GOOGLE_CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE_AQUI"; // Substitua pelo seu ID de Cliente do Google
+  
+  if (typeof google !== 'undefined') {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+    });
+  
+    google.accounts.id.renderButton(
+      document.getElementById("google-login-button"),
+      { theme: "outline", size: "large", type: "standard", shape: "pill" }
+    );
+  }
+
+  async function handleGoogleLogin(response) {
+    try {
+      const res = await axios.post(`${API_URL}/google-login`, { token: response.credential });
+      
+      const { token: jwtToken } = res.data;
+      localStorage.setItem("jwtToken", jwtToken);
+      
+      loginMessage.textContent = "Login com Google bem-sucedido! Redirecionando...";
+      loginMessage.className = "form-message success";
+      setTimeout(() => {
+        window.location.href = "../../inicio/HTML/index.html";
+      }, 1500);
+      
+    } catch (error) {
+      loginMessage.textContent = "Erro ao fazer login com o Google.";
+      loginMessage.className = "form-message error";
+      console.error("Erro de login com Google:", error);
+    }
+  }
+
   // ===============================================
   // LÓGICA DO CANVAS DE FUNDO (Existente)
   // ===============================================

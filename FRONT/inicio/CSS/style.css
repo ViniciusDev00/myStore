@@ -1187,3 +1187,96 @@ input[type=number]::-webkit-outer-spin-button {
 .cart-notification.show {
     transform: translateX(-50%) translateY(0);
 }
+
+@media (max-width: 992px) {
+    /* Ajustes para o layout do header em tablets */
+    .main-header .container {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+    }
+    .main-nav {
+        order: 3;
+        width: 100%;
+        padding-top: var(--space-sm);
+    }
+    .header-actions {
+        order: 2;
+        border-left: none;
+        padding-left: 0;
+    }
+    .hero-content {
+        padding-left: 0;
+        text-align: center;
+    }
+    .hero-subtitle {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .hero-background::after {
+        background: linear-gradient(180deg, var(--background) 30%, transparent 70%);
+    }
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Ajustes para layout de celular */
+    .mobile-nav-toggle {
+        display: block;
+        order: 1; /* Coloca o toggle no início */
+        position: relative;
+        z-index: 1001;
+    }
+    .logo {
+        order: 2; /* Move o logo para o meio */
+    }
+    .header-actions {
+        order: 3; /* Move os botões para o final */
+        gap: 1rem;
+    }
+
+    .main-nav {
+        position: fixed;
+        inset: 0 0 0 40%;
+        transform: translateX(100%);
+    }
+    body.nav-open .main-nav {
+        transform: translateX(0);
+    }
+    .hero {
+        padding-top: var(--header-height);
+        min-height: auto;
+    }
+    .hero-title {
+        font-size: clamp(2rem, 10vw, 4rem);
+    }
+    .hero-socials {
+        position: static;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: var(--space-lg);
+    }
+    .crew-content {
+        grid-template-columns: 1fr;
+    }
+    .crew-text {
+        text-align: center;
+    }
+    .crew-image-stack {
+        height: 350px;
+        margin-top: var(--space-lg);
+    }
+    .image-card {
+        width: 200px;
+        height: 280px;
+    }
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+}
