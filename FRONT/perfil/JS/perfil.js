@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'http://localhost:8080/api',
+        baseURL: 'https://minhaloja-produção-1705.up.railway.app/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
