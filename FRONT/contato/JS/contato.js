@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // A API pública para onde o formulário enviará os dados.
-    const API_URL = 'http://localhost:8080/api/public';
+    const API_URL = 'https://minhaloja-produção-1705.up.railway.app/api/public';
 
     // Lógica do formulário de contato
     const form = document.getElementById('contactForm');
