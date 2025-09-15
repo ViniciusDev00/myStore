@@ -5,9 +5,9 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.5</version> <relativePath/> </parent>
+		<version>3.3.0</version> <relativePath/> </parent>
 	<groupId>com.store</groupId>
-	<artifactId>BACK</artifactId>
+	<artifactId>japaunder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>japaunder</name>
 	<description>Demo project for Spring Boot</description>
@@ -85,6 +85,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>japaunder-0.0.1-SNAPSHOT</finalName> 
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
