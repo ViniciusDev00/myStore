@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuração do Cliente API ---
     const apiClient = axios.create({
-        baseURL: 'https://minhaloja-produção-1705.up.railway.app/api/admin',
+        baseURL: 'https://japauniverse.com.br/api/admin',
         headers: { 
-        'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
         }
     });
-    const publicApiClient = axios.create({ baseURL: 'https://minhaloja-produção-1705.up.railway.app/api' });
+    const publicApiClient = axios.create({ baseURL: 'https://japauniverse.com.br/api' });
 
     // --- Elementos do DOM ---
     const pedidosSection = document.getElementById('pedidos-section');
