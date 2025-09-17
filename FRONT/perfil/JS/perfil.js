@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'https://minhaloja-produção-1705.up.railway.app/api',
+        baseURL: 'https://japauniverse.com.br/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
