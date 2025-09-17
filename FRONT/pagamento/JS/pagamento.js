@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'https://minhaloja-produção-1705.up.railway.app/api',
+        baseURL: 'https://japauniverse.com.br/api',
         headers: { 'Authorization': `Bearer ${token}` }
-    });    
-    
+    });
+
     const pixDetailsContainer = document.getElementById('pix-details');
     const params = new URLSearchParams(window.location.search);
     const pedidoId = params.get('pedidoId');
