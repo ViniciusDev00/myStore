@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productDetailContainer = document.getElementById('product-detail-container');
-    const API_URL = 'https://minhaloja-produção-1705.up.railway.app/api/produtos';
+    const API_URL = 'https://japauniverse.com.br/api/produtos';
 
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
