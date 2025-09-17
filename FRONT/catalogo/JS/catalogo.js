@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://minhaloja-produção-1705.up.railway.app/api/produtos';
+    const API_URL = 'https://japauniverse.com.br/api/produtos';
     const grid = document.getElementById('products-grid');
 
     if (grid) {
