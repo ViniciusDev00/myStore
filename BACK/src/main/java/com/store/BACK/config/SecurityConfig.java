@@ -55,17 +55,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // --- INÍCIO DA CORREÇÃO ---
-        // Adicionadas as URLs de produção para permitir o acesso do frontend
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
                 "http://127.0.0.1:5501",
-                "http://localhost:5501",
-                "https://japa-front-production.up.railway.app", // Sua URL do Railway
-                "https://japauniverse.com.br" // Seu domínio principal
+                "http://localhost:5501"
         ));
-        // --- FIM DA CORREÇÃO ---
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
