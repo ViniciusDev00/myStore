@@ -2,6 +2,4 @@ admin@japaunder.com
 
 admin123
 
-# Forçando a atualização do build.
-
-
+# Forçando a atualização do build
