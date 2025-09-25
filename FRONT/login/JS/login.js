@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginMessage = document.getElementById("loginMessage");
   const registerMessage = document.getElementById("registerMessage");
 
-  const API_URL = "https://japauniverse.com.br/api/auth";
+  const API_URL = "https://www.japauniverse.com.br/api/auth";
 
   showLoginBtn.addEventListener("click", () => {
     loginForm.classList.add("active");
