@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://japauniverse.com.br/api/produtos';
+    const API_URL = 'https://www.japauniverse.com.br/api/produtos';
     const grid = document.getElementById('products-grid');
 
     if (grid) {
