@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productDetailContainer = document.getElementById('product-detail-container');
-    const API_URL = 'https://japauniverse.com.br/api/produtos';
+    const API_URL = 'https://www.japauniverse.com.br/api/produtos';
 
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
@@ -95,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- FUNÇÃO ATUALIZADA ---
     const renderRelatedProducts = (products) => {
         const grid = document.getElementById('related-products-grid');
         if (!products || products.length === 0) {
@@ -127,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        // Inicia o Swiper para o carrossel de produtos relacionados
         new Swiper('.related-products-swiper', {
             slidesPerView: 2,
             spaceBetween: 10,
@@ -143,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const addEventListeners = () => {
-        // Lógica do seletor de tamanho
         const sizeBtns = document.querySelectorAll('.size-btn');
         sizeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -152,8 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // --- INÍCIO DA NOVA LÓGICA ---
-        // Lógica para ADICIONAR AO CARRINHO
         const buyButton = document.querySelector('.buy-button');
         if(buyButton) {
             buyButton.addEventListener('click', async () => {
@@ -164,19 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const size = selectedSizeEl.textContent;
                 
-                // Re-buscar os dados do produto para garantir que temos tudo atualizado
                 const response = await axios.get(`${API_URL}/${productId}`);
                 const product = response.data;
     
                 const productToAdd = {
-                    id: product.id.toString(), // ID como string para consistência
+                    id: product.id.toString(),
                     name: product.nome,
                     price: product.preco,
                     image: product.imagemUrl,
                     size: size
                 };
     
-                // Chama a função global do main.js
                 if (window.addToCart) {
                     window.addToCart(productToAdd);
                 } else {
@@ -184,9 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        // --- FIM DA NOVA LÓGICA ---
 
-        // Efeito de zoom na imagem principal
         const mainImageContainer = document.querySelector('.main-image-container');
         const mainImage = document.getElementById('main-product-image');
         if (mainImageContainer && mainImage) {
