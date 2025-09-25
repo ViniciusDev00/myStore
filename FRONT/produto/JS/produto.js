@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchRelatedProducts = async (categoryId, currentProductId) => {
         try {
             const response = await axios.get(`${API_URL}?categoriaId=${categoryId}`);
-            // Filtra para não mostrar o produto atual na lista de relacionados
             const relatedProducts = response.data.filter(p => p.id != currentProductId);
             renderRelatedProducts(relatedProducts);
         } catch (error) {
