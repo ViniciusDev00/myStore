@@ -3,10 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ordersContainer = document.getElementById('orders-container');
     const token = localStorage.getItem('jwtToken');
 
-    // Elementos do Modal
     const addressModal = document.getElementById('address-modal');
     const modalOverlay = document.getElementById('address-modal-overlay');
-    const openModalBtn = document.querySelector('.btn.btn-primary'); // Botão "Adicionar novo endereço"
+    const openModalBtn = document.querySelector('.btn.btn-primary');
     const closeModalBtn = document.getElementById('close-address-modal');
     const addressForm = document.getElementById('address-form');
 
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'https://japauniverse.com.br/api',
+        baseURL: 'https://www.japauniverse.com.br/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -76,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    // --- LÓGICA DO MODAL ---
     const toggleModal = (show) => {
         if (show) {
             addressModal.classList.add('active');
@@ -103,10 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
             estado: document.getElementById('estado').value,
         };
 
-
         try {
-            // AQUI FAZEMOS A CHAMADA PARA O NOVO ENDPOINT DO BACKEND
-            await apiClient.post('/enderecos', newAddress); // Alterado de '/usuario/enderecos' para '/enderecos'
+            await apiClient.post('/enderecos', newAddress);
             
             toggleModal(false); 
             loadProfileData(); 
@@ -116,8 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao adicionar endereço:', error);
             alert('Não foi possível salvar o endereço. Tente novamente.');
         }
-
-
     });
 
     loadProfileData();
