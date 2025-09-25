@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // A API pública para onde o formulário enviará os dados.
-    const API_URL = 'https://japauniverse.com.br/api/public';
+    const API_URL = 'https://www.japauniverse.com.br/api/public';
 
     // Lógica do formulário de contato
     const form = document.getElementById('contactForm');
