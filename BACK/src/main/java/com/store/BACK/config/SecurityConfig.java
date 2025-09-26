@@ -3,7 +3,6 @@ package com.store.BACK.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod; // Adicione esta importação
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,14 +33,11 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**").permitAll()
-
-                                .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                                .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                                .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
+                        .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -55,12 +51,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        // --- ALTERAÇÃO IMPORTANTE AQUI ---
+        // Adicionamos as URLs de produção à lista de origens permitidas
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
                 "http://127.0.0.1:5501",
-                "http://localhost:5501"
+                "http://localhost:5501",
+                "https://japa-front-production.up.railway.app", // URL do Railway
+                "https://www.japauniverse.com.br",              // Seu domínio final
+                "https://japauniverse.com.br"                   // Seu domínio sem o "www"
         ));
+        // --- FIM DA ALTERAÇÃO ---
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
