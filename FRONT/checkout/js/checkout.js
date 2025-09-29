@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'https://www.japauniverse.com.br/api',
+        baseURL: 'https://api.japauniverse.com.br/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
             
-            // Adiciona evento de clique para seleção de endereço
             document.querySelectorAll('.address-card').forEach(card => {
                 card.addEventListener('click', () => {
                     document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
@@ -89,17 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
         finalizeBtn.disabled = true;
 
         try {
-            // Envia o pedido para o backend para ser criado
             const response = await apiClient.post('/pedidos', cart);
             const novoPedido = response.data;
             
             messageEl.textContent = 'Pedido realizado com sucesso! A redirecionar para pagamento...';
             messageEl.style.color = 'green';
 
-            // Limpa o carrinho
             localStorage.removeItem('japaUniverseCart');
             
-            // Redireciona para a página de pagamento com o ID do novo pedido
             setTimeout(() => {
                 window.location.href = `../../pagamento/HTML/pagamento.html?pedidoId=${novoPedido.id}`;
             }, 2000);
