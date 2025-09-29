@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://www.japauniverse.com.br/api/produtos';
+    const API_URL = 'https://api.japauniverse.com.br/api/produtos';
     const grid = document.getElementById('products-grid');
 
     if (grid) {
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadMoreBtn = document.getElementById('loadMoreBtn');
 
         const renderGrid = (productsToRender) => {
-            // --- INÍCIO DA CORREÇÃO ---
             grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
                     <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}">Adicionar ao Carrinho</button>
                 </div>
             `).join('');
-            // --- FIM DA CORREÇÃO ---
 
             loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
         };
