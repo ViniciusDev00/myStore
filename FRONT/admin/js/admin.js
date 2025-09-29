@@ -31,12 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuração do Cliente API ---
     const apiClient = axios.create({
-        baseURL: 'https://www.japauniverse.com.br/api/admin',
+        baseURL: 'https://api.japauniverse.com.br/api/admin',
         headers: { 
             'Authorization': `Bearer ${token}`,
         }
     });
-    const publicApiClient = axios.create({ baseURL: 'https://www.japauniverse.com.br/api' });
+    const publicApiClient = axios.create({ baseURL: 'https://api.japauniverse.com.br/api' });
 
     // --- Elementos do DOM ---
     const pedidosSection = document.getElementById('pedidos-section');
