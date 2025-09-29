@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginMessage = document.getElementById("loginMessage");
   const registerMessage = document.getElementById("registerMessage");
 
-  const API_URL = "https://www.japauniverse.com.br/api/auth";
+  const API_URL = "https://api.japauniverse.com.br/api/auth";
 
   showLoginBtn.addEventListener("click", () => {
     loginForm.classList.add("active");
@@ -34,16 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("login-email").value;
     const senha = document.getElementById("login-password").value;
     try {
-      // A API agora retorna um objeto JSON -> { "token": "seu.token.jwt" }
       const response = await axios.post(`${API_URL}/login`, { email, senha });
 
-      // Salvamos o token recebido no localStorage do navegador
       localStorage.setItem("jwtToken", response.data.token);
 
       loginMessage.textContent = "Login bem-sucedido! Redirecionando...";
       loginMessage.className = "form-message success";
       setTimeout(() => {
-        window.location.href = "../../inicio/HTML/index.html"; // Redireciona para a página inicial
+        window.location.href = "../../index.html"; // Redireciona para a página inicial
       }, 1500);
     } catch (error) {
       loginMessage.textContent = "E-mail ou senha inválidos.";
@@ -60,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("register-email").value;
     const senha = document.getElementById("register-password").value;
     try {
-      // Usando o DTO de registro com apenas nome, email e senha
       await axios.post(`${API_URL}/registrar`, { nome, email, senha });
       registerMessage.textContent =
         "Registo bem-sucedido! Pode fazer login agora.";
@@ -80,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==============================================================
   // NOVA LÓGICA DE LOGIN COM GOOGLE
   // ==============================================================
-  const GOOGLE_CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE_AQUI"; // Substitua pelo seu ID de Cliente do Google
+  const GOOGLE_CLIENT_ID = "SEU_CLIENT_ID_DO_GOOGLE_AQUI"; 
   
   if (typeof google !== 'undefined') {
     google.accounts.id.initialize({
@@ -104,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
       loginMessage.textContent = "Login com Google bem-sucedido! Redirecionando...";
       loginMessage.className = "form-message success";
       setTimeout(() => {
-        window.location.href = "../../inicio/HTML/index.html";
+        window.location.href = "../../index.html";
       }, 1500);
       
     } catch (error) {
