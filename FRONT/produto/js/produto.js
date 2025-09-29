@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productDetailContainer = document.getElementById('product-detail-container');
-    const API_URL = 'https://www.japauniverse.com.br/api/produtos';
+    const API_URL = 'https://api.japauniverse.com.br/api/produtos';
 
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="product-info">
                     <div class="breadcrumbs">
-                        <a href="../../inicio/HTML/index.html">Página Inicial</a> / <a href="../../catalogo/HTML/catalogo.html">Catálogo</a> / <span>${product.nome}</span>
+                        <a href="../../index.html">Página Inicial</a> / <a href="../../catalogo/HTML/catalogo.html">Catálogo</a> / <span>${product.nome}</span>
                     </div>
                     <h1>${product.nome}</h1>
 
