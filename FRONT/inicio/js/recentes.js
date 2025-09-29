@@ -7,9 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = productsToRender.map(product => `
       <div class="swiper-slide">
         <div class="product-card" data-id="${product.id}">
-          <a href="FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
+          <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
             <div class="product-image-wrapper">
-              <img src="${product.imagemUrl || 'path/to/placeholder.png'}" alt="${product.nome}">
+              <img src="/${product.imagemUrl || 'path/to/placeholder.png'}" alt="${product.nome}">
             </div>
             <div class="product-info">
               <span class="product-brand">${product.marca.nome}</span>
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: product.id.toString(),
           name: product.nome,
           price: product.preco,
-          image: product.imagemUrl,
+          image: `/${product.imagemUrl}`,
           size: '39' // Tamanho padrão para adição rápida
         };
         if (window.addToCart) {
