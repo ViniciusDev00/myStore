@@ -51,8 +51,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // --- ALTERAÇÃO IMPORTANTE AQUI ---
-        // Adicionamos as URLs de produção à lista de origens permitidas
+        // --- CORREÇÃO APLICADA AQUI ---
+        // Adicionando as URLs de produção e desenvolvimento à lista de origens permitidas.
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
@@ -62,7 +62,7 @@ public class SecurityConfig {
                 "https://www.japauniverse.com.br",              // Seu domínio final
                 "https://japauniverse.com.br"                   // Seu domínio sem o "www"
         ));
-        // --- FIM DA ALTERAÇÃO ---
+        // --- FIM DA CORREÇÃO ---
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
