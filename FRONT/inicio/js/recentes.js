@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_URL = "https://www.japauniverse.com.br/api/produtos";
+  const API_URL = "https://api.japauniverse.com.br/api/produtos";
 
   const renderProductRow = (productsToRender, containerId) => {
     const container = document.getElementById(containerId);
@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = productsToRender.map(product => `
       <div class="swiper-slide">
         <div class="product-card" data-id="${product.id}">
-          <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
+          <a href="FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
             <div class="product-image-wrapper">
               <img src="${product.imagemUrl || 'path/to/placeholder.png'}" alt="${product.nome}">
             </div>
@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await axios.get(API_URL);
       const allProducts = response.data;
       
-      // Disponibilizar os produtos para a lógica do carrinho
       window.allProducts = allProducts; 
 
       sectionsToBuild.forEach((section) => {
@@ -59,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Event listener para adicionar ao carrinho (delegação de evento)
   document.body.addEventListener('click', (e) => {
     if (e.target.classList.contains('add-to-cart-btn')) {
       const productId = e.target.dataset.productId;
@@ -69,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const product = window.allProducts.find(p => p.id.toString() === productId);
       if (product) {
-        // Assume um tamanho padrão ou abre um seletor
         const productToAdd = {
           id: product.id.toString(),
           name: product.nome,
