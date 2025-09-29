@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const apiClient = axios.create({
-        baseURL: 'https://www.japauniverse.com.br/api',
+        baseURL: 'https://api.japauniverse.com.br/api',
         headers: { 'Authorization': `Bearer ${token}` }
     });
 
