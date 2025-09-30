@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const parseJwt = (token) => {
     try {
-      // Decodificação segura do JWT para evitar erros com caracteres especiais
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -19,7 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("jwtToken");
   const userData = token ? parseJwt(token) : null;
   const isLoggedIn = userData !== null;
-  const basePath = headerElement.dataset.basepath || ".";
+  
+  // --- CORREÇÃO APLICADA AQUI ---
+  // Definindo caminhos fixos a partir da raiz do site para evitar erros.
+  const homeUrl = "/index.html";
+  const basePath = "/FRONT";
 
   headerElement.innerHTML = `
         <div class="container">
@@ -28,11 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="hamburger-icon"></div>
             </button>
             
-            <a href="${basePath}/inicio/HTML/index.html" class="logo">Japa<span> Universe</span></a>
+            <a href="${homeUrl}" class="logo">Japa<span> Universe</span></a>
             
             <nav class="main-nav" id="main-nav">
                 <ul class="nav-list">
-                    <li><a href="${basePath}/inicio/HTML/index.html" class="nav-link">Início</a></li>
+                    <li><a href="${homeUrl}" class="nav-link">Início</a></li>
                     <li><a href="${basePath}/catalogo/HTML/catalogo.html" class="nav-link">Catálogo</a></li>
                     <li><a href="${basePath}/contato/HTML/contato.html" class="nav-link">Contato</a></li>
                 </ul>
@@ -52,9 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (isLoggedIn) {
     const userName = userData.nome ? userData.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
-    
-    // --- LÓGICA MODIFICADA PARA ADICIONAR LINK DO ADMIN ---
-    // VERSÃO CORRIGIDA
     const isAdmin = userData.authorities && userData.authorities.some(auth => auth.authority === 'ROLE_ADMIN');
     const adminLink = isAdmin ? `<a href="${basePath}/admin/HTML/admin.html">Painel Admin</a>` : '';
 
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("jwtToken");
-      window.location.href = `${basePath}/inicio/HTML/index.html`; 
+      window.location.href = homeUrl; 
     });
   }
 
