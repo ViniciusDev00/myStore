@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderGrid = (productsToRender) => {
             grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
-                    <a href="../../produto/HTML/produto.html?id=${product.id}" class="product-card-link">
+                    <a href="/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                         <div class="product-image-wrapper">
-                            <img src="/${product.imagemUrl}" onerror="this.onerror=null;this.src='https.via.placeholder.com/400x400.png?text=Imagem+Indisponível';" alt="${product.nome}">
+                            <img src="${product.imagemUrl}" alt="${product.nome}">
                         </div>
                         <div class="product-info">
                             <span class="product-brand">${product.marca.nome}</span>
