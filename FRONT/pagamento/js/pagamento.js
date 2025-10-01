@@ -5,11 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- CORREÇÃO APLICADA AQUI ---
+    // Configura o Axios para sempre usar o token mais recente
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
     });
-
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, error => {
         return Promise.reject(error);
     });
-    // --- FIM DA CORREÇÃO ---
 
     const pixDetailsContainer = document.getElementById('pix-details');
     const params = new URLSearchParams(window.location.search);
@@ -37,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPixDetails(pixData);
         } catch (error) {
             console.error('Erro ao gerar PIX:', error);
-            pixDetailsContainer.innerHTML = '<p>Não foi possível gerar os dados do PIX.</p>';
+            pixDetailsContainer.innerHTML = '<p>Não foi possível gerar os dados do PIX. Tente novamente.</p>';
         }
     };
 
@@ -64,4 +62,4 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchPixData();
-});
+}); 
