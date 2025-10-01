@@ -693,88 +693,108 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 /* ===================================
-    RESPONSIVIDADE MELHORADA - MOBILE FIRST
+    RESPONSIVIDADE PROFISSIONAL - MOBILE FIRST
    =================================== */
 
 /* Mobile Small (até 480px) */
 @media (max-width: 480px) {
+  :root {
+    --header-height: 60px;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+  }
+
   .container {
-    padding: 0 var(--space-sm);
+    padding: 0 1rem;
   }
-  
-  .section-padding {
-    padding: var(--space-xl) 0;
+
+  .logo {
+    font-size: 1.5rem;
   }
-  
+
   .btn {
-    padding: 0.8rem var(--space-sm);
-    font-size: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
   }
-  
-  .section-title {
-    font-size: 2.2rem;
-  }
-  
-  .footer-grid {
-    gap: var(--space-lg);
+
+  .main-header .container {
+    padding: 0 1rem;
   }
 }
 
 /* Mobile (até 768px) */
 @media (max-width: 768px) {
-  :root {
-    --header-height: 70px;
-    --space-xl: 2.5rem;
-    --space-xxl: 4rem;
+  .main-nav {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    background: var(--background);
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 2rem;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    border-top: 1px solid var(--border-color);
   }
-  
-  .main-header .container {
-    padding: 0 var(--space-sm);
+
+  .main-nav.active {
+    transform: translateX(0);
   }
-  
-  .logo {
-    font-size: 1.8rem;
+
+  .nav-list {
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    text-align: center;
   }
-  
+
+  .nav-link {
+    font-size: 1.2rem;
+    padding: 0.5rem 0;
+    display: block;
+  }
+
+  .mobile-nav-toggle {
+    display: block;
+  }
+
   .header-actions {
     gap: 0.8rem;
   }
-  
-  .cart-btn {
-    font-size: 1.3rem;
-  }
-  
+
   .user-account-menu {
-    padding-left: 1rem;
-    margin-left: 0.25rem;
+    padding-left: 0.8rem;
+    margin-left: 0;
+    border-left: none;
   }
-  
+
   .welcome-text {
     font-size: 0.7rem;
   }
-  
+
   .my-account-link {
     font-size: 0.8rem;
-  }
-  
-  .modal-content {
-    max-width: 100%;
-  }
-  
-  .cart-item {
-    grid-template-columns: 80px 1fr;
-    gap: var(--space-sm);
-  }
-  
-  .cart-item-image {
-    width: 80px;
-    height: 80px;
   }
 }
 
 /* Tablet (769px a 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .container {
-    padding: 0 var(--space-md);
+    padding: 0 1.5rem;
+  }
+  
+  .nav-list {
+    gap: 2rem;
+  }
+}
+
+/* Desktop (acima de 1025px) */
+@media (min-width: 1025px) {
+  .main-nav {
+    display: flex !important;
   }
 }
