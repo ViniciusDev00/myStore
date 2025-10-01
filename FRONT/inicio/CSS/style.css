@@ -344,33 +344,45 @@
   .hero-content {
     padding: 0 1rem;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
   .hero-title {
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     line-height: 1;
     margin-bottom: 1rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
-    max-width: 100%;
+    font-size: 0.95rem;
+    max-width: 300px;
     margin: 1rem 0 1.5rem;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
   .hero-bg-image {
-    background-position: 65% center;
-    transform: scale(1.1);
+    background-position: center 40%;
+    background-size: cover;
+    transform: none;
   }
 
   .hero-background::after {
-    background: linear-gradient(180deg, rgba(10,10,10,0.8) 0%, transparent 50%);
+    background: linear-gradient(
+      180deg, 
+      rgba(10,10,10,0.95) 0%, 
+      rgba(10,10,10,0.8) 30%,
+      rgba(10,10,10,0.4) 70%,
+      transparent 100%
+    );
   }
 
   .hero-socials {
     position: fixed;
-    bottom: 2rem;
+    bottom: 1.5rem;
     left: 1rem;
     flex-direction: column;
     gap: 1rem;
@@ -378,13 +390,13 @@
   }
 
   .section-titleRECEM {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     margin-bottom: 1rem;
     padding: 0;
   }
 
   .section-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .collection-section .section-header {
@@ -392,10 +404,37 @@
     gap: 1rem;
     text-align: center;
     margin-bottom: 1.5rem;
+    padding: 0 1rem;
   }
 
   .collection-nav {
     justify-content: center;
+  }
+
+  .collection-nav button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .collection-swiper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .collection-swiper .swiper-slide {
+    width: 260px;
+  }
+
+  .collection-section .product-image-wrapper {
+    height: 220px;
+  }
+
+  .collection-section .product-name {
+    font-size: 1rem;
+  }
+
+  .collection-section .product-price {
+    font-size: 1.1rem;
   }
 
   .crew-content {
@@ -405,17 +444,30 @@
   }
 
   .crew-image-stack {
-    height: 280px;
+    height: 250px;
     margin-top: 1rem;
+    order: -1;
   }
 
   .image-card {
-    width: 160px;
-    height: 220px;
+    width: 150px;
+    height: 200px;
+  }
+
+  .image-card:nth-child(1) {
+    transform: rotate(-5deg) translate(-15%, 0);
+  }
+
+  .image-card:nth-child(2) {
+    transform: rotate(2deg) translate(0, 5%);
+  }
+
+  .image-card:nth-child(3) {
+    transform: rotate(8deg) translate(15%, 0);
   }
 
   .newsletter h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .newsletter p {
@@ -426,11 +478,22 @@
   #newsletterForm {
     flex-direction: column;
     gap: 0.5rem;
+    max-width: 100%;
   }
 
   #newsletterForm input {
     text-align: center;
     padding: 1rem;
+  }
+
+  .featured-sneaker-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .featured-image-wrapper.swiper {
+    height: 300px;
+    border-radius: 12px;
   }
 }
 
@@ -445,21 +508,39 @@
 
   .hero-content {
     padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
   .hero-title {
-    font-size: 3.5rem;
+    font-size: 3rem;
     line-height: 1.1;
+    margin-bottom: 1rem;
   }
 
   .hero-subtitle {
-    font-size: 1.1rem;
-    max-width: 100%;
+    font-size: 1rem;
+    max-width: 400px;
     margin: 1.5rem 0 2rem;
+    line-height: 1.5;
+  }
+
+  .hero-bg-image {
+    background-position: center 35%;
+    background-size: cover;
   }
 
   .hero-background::after {
-    background: linear-gradient(180deg, rgba(10,10,10,0.7) 0%, transparent 50%);
+    background: linear-gradient(
+      180deg, 
+      rgba(10,10,10,0.9) 0%, 
+      rgba(10,10,10,0.7) 25%,
+      rgba(10,10,10,0.4) 60%,
+      transparent 100%
+    );
   }
 
   .featured-sneaker-content {
@@ -476,7 +557,12 @@
   }
 
   .section-titleRECEM {
-    font-size: 3.5rem;
+    font-size: 3rem;
+  }
+
+  .collection-swiper {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   .crew-content {
@@ -486,29 +572,17 @@
   }
 
   .crew-image-stack {
-    height: 320px;
+    height: 280px;
     order: -1;
   }
 
   .image-card {
-    width: 200px;
-    height: 280px;
-  }
-
-  .image-card:nth-child(1) {
-    transform: rotate(-5deg) translate(-15%, 0);
-  }
-
-  .image-card:nth-child(2) {
-    transform: rotate(2deg) translate(0, 5%);
-  }
-
-  .image-card:nth-child(3) {
-    transform: rotate(8deg) translate(15%, 0);
+    width: 180px;
+    height: 240px;
   }
 
   .newsletter h2 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
 
   #newsletterForm {
@@ -523,8 +597,17 @@
     padding-left: 5%;
   }
 
+  .hero-bg-image {
+    background-position: center 30%;
+  }
+
   .collection-section .section-header {
     padding: 0 1.5rem;
+  }
+
+  .collection-swiper {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   .crew-content {
@@ -538,9 +621,16 @@
     padding-left: 10%;
   }
 
+  .hero-bg-image {
+    background-position: center;
+  }
+
+  .hero-background::after {
+    background: linear-gradient(90deg, var(--background) 30%, transparent 70%);
+  }
+
   .hero-socials {
-    position: absolute;
-    flex-direction: column;
+    display: flex;
   }
 
   .featured-sneaker-content {
@@ -550,7 +640,8 @@
   .collection-section .section-header {
     flex-direction: row;
     text-align: left;
-    padding: 0 calc((100% - 1300px) / 2 + 1.5rem);
+    padding-left: calc((100% - 1300px) / 2 + 1.5rem);
+    padding-right: calc((100% - 1300px) / 2 + 1.5rem);
   }
 
   .crew-content {
