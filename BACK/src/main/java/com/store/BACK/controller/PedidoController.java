@@ -33,7 +33,6 @@ public class PedidoController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-
     @PostMapping
     public ResponseEntity<Pedido> criarPedido(@RequestBody List<Map<String, Object>> cartItems, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
@@ -47,9 +46,18 @@ public class PedidoController {
     @GetMapping("/{id}/pix")
     public ResponseEntity<Map<String, String>> gerarPix(@PathVariable Long id, @AuthenticationPrincipal Usuario usuarioLogado) {
         Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
-        if (pedidoOptional.isEmpty() || !pedidoOptional.get().getUsuario().getId().equals(usuarioLogado.getId())) {
-            return ResponseEntity.status(403).body(Map.of("error", "Pedido não encontrado ou não pertence ao usuário."));
+
+        // --- CORREÇÃO APLICADA AQUI ---
+        // Verifica se o usuário logado é um Admin
+        boolean isAdmin = usuarioLogado.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        // Acesso é negado APENAS se o pedido não existir OU se o usuário não for o dono E não for Admin
+        if (pedidoOptional.isEmpty() || (!pedidoOptional.get().getUsuario().getId().equals(usuarioLogado.getId()) && !isAdmin)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Pedido não encontrado ou acesso negado."));
         }
+        // --- FIM DA CORREÇÃO ---
+        
         Pedido pedido = pedidoOptional.get();
 
         String url = "https://api.pixgg.com/v1/createCharge";
@@ -59,8 +67,7 @@ public class PedidoController {
         requestBody.put("value", valorEmCentavos);
         
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-        // --- TENTATIVA DE CORREÇÃO AQUI ---
-        headers.set("Authorization", "Bearer " + pixApiKey); // Adicionado o prefixo "Bearer "
+        headers.set("Authorization", "Bearer " + pixApiKey);
         headers.set("Content-Type", "application/json");
 
         org.springframework.http.HttpEntity<Map<String, Object>> entity = new org.springframework.http.HttpEntity<>(requestBody, headers);
@@ -81,9 +88,7 @@ public class PedidoController {
             } else {
                  return ResponseEntity.status(500).body(Map.of("error", "Resposta inválida da API de pagamento."));
             }
-        // --- MELHORIA NO TRATAMENTO DE ERRO ---
         } catch (HttpClientErrorException e) {
-            // Se o erro for de autorização (401 ou 403), a chave está errada.
             if (e.getStatusCode().is4xxClientError()) {
                 return ResponseEntity.status(e.getStatusCode()).body(Map.of("error", "Erro de autorização com a API de pagamento. Verifique a API Key."));
             }
