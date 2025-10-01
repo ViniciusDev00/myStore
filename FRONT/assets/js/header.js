@@ -20,9 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const isLoggedIn = userData !== null;
   
   // --- CORREÇÃO APLICADA AQUI ---
-  // Definindo caminhos fixos a partir da raiz do site para evitar erros.
-  const homeUrl = "/index.html";
-  const basePath = "/FRONT";
+  // Tornando os caminhos dinâmicos baseados no data-attribute do header.
+  const basePath = headerElement.dataset.basepath || ".";
+  const homeUrl = `${basePath}/index.html`.replace("./", ""); // Remove o ./ do início se existir
+  const catalogoUrl = `${basePath}/FRONT/catalogo/HTML/catalogo.html`;
+  const contatoUrl = `${basePath}/FRONT/contato/HTML/contato.html`;
+  const adminUrl = `${basePath}/FRONT/admin/HTML/admin.html`;
+  const perfilUrl = `${basePath}/FRONT/perfil/HTML/perfil.html`;
+  const loginUrl = `${basePath}/FRONT/login/HTML/login.html`;
 
   headerElement.innerHTML = `
         <div class="container">
@@ -36,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <nav class="main-nav" id="main-nav">
                 <ul class="nav-list">
                     <li><a href="${homeUrl}" class="nav-link">Início</a></li>
-                    <li><a href="${basePath}/catalogo/HTML/catalogo.html" class="nav-link">Catálogo</a></li>
-                    <li><a href="${basePath}/contato/HTML/contato.html" class="nav-link">Contato</a></li>
+                    <li><a href="${catalogoUrl}" class="nav-link">Catálogo</a></li>
+                    <li><a href="${contatoUrl}" class="nav-link">Contato</a></li>
                 </ul>
             </nav>
             <div class="header-actions" id="header-actions"></div>
@@ -56,24 +61,24 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isLoggedIn) {
     const userName = userData.nome ? userData.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
     const isAdmin = userData.authorities && userData.authorities.some(auth => auth.authority === 'ROLE_ADMIN');
-    const adminLink = isAdmin ? `<a href="${basePath}/admin/HTML/admin.html">Painel Admin</a>` : '';
+    const adminLink = isAdmin ? `<a href="${adminUrl}">Painel Admin</a>` : '';
 
     actionsHTML += `
             <div class="user-account-menu">
                 <div class="user-info">
                     <span class="welcome-text">Olá, ${userName}</span>
-                    <a href="${basePath}/perfil/HTML/perfil.html" class="my-account-link">Minha conta <i class="fas fa-chevron-down"></i></a>
+                    <a href="${perfilUrl}" class="my-account-link">Minha conta <i class="fas fa-chevron-down"></i></a>
                 </div>
                 <div class="account-dropdown">
                     ${adminLink}
-                    <a href="${basePath}/perfil/HTML/perfil.html">Meus Dados</a>
+                    <a href="${perfilUrl}">Meus Dados</a>
                     <button id="logoutBtn" class="logout-button">Sair</button>
                 </div>
             </div>
         `;
   } else {
     actionsHTML += `
-            <a href="${basePath}/login/HTML/login.html" class="btn btn-outline">Login</a>
+            <a href="${loginUrl}" class="btn btn-outline">Login</a>
         `;
   }
 

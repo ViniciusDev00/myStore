@@ -1,5 +1,6 @@
-/* Importa variáveis globais e estilos base */
-@import url('../../inicio/CSS/style.css');
+/* ===================================================
+    CSS/produto.css - Estilos Específicos do Produto
+   =================================================== */
 
 body {
     padding-top: var(--header-height);
@@ -17,34 +18,38 @@ main.container {
     color: var(--text-secondary);
 }
 
-/* Layout principal da página de produto */
+/* Layout principal (Mobile-first) */
 .product-detail-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
     align-items: flex-start;
 }
 
-/* Coluna da Esquerda: Imagens */
+/* Imagens do Produto */
 .product-images {
     display: flex;
+    flex-direction: column-reverse;
     gap: var(--space-md);
 }
 
 .thumbnail-gallery {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--space-sm);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
 }
 
 .thumbnail-item {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
     overflow: hidden;
     transition: border-color var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .thumbnail-item:hover, .thumbnail-item.active {
@@ -61,7 +66,7 @@ main.container {
     flex: 1;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    overflow: hidden; /* Essencial para o efeito de zoom */
+    overflow: hidden;
     position: relative;
 }
 
@@ -72,12 +77,7 @@ main.container {
     transition: transform 0.3s ease;
 }
 
-/* Efeito de Zoom */
-.main-image-container:hover img {
-    transform: scale(2);
-}
-
-/* Coluna da Direita: Informações */
+/* Informações do Produto */
 .product-info {
     display: flex;
     flex-direction: column;
@@ -93,7 +93,7 @@ main.container {
 }
 
 .product-info h1 {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
     font-family: var(--font-display);
     line-height: 1.1;
     margin: 0;
@@ -131,7 +131,7 @@ main.container {
 
 .price-box {
     background-color: var(--surface);
-    padding: var(--space-md);
+    padding: var(--space-sm);
     border-radius: 8px;
 }
 .price-original {
@@ -140,7 +140,7 @@ main.container {
     text-decoration: line-through;
 }
 .price-current {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary);
 }
@@ -161,12 +161,12 @@ main.container {
 .buy-button {
     width: 100%;
     padding: 1rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .product-description {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
     border-top: 1px solid var(--border-color);
 }
 .product-description h2 {
@@ -178,14 +178,14 @@ main.container {
     line-height: 1.8;
 }
 
-/* --- ESTILOS DOS PRODUTOS RELACIONADOS (TALVEZ VOCÊ GOSTE) --- */
+/* Produtos Relacionados */
 .related-products-section {
     margin-top: var(--space-xxl);
     padding-top: var(--space-xl);
     border-top: 1px solid var(--border-color);
 }
 .related-products-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-family: var(--font-body);
     font-weight: 600;
     text-align: left;
@@ -211,15 +211,14 @@ main.container {
     color: var(--primary);
 }
 
-/* --- INÍCIO DA CORREÇÃO DO BUG --- */
 .related-products-swiper .swiper-slide {
-    height: auto; /* Permite que o slide se ajuste ao card */
+    height: auto;
 }
 
 a.related-product-card {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Força o card a ocupar toda a altura do slide */
+    height: 100%;
     background-color: var(--surface);
     border-radius: 8px;
     padding: var(--space-md);
@@ -227,7 +226,6 @@ a.related-product-card {
     border: 1px solid transparent;
     transition: all var(--transition-fast);
 }
-/* --- FIM DA CORREÇÃO DO BUG --- */
 
 .related-product-card:hover {
     border-color: var(--border-color);
@@ -261,15 +259,13 @@ a.related-product-card {
     gap: 4px;
 }
 
-/* --- INÍCIO DA CORREÇÃO DO BUG --- */
 .related-product-info {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    flex-grow: 1; /* Faz esta área crescer para preencher o espaço */
-    justify-content: space-around; /* Distribui o conteúdo verticalmente */
+    flex-grow: 1;
+    justify-content: space-around;
 }
-/* --- FIM DA CORREÇÃO DO BUG --- */
 
 .related-product-name {
     font-size: 1rem;
@@ -303,48 +299,41 @@ a.related-product-card {
     margin-top: 0.5rem;
 }
 
-@media (max-width: 900px) {
-    .product-detail-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-lg);
-    }
-    .product-info {
-        gap: var(--space-md);
-    }
-    .product-description {
-        margin-top: var(--space-lg);
-        padding-top: var(--space-md);
-    }
-}
+/* ===================================
+    RESPONSIVIDADE - PÁGINA DE PRODUTO
+   =================================== */
 
-@media (max-width: 600px) {
+@media (min-width: 901px) {
+    .product-detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
     .product-images {
-        flex-direction: column-reverse;
-        gap: var(--space-md);
+        flex-direction: row;
     }
     .thumbnail-gallery {
-        flex-direction: row;
-        overflow-x: auto;
-        justify-content: flex-start;
+        flex-direction: column;
+        overflow-x: visible;
     }
     .thumbnail-item {
-        flex-shrink: 0;
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
+    }
+    .main-image-container:hover img {
+        transform: scale(2);
     }
     .product-info h1 {
-        font-size: 2.2rem;
+        font-size: 2.8rem;
     }
     .price-box {
-        padding: var(--space-sm);
+        padding: var(--space-md);
     }
     .price-current {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
     }
     .buy-button {
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
     .related-products-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 }
