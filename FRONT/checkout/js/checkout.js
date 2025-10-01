@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
-        window.location.href = '../../login/HTML/login.html';
+        window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
@@ -50,8 +50,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const addresses = response.data.enderecos;
 
             if (!addresses || addresses.length === 0) {
-                addressesContainer.innerHTML = '<p>Nenhum endereço cadastrado. Por favor, <a href="../../perfil/HTML/perfil.html">adicione um endereço no seu perfil</a> para continuar.</p>';
+                // --- MELHORIA APLICADA AQUI ---
+                addressesContainer.innerHTML = `
+                    <div class="empty-state-address">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Nenhum endereço cadastrado</h3>
+                        <p>Você precisa adicionar um endereço de entrega no seu perfil para poder finalizar a compra.</p>
+                        <a href="/FRONT/perfil/HTML/perfil.html" class="btn btn-primary">Adicionar Endereço</a>
+                    </div>
+                `;
                 finalizeBtn.disabled = true;
+                finalizeBtn.style.display = 'none'; // Esconde o botão original
                 return;
             }
 
@@ -97,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('japaUniverseCart');
             
             setTimeout(() => {
-                window.location.href = `../../pagamento/HTML/pagamento.html?pedidoId=${novoPedido.id}`;
+                window.location.href = `/FRONT/pagamento/HTML/pagamento.html?pedidoId=${novoPedido.id}`;
             }, 2000);
 
         } catch (error) {
