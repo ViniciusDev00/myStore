@@ -1,7 +1,7 @@
-/* Importa variáveis globais */
-@import url('../../inicio/CSS/style.css');
+/* ===================================================
+    CSS/perfil.css - Estilos Específicos do Perfil
+   =================================================== */
 
-/* Corpo da página com espaçamento para o header */
 body {
     padding-top: var(--header-height);
 }
@@ -28,19 +28,14 @@ body {
 
 .perfil-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 1fr;
     gap: var(--space-lg);
-    align-items: flex-start;
     padding-top: var(--space-xl);
     padding-bottom: var(--space-xl);
 }
 
-/* Sidebar de Navegação */
 .perfil-sidebar {
-    background-color: var(--surface);
-    padding: var(--space-md);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+    display: none; /* Escondido em mobile, visível em telas maiores */
 }
 
 .perfil-nav a {
@@ -64,10 +59,9 @@ body {
     background-color: rgba(255, 122, 0, 0.1);
 }
 
-/* Conteúdo Principal */
 .perfil-content {
     background-color: var(--surface);
-    padding: var(--space-xl);
+    padding: var(--space-md);
     border-radius: 8px;
     border: 1px solid var(--border-color);
     min-height: 50vh;
@@ -75,18 +69,35 @@ body {
 
 .content-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--space-md);
     margin-bottom: var(--space-lg);
 }
 
-.content-header h1 {
-    font-size: 2.2rem;
+.content-header .btn {
+    width: 100%;
+    margin-top: 1rem;
 }
 
-/* Estilos para "Nenhum item" */
+.perfil-section {
+    margin-bottom: var(--space-xl);
+}
+
+.perfil-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.perfil-section-title {
+    font-size: 1.8rem;
+    font-family: var(--font-display);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--space-lg);
+}
+
 .empty-state {
     text-align: center;
     padding: var(--space-xl) 0;
@@ -105,7 +116,6 @@ body {
     margin-bottom: var(--space-xs);
 }
 
-/* Estilos específicos para Pedidos */
 .order-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -144,7 +154,6 @@ body {
     font-family: var(--font-body);
 }
 
-/* Estilos específicos para Endereços */
 .address-card {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -167,25 +176,7 @@ body {
     color: var(--primary);
 }
 
-/* Adicionar ao final de perfil.css */
-
-.perfil-section {
-    margin-bottom: var(--space-xl);
-}
-
-.perfil-section:last-of-type {
-    margin-bottom: 0;
-}
-
-.perfil-section-title {
-    font-size: 1.8rem;
-    font-family: var(--font-display);
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: var(--space-lg);
-}
-
-/* ===== ESTILOS DO MODAL DE ENDEREÇO ===== */
+/* ===== MODAL DE ENDEREÇO ===== */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -263,24 +254,30 @@ body {
     margin-top: 1rem;
 }
 
-@media (max-width: 900px) {
+/* ===================================
+    RESPONSIVIDADE - PÁGINA DE PERFIL
+   =================================== */
+
+@media (min-width: 900px) {
     .perfil-container {
-        grid-template-columns: 1fr;
-        gap: var(--space-lg);
+        grid-template-columns: 280px 1fr;
     }
     .perfil-sidebar {
-        display: none;
+        display: block;
+        background-color: var(--surface);
+        padding: var(--space-md);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
     }
     .perfil-content {
-        padding: var(--space-md);
+        padding: var(--space-xl);
     }
     .content-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-sm);
+        flex-direction: row;
+        align-items: center;
     }
     .content-header .btn {
-        width: 100%;
-        margin-top: 1rem;
+        width: auto;
+        margin-top: 0;
     }
 }
