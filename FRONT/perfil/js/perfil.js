@@ -10,14 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const addressForm = document.getElementById('address-form');
 
     if (!token) {
-        window.location.href = '../../login/HTML/login.html';
+        window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
+    // --- CORREÇÃO APLICADA AQUI ---
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
-        headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    apiClient.interceptors.request.use(config => {
+        const currentToken = localStorage.getItem('jwtToken');
+        if (currentToken) {
+            config.headers.Authorization = `Bearer ${currentToken}`;
+        }
+        return config;
+    }, error => {
+        return Promise.reject(error);
+    });
+    // --- FIM DA CORREÇÃO ---
 
     const renderAddresses = (addresses) => {
         if (!addresses || addresses.length === 0) {
@@ -40,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="empty-state">
                     <i class="fas fa-box-open"></i>
                     <h3>Nenhuma compra feita ainda</h3>
-                    <a href="../../catalogo/HTML/catalogo.html" class="btn btn-primary" style="margin-top: 1rem;">Faça seu primeiro pedido</a>
+                    <a href="/FRONT/catalogo/HTML/catalogo.html" class="btn btn-primary" style="margin-top: 1rem;">Faça seu primeiro pedido</a>
                 </div>
             `;
             return;
@@ -70,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar dados do perfil:', error);
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                 localStorage.removeItem('jwtToken');
-                window.location.href = '../../login/HTML/login.html';
+                window.location.href = '/FRONT/login/HTML/login.html';
             }
         }
     };
@@ -115,4 +126,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     loadProfileData();
-});
+}); 
