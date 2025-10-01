@@ -47,8 +47,7 @@ public class PedidoController {
     public ResponseEntity<Map<String, String>> gerarPix(@PathVariable Long id, @AuthenticationPrincipal Usuario usuarioLogado) {
         Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
 
-        // --- CORREÇÃO APLICADA AQUI ---
-        // Verifica se o usuário logado é um Admin
+        // --- CORREÇÃO DA REGRA DE ACESSO DO ADMIN ---
         boolean isAdmin = usuarioLogado.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
