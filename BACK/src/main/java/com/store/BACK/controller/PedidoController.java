@@ -33,7 +33,6 @@ public class PedidoController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-
     @PostMapping
     public ResponseEntity<Pedido> criarPedido(@RequestBody List<Map<String, Object>> cartItems, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
@@ -46,44 +45,19 @@ public class PedidoController {
 
     @GetMapping("/{id}/pix")
     public ResponseEntity<Map<String, String>> gerarPix(@PathVariable Long id, @AuthenticationPrincipal Usuario usuarioLogado) {
-        
-        // --- INÍCIO DO CÓDIGO DE DIAGNÓSTICO ---
-        System.out.println("--- INICIANDO VERIFICAÇÃO DE ACESSO AO PIX ---");
-        System.out.println("ID do Pedido Solicitado: " + id);
-        System.out.println("ID do Usuário Logado: " + usuarioLogado.getId());
-        System.out.println("Email do Usuário Logado: " + usuarioLogado.getEmail());
-
         Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
-
-        if (pedidoOptional.isEmpty()) {
-            System.out.println("RESULTADO: ACESSO NEGADO. Motivo: Pedido não encontrado.");
-            return ResponseEntity.status(404).body(Map.of("error", "Pedido não encontrado."));
-        }
-
-        Pedido pedido = pedidoOptional.get();
-        Usuario donoDoPedido = pedido.getUsuario();
-
-        System.out.println("ID do Dono do Pedido (do banco de dados): " + donoDoPedido.getId());
-        System.out.println("Email do Dono do Pedido: " + donoDoPedido.getEmail());
-
-        boolean isOwner = donoDoPedido.getId().equals(usuarioLogado.getId());
-        System.out.println("Verificação 'É o dono?': " + isOwner);
 
         boolean isAdmin = usuarioLogado.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
-        System.out.println("Verificação 'É Admin?': " + isAdmin);
 
-        if (!isOwner && !isAdmin) {
-            System.out.println("RESULTADO: ACESSO NEGADO. Motivo: Usuário não é o dono e não é admin.");
-            System.out.println("--- FIM DA VERIFICAÇÃO ---");
+        if (pedidoOptional.isEmpty() || (!pedidoOptional.get().getUsuario().getId().equals(usuarioLogado.getId()) && !isAdmin)) {
             return ResponseEntity.status(403).body(Map.of("error", "Pedido não encontrado ou acesso negado."));
         }
-
-        System.out.println("RESULTADO: ACESSO PERMITIDO.");
-        System.out.println("--- FIM DA VERIFICAÇÃO ---");
-        // --- FIM DO CÓDIGO DE DIAGNÓSTICO ---
         
+        Pedido pedido = pedidoOptional.get();
+
         String url = "https://api.pixgg.com/v1/createCharge";
+        
         Map<String, Object> requestBody = new HashMap<>();
         int valorEmCentavos = pedido.getValorTotal().multiply(java.math.BigDecimal.valueOf(100)).intValue();
         requestBody.put("value", valorEmCentavos);
