@@ -145,84 +145,75 @@
 }
 
 /* ===================================
-    RESPONSIVIDADE - COLECÕES MOBILE
+    RESPONSIVIDADE - CARROSSÉIS MOBILE
    =================================== */
 
 /* Mobile Small (até 480px) */
 @media (max-width: 480px) {
   .collection-section {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-md);
-  }
-  
-  .collection-section .section-header {
-    margin-bottom: var(--space-lg);
-  }
-  
-  .section-titleRECEM {
-    font-size: 2.8rem;
-    margin-bottom: var(--space-sm);
-  }
-  
-  .swiper[class*="collection-swiper"] {
-    padding-left: var(--space-sm);
-    padding-right: var(--space-sm);
+    padding-top: var(--space-lg);
     padding-bottom: var(--space-lg);
   }
-  
+
+  .swiper[class*="collection-swiper"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: var(--space-lg);
+  }
+
   .swiper[class*="collection-swiper"] .swiper-slide {
     width: 280px !important;
   }
-  
+
   .product-image-wrapper {
-    height: 240px;
+    height: 220px;
+    padding: var(--space-sm);
   }
-  
+
+  .product-info {
+    padding: var(--space-sm);
+  }
+
   .product-name {
     font-size: 1rem;
   }
-  
+
   .product-price {
     font-size: 1.1rem;
+  }
+
+  .add-to-cart-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
   }
 }
 
 /* Mobile (até 768px) */
 @media (max-width: 768px) {
   .collection-section {
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
   }
-  
-  .section-titleRECEM {
-    font-size: 3.5rem;
-  }
-  
+
   .swiper[class*="collection-swiper"] {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-    padding-bottom: var(--space-lg);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
-  
+
   .collection-nav button {
-    width: 45px;
-    height: 45px;
+    width: 44px;
+    height: 44px;
   }
-  
+
   .product-image-wrapper {
-    height: 260px;
-    padding: var(--space-sm);
-  }
-  
-  .product-info {
-    padding: var(--space-sm);
+    height: 250px;
   }
 }
 
 /* Tablet (769px a 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .swiper[class*="collection-swiper"] {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
