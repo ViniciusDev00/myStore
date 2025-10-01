@@ -14,11 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- CORREÇÃO APLICADA AQUI ---
+    // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
+    // Cria a instância do Axios
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
     });
 
+    // Usa um "interceptor" que adiciona o token mais recente a CADA requisição
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -95,34 +97,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    openModalBtn.addEventListener('click', () => toggleModal(true));
-    closeModalBtn.addEventListener('click', () => toggleModal(false));
-    modalOverlay.addEventListener('click', () => toggleModal(false));
+    if(openModalBtn) openModalBtn.addEventListener('click', () => toggleModal(true));
+    if(closeModalBtn) closeModalBtn.addEventListener('click', () => toggleModal(false));
+    if(modalOverlay) modalOverlay.addEventListener('click', () => toggleModal(false));
 
-    addressForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const newAddress = {
-            cep: document.getElementById('cep').value,
-            rua: document.getElementById('rua').value,
-            numero: document.getElementById('numero').value,
-            complemento: document.getElementById('complemento').value,
-            cidade: document.getElementById('cidade').value,
-            estado: document.getElementById('estado').value,
-        };
-
-        try {
-            await apiClient.post('/enderecos', newAddress);
+    if(addressForm) {
+        addressForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            toggleModal(false); 
-            loadProfileData(); 
-            addressForm.reset(); 
-
-        } catch (error) {
-            console.error('Erro ao adicionar endereço:', error);
-            alert('Não foi possível salvar o endereço. Tente novamente.');
-        }
-    });
+            const newAddress = {
+                cep: document.getElementById('cep').value,
+                rua: document.getElementById('rua').value,
+                numero: document.getElementById('numero').value,
+                complemento: document.getElementById('complemento').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value,
+            };
+    
+            try {
+                await apiClient.post('/enderecos', newAddress);
+                
+                toggleModal(false); 
+                loadProfileData(); 
+                addressForm.reset(); 
+    
+            } catch (error) {
+                console.error('Erro ao adicionar endereço:', error);
+                alert('Não foi possível salvar o endereço. Tente novamente.');
+            }
+        });
+    }
 
     loadProfileData();
 });
