@@ -88,12 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const toggleModal = (show) => {
-        if (show) {
-            addressModal.classList.add('active');
-            modalOverlay.classList.add('active');
-        } else {
-            addressModal.classList.remove('active');
-            modalOverlay.classList.remove('active');
+        if (addressModal && modalOverlay) {
+            if (show) {
+                addressModal.classList.add('active');
+                modalOverlay.classList.add('active');
+            } else {
+                addressModal.classList.remove('active');
+                modalOverlay.classList.remove('active');
+            }
         }
     };
 
