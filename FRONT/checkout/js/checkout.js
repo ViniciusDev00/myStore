@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificação inicial do token continua necessária
     const token = localStorage.getItem('jwtToken');
     if (!token) {
         window.location.href = '/FRONT/login/HTML/login.html';
@@ -7,12 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- CORREÇÃO APLICADA AQUI ---
-    // Cria a instância do Axios sem o token fixo
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
     });
 
-    // Adiciona um "interceptor" que anexa o token mais recente a CADA requisição
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -23,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return Promise.reject(error);
     });
     // --- FIM DA CORREÇÃO ---
-
 
     const summaryItemsContainer = document.getElementById('summary-items');
     const summaryTotalPriceEl = document.getElementById('summary-total-price');
@@ -69,12 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="empty-state-address">
                         <i class="fas fa-map-marker-alt"></i>
                         <h3>Nenhum endereço cadastrado</h3>
-                        <p>Você precisa adicionar um endereço de entrega no seu perfil para poder finalizar a compra.</p>
-                        <a href="/FRONT/perfil/HTML/perfil.html" class="btn btn-primary">Adicionar Endereço</a>
+                        <p>Você precisa adicionar um endereço de entrega para finalizar a compra.</p>
+                        <a href="/FRONT/perfil/HTML/perfil.html" class="btn btn-primary">Ir para o Perfil</a>
                     </div>
                 `;
                 finalizeBtn.disabled = true;
-                finalizeBtn.style.display = 'none';
+                finalizeBtn.style.display = 'none'; // Esconde o botão original
                 return;
             }
 

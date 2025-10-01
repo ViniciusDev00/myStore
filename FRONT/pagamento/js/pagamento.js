@@ -1,14 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
-        window.location.href = '../../login/HTML/login.html';
+        window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
+    // --- CORREÇÃO APLICADA AQUI ---
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
-        headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    apiClient.interceptors.request.use(config => {
+        const currentToken = localStorage.getItem('jwtToken');
+        if (currentToken) {
+            config.headers.Authorization = `Bearer ${currentToken}`;
+        }
+        return config;
+    }, error => {
+        return Promise.reject(error);
+    });
+    // --- FIM DA CORREÇÃO ---
 
     const pixDetailsContainer = document.getElementById('pix-details');
     const params = new URLSearchParams(window.location.search);

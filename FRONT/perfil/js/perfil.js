@@ -57,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         ordersContainer.innerHTML = orders.map(order => {
-             const firstItem = order.itens[0];
              return `
             <div class="order-card">
                 <div class="order-header">
@@ -126,4 +125,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     loadProfileData();
-}); 
+});
