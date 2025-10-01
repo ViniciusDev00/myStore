@@ -205,7 +205,7 @@
 }
 
 /* ===================================
-    RESPONSIVIDADE - FEATURED SNEAKER MOBILE
+    RESPONSIVIDADE - FEATURED SNEAKER
    =================================== */
 
 @media (max-width: 768px) {
@@ -213,43 +213,33 @@
     grid-template-columns: 1fr;
     gap: var(--space-lg);
   }
-  
+
   .featured-image-wrapper.swiper {
     height: 400px;
+    border-radius: 12px;
   }
-  
+
   .featured-image-wrapper .swiper-button-next,
   .featured-image-wrapper .swiper-button-prev {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
   }
-  
-  .featured-image-wrapper .swiper-button-next::after,
-  .featured-image-wrapper .swiper-button-prev::after {
-    font-size: 1rem;
-  }
-  
-  .collection-swiper {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
-  }
-  
+
   .product-image-wrapper {
-    height: 300px;
+    height: 280px;
   }
 }
 
 @media (max-width: 480px) {
   .featured-image-wrapper.swiper {
     height: 350px;
-    border-radius: 12px;
   }
-  
+
+  .featured-image-wrapper .swiper-pagination {
+    bottom: 10px !important;
+  }
+
   .product-image-wrapper {
-    height: 250px;
-  }
-  
-  .product-name {
-    font-size: 1.1rem;
+    height: 220px;
   }
 }
