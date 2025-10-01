@@ -203,3 +203,53 @@
   text-align: center;
   margin-top: var(--space-lg);
 }
+
+/* ===================================
+    RESPONSIVIDADE - FEATURED SNEAKER MOBILE
+   =================================== */
+
+@media (max-width: 768px) {
+  .featured-sneaker-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+  
+  .featured-image-wrapper.swiper {
+    height: 400px;
+  }
+  
+  .featured-image-wrapper .swiper-button-next,
+  .featured-image-wrapper .swiper-button-prev {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .featured-image-wrapper .swiper-button-next::after,
+  .featured-image-wrapper .swiper-button-prev::after {
+    font-size: 1rem;
+  }
+  
+  .collection-swiper {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  
+  .product-image-wrapper {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-image-wrapper.swiper {
+    height: 350px;
+    border-radius: 12px;
+  }
+  
+  .product-image-wrapper {
+    height: 250px;
+  }
+  
+  .product-name {
+    font-size: 1.1rem;
+  }
+}
