@@ -31,22 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const discount = product.precoOriginal ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
         const discountTagHTML = discount > 0 ? `<span class="discount-tag">-${discount}%</span>` : '';
 
+        // --- CAMINHOS DAS IMAGENS CORRIGIDOS AQUI ---
+        const imageUrl = `/${product.imagemUrl}`;
+
         const productHTML = `
             <div class="product-detail-grid">
                 <div class="product-images">
                     <div class="thumbnail-gallery">
                         <div class="thumbnail-item active">
-                            <img src="${product.imagemUrl}" alt="Thumbnail de ${product.nome}">
+                            <img src="${imageUrl}" alt="Thumbnail de ${product.nome}">
                         </div>
                     </div>
                     <div class="main-image-container">
-                        <img src="${product.imagemUrl}" alt="${product.nome}" id="main-product-image">
+                        <img src="${imageUrl}" alt="${product.nome}" id="main-product-image">
                     </div>
                 </div>
 
                 <div class="product-info">
                     <div class="breadcrumbs">
-                        <a href="../../index.html">Página Inicial</a> / <a href="../../catalogo/HTML/catalogo.html">Catálogo</a> / <span>${product.nome}</span>
+                        <a href="/index.html">Página Inicial</a> / <a href="/FRONT/catalogo/HTML/catalogo.html">Catálogo</a> / <span>${product.nome}</span>
                     </div>
                     <h1>${product.nome}</h1>
 
@@ -104,12 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.innerHTML = products.map(product => {
             const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
             const discountPercentage = hasDiscount ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
+            
+            // --- CAMINHOS DE IMAGEM E LINK CORRIGIDOS AQUI ---
+            const imageUrl = `/${product.imagemUrl}`;
+            const productUrl = `/FRONT/produto/HTML/produto.html?id=${product.id}`;
 
             return `
             <div class="swiper-slide">
-                <a href="./produto.html?id=${product.id}" class="related-product-card">
+                <a href="${productUrl}" class="related-product-card">
                     <div class="related-product-image-wrapper">
-                        <img src="${product.imagemUrl}" alt="${product.nome}">
+                        <img src="${imageUrl}" alt="${product.nome}">
                         ${hasDiscount ? `<div class="related-discount-badge"><i class="fas fa-arrow-down"></i> ${discountPercentage}%</div>` : ''}
                     </div>
                     <div class="related-product-info">
@@ -161,11 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await axios.get(`${API_URL}/${productId}`);
                 const product = response.data;
     
+                // --- CAMINHO DA IMAGEM CORRIGIDO PARA O CARRINHO ---
                 const productToAdd = {
                     id: product.id.toString(),
                     name: product.nome,
                     price: product.preco,
-                    image: product.imagemUrl,
+                    image: `/${product.imagemUrl}`,
                     size: size
                 };
     
