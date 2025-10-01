@@ -1,4 +1,6 @@
--- Apagar dados existentes para garantir um estado limpo (exceto usuários)
+-- Apagar dados existentes na ORDEM CORRETA para evitar erros de constraint
+DELETE FROM itens_pedido;
+DELETE FROM pedidos;
 DELETE FROM produtos;
 DELETE FROM categorias;
 DELETE FROM marcas;
@@ -9,7 +11,7 @@ INSERT INTO marcas (id, nome) VALUES (1, 'Nike'), (2, 'Air Jordan'), (3, 'Adidas
 -- Inserir Categorias
 INSERT INTO categorias (id, nome) VALUES (1, 'Air Max 95'), (2, 'Air Max DN'), (3, 'Air Max TN'), (4, 'Dunk'), (5, 'Jordan'), (6, 'Outros') ON DUPLICATE KEY UPDATE nome=nome;
 
--- Inserir Produtos com os caminhos originais
+-- Inserir Produtos com os caminhos de imagem corretos para o servidor
 INSERT INTO produtos (id, nome, descricao, preco, preco_original, imagem_url, estoque, marca_id, categoria_id) VALUES
 (1, 'Air Max 95 CDG "Branco"', 'Colaboração icônica com a Comme des Garçons, reinventando o clássico Air Max 95 com um design desconstrutído e materiais premium para um visual arrojado e sofisticado.', 899.99, 1199.99, 'FRONT/inicio/IMG/recentes/95cdgBranco.webp', 10, 1, 1),
 (2, 'Air Max 95 CDG "Cinza/Preto"', 'Estilo e conforto em um design clássico reinventado pela Comme des Garçons. A paleta de cores neutras destaca a construção única e os detalhes exclusivos da colaboração.', 949.99, 1249.99, 'FRONT/inicio/IMG/recentes/95cdgCinzaPreto.webp', 10, 1, 1),
