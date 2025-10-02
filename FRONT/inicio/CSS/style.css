@@ -346,7 +346,7 @@
 
     .hero-background {
         height: 50vh; /* A área da imagem ocupa 50% da altura da tela */
-        top: var(--header-height); /* Posiciona abaixo do cabeçalho */
+        top: 0; /* <<< ALTERAÇÃO AQUI: A imagem começa no topo da tela */
         bottom: auto;
         right: auto;
     }
