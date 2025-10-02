@@ -1,51 +1,54 @@
 /* ===================================================
-    CSS/recentes.css - Estilos FINAIS das Coleções
+    CSS/recentes.css - Estilos MOBILE FIRST
    =================================================== */
 
 /* --- Layout Geral das Seções de Coleção --- */
 .collection-section {
-  padding-top: var(--space-lg);
-  padding-bottom: var(--space-lg);
+  padding: var(--space-xl) 0;
+  background: var(--background);
 }
 
 .collection-section .section-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
   margin-bottom: var(--space-xl);
+  text-align: center;
+  padding: 0 var(--space-md);
 }
 
 /* --- Títulos das Seções --- */
 .section-titleRECEM {
-  font-size: 5rem;
+  font-size: clamp(2.5rem, 10vw, 3.5rem);
   text-align: center;
-  margin-bottom: var(--space-lg);
-  padding: 20px;
-  color: rgb(255, 255, 255);
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.1;
 }
 
-/* --- Botões de Navegação dos Carrosséis --- */
-.collection-nav button,
+/* --- Botões de Navegação Mobile --- */
 [class*="collection-prev-"],
 [class*="collection-next-"] {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border-color);
   border-radius: 50%;
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.collection-nav button:hover,
-[class*="collection-prev-"]:hover,
-[class*="collection-next-"]:hover {
+[class*="collection-prev-"]:hover:not(.swiper-button-disabled),
+[class*="collection-next-"]:hover:not(.swiper-button-disabled) {
   background-color: var(--primary);
   border-color: var(--primary);
   color: #fff;
 }
 
-.collection-nav button.swiper-button-disabled,
 [class*="collection-prev-"].swiper-button-disabled,
 [class*="collection-next-"].swiper-button-disabled {
   opacity: 0.3;
@@ -57,116 +60,169 @@
   gap: var(--space-sm);
 }
 
-/* --- Estrutura dos Carrosséis (Swiper) --- */
+/* --- Estrutura dos Carrosséis Mobile --- */
 .swiper[class*="collection-swiper"] {
   width: 100%;
-  padding-left: calc((100% - 1300px) / 2 + 1.5rem);
-  padding-right: calc((100% - 1300px) / 2 + 1.5rem);
-  padding-bottom: var(--space-xl);
+  padding: 0 var(--space-md) var(--space-xl);
 }
 
 .swiper[class*="collection-swiper"] .swiper-slide {
-  width: 320px !important;
+  width: 280px !important;
+  height: auto;
 }
 
+/* --- Product Cards Mobile --- */
+.product-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 30px rgba(255, 122, 0, 0.1);
+}
+
+.product-image-wrapper {
+  height: 200px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform var(--transition-normal);
+}
+
+.product-card:hover .product-image-wrapper img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  padding: var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.product-brand {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.product-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-top: auto;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  margin-top: var(--space-sm);
+  background: var(--text-primary);
+  color: var(--background);
+  border: 2px solid var(--text-primary);
+}
+
+.add-to-cart-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* Swiper Scrollbar Mobile */
 .swiper[class*="collection-swiper"] .swiper-scrollbar {
   background: var(--surface);
-  height: 4px !important;
+  height: 3px !important;
+  margin-top: var(--space-md);
 }
 
 .swiper[class*="collection-swiper"] .swiper-scrollbar-drag {
   background: var(--primary);
 }
 
-/* ===== ESTILOS DO CARD DE PRODUTO (Baseado na sua referência) ===== */
+/* ===== RESPONSIVE ENHANCEMENTS ===== */
 
-.product-card {
-  /* Usando var(--surface) para consistência, mas poderia ser transparent */
-  background-color: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border-color: var(--primary);
-}
-
-.product-image-wrapper {
-  height: 280px; /* Altura ajustada para um bom enquadramento */
-  background-color: #f0f0f0; /* Fundo claro para as imagens */
-  padding: var(--space-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.product-image-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Usando contain para garantir que o tênis inteiro apareça */
-  transition: transform 0.4s ease;
-}
-
-.product-card:hover .product-image-wrapper img {
-  transform: scale(1.05); /* Animação de zoom sutil */
-}
-
-.product-info {
-  padding: var(--space-md);
-  background-color: var(--surface);
-}
-
-.product-brand {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.product-name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  margin: 0.25rem 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.product-price {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-/* ===================================
-    RESPONSIVIDADE - CARROSSÉIS MOBILE
-   =================================== */
-
-/* Mobile Small (até 480px) */
-@media (max-width: 480px) {
-  .collection-section {
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-lg);
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .collection-section .section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: left;
   }
 
   .swiper[class*="collection-swiper"] {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-bottom: var(--space-lg);
+    padding-left: calc((100% - 1300px) / 2 + 1.5rem);
+    padding-right: calc((100% - 1300px) / 2 + 1.5rem);
   }
 
   .swiper[class*="collection-swiper"] .swiper-slide {
-    width: 280px !important;
+    width: 300px !important;
   }
 
   .product-image-wrapper {
-    height: 220px;
+    height: 250px;
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .swiper[class*="collection-swiper"] .swiper-slide {
+    width: 320px !important;
+  }
+
+  .product-image-wrapper {
+    height: 280px;
+  }
+}
+
+/* Mobile Small (480px and down) */
+@media (max-width: 480px) {
+  .collection-section {
+    padding: var(--space-lg) 0;
+  }
+
+  .section-titleRECEM {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .swiper[class*="collection-swiper"] .swiper-slide {
+    width: 260px !important;
+  }
+
+  .product-image-wrapper {
+    height: 180px;
     padding: var(--space-sm);
   }
 
@@ -175,45 +231,15 @@
   }
 
   .product-name {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .product-price {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .add-to-cart-btn {
-    padding: 0.7rem 1rem;
-    font-size: 0.8rem;
-  }
-}
-
-/* Mobile (até 768px) */
-@media (max-width: 768px) {
-  .collection-section {
-    padding-top: var(--space-xl);
-    padding-bottom: var(--space-xl);
-  }
-
-  .swiper[class*="collection-swiper"] {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  .collection-nav button {
-    width: 44px;
-    height: 44px;
-  }
-
-  .product-image-wrapper {
-    height: 250px;
-  }
-}
-
-/* Tablet (769px a 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .swiper[class*="collection-swiper"] {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+    padding: 0.8rem var(--space-sm);
+    font-size: 0.85rem;
   }
 }
