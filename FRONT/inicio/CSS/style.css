@@ -328,47 +328,38 @@
   outline: none;
 }
 
-
 /* ==========================================================
-    RESPONSIVIDADE - CÓDIGO CORRIGIDO
+    RESPONSIVIDADE - VERSÃO FINAL E DIRETA
    ========================================================== */
 
 /* Estilos para telas menores que 1024px (tablets e celulares) */
 @media (max-width: 1024px) {
     /* --- SEÇÃO HERO --- */
+    /* Esconde os elementos de fundo que são usados no desktop */
+    .hero-background, .hero-bg-image {
+        display: none !important;
+    }
+
     .hero {
-        height: 80vh; /* A seção ocupa 80% da altura da tela */
+        height: 80vh;
         min-height: 600px;
-        align-items: flex-end; /* Alinha o conteúdo de texto na base */
-        justify-content: center; /* Centraliza o conteúdo horizontalmente */
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
         text-align: center;
-    }
-
-    .hero-background {
-        height: 50vh; /* A área da imagem ocupa 50% da altura da tela */
-        top: 0; /* <<< ALTERAÇÃO AQUI: A imagem começa no topo da tela */
-        bottom: auto;
-        right: auto;
-    }
-
-    .hero-bg-image {
-        background-size: contain; /* Mostra a imagem inteira sem cortar */
-        background-position: center bottom; /* Alinha a imagem na parte de baixo do seu container */
-        transform: none;
-    }
-
-    .hero-background::after {
-        /* Gradiente vem de baixo para cima, para suavizar a transição com o conteúdo */
-        background: linear-gradient(to top, var(--background) 20%, transparent 100%);
+        padding: 0 1.5rem var(--space-xl);
+        padding-top: var(--header-height); /* Adiciona espaço no topo para o conteúdo não ficar atrás do header */
+        
+        /* Aplica a imagem e o gradiente diretamente aqui */
+        background-image: linear-gradient(to top, var(--background) 20%, transparent 100%), url("../IMG/tiger.png");
+        background-size: contain;
+        background-position: center top; /* Imagem posicionada no topo da seção */
+        background-repeat: no-repeat;
     }
 
     .hero-content {
         position: relative;
         width: 100%;
-        padding: 0 1.5rem var(--space-xl); /* Adiciona espaçamento na base */
-        left: auto;
-        bottom: auto;
-        transform: none;
     }
 
     .hero-title {
@@ -378,7 +369,7 @@
     .hero-subtitle {
         font-size: clamp(0.9rem, 4vw, 1rem);
         max-width: 450px;
-        margin: 1rem auto 1.5rem; /* Centraliza a margem */
+        margin: 1rem auto 1.5rem;
     }
 
     .hero-socials {
