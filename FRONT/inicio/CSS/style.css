@@ -10,22 +10,28 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
+
 .hero-content {
   position: relative;
   z-index: 2;
   padding-left: 10%;
+  width: 100%;
 }
+
 .hero-title {
   font-size: clamp(3rem, 10vw, 7rem);
   line-height: 1;
 }
+
 .hero-subtitle {
   font-size: 1.1rem;
   color: var(--text-secondary);
   max-width: 450px;
   margin: var(--space-md) 0 var(--space-lg);
 }
+
 .hero-background {
   position: absolute;
   top: 0;
@@ -34,6 +40,7 @@
   height: 100%;
   z-index: 0;
 }
+
 .hero-bg-image {
   background-image: url("../IMG/tiger.png");
   width: 100%;
@@ -43,6 +50,7 @@
   background-repeat: no-repeat;
   transform: scale(1.05);
 }
+
 .hero-background::after {
   content: "";
   position: absolute;
@@ -52,6 +60,7 @@
   height: 100%;
   background: linear-gradient(90deg, var(--background) 30%, transparent 70%);
 }
+
 .hero-socials {
   position: absolute;
   bottom: var(--space-lg);
@@ -61,10 +70,12 @@
   flex-direction: column;
   gap: var(--space-md);
 }
+
 .hero-socials a {
   color: var(--text-secondary);
   transition: var(--transition-fast);
 }
+
 .hero-socials a:hover {
   color: var(--primary);
   transform: scale(1.2);
@@ -76,7 +87,9 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
   align-items: center;
+  width: 100%;
 }
+
 .featured-image-wrapper.swiper {
   position: relative;
   width: 100%;
@@ -87,11 +100,13 @@
   overflow: hidden;
   display: flex;
 }
+
 .featured-sneaker-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .featured-image-wrapper .swiper-button-next,
 .featured-image-wrapper .swiper-button-prev {
   color: var(--primary);
@@ -102,16 +117,19 @@
   backdrop-filter: blur(5px);
   transition: var(--transition-fast);
 }
+
 .featured-image-wrapper .swiper-button-next:hover,
 .featured-image-wrapper .swiper-button-prev:hover {
   background-color: var(--primary);
   color: #fff;
 }
+
 .featured-image-wrapper .swiper-button-next::after,
 .featured-image-wrapper .swiper-button-prev::after {
   font-size: 1.2rem;
   font-weight: 900;
 }
+
 .featured-image-wrapper .swiper-pagination {
   position: absolute;
   bottom: 15px !important;
@@ -120,12 +138,14 @@
   z-index: 10;
   width: auto;
 }
+
 .featured-image-wrapper .swiper-pagination-bullet {
   background-color: var(--text-secondary);
   width: 10px;
   height: 10px;
   opacity: 0.7;
 }
+
 .featured-image-wrapper .swiper-pagination-bullet-active {
   background-color: var(--primary);
   opacity: 1;
@@ -138,7 +158,10 @@
   padding-right: 0;
   padding-top: var(--space-xxl);
   padding-bottom: var(--space-xxl);
+  width: 100%;
+  overflow: hidden;
 }
+
 .collection-section .section-header {
   display: flex;
   justify-content: space-between;
@@ -146,7 +169,9 @@
   margin-bottom: var(--space-xl);
   padding-left: calc((100% - 1300px) / 2 + 1.5rem);
   padding-right: calc((100% - 1300px) / 2 + 1.5rem);
+  width: 100%;
 }
+
 .collection-nav button {
   width: 50px;
   height: 50px;
@@ -156,28 +181,35 @@
   font-size: 1.1rem;
   transition: all var(--transition-fast);
 }
+
 .collection-nav button:hover {
   background-color: var(--primary);
   border-color: var(--primary);
   color: #fff;
 }
+
 .collection-nav button.swiper-button-disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
 .collection-nav {
   display: flex;
   gap: var(--space-sm);
 }
+
 .collection-swiper {
   padding-left: calc((100% - 1300px) / 2 + 1.5rem);
   padding-right: calc((100% - 1300px) / 2 + 1.5rem);
   padding-bottom: var(--space-xl);
+  width: 100%;
 }
+
 .collection-swiper .swiper-slide {
   width: 290px;
   height: auto;
 }
+
 .collection-section .product-card {
   background-color: var(--surface);
   border: 1px solid var(--border-color);
@@ -187,6 +219,7 @@
   flex-direction: column;
   height: 100%;
 }
+
 .collection-section .product-image-wrapper {
   background-color: #eaeaea;
   padding: 0;
@@ -196,24 +229,28 @@
   justify-content: center;
   overflow: hidden;
 }
+
 .collection-section .product-image-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
 }
+
 .collection-section .product-info {
   padding: var(--space-md);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
+
 .collection-section .product-brand {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text-secondary);
   text-transform: uppercase;
 }
+
 .collection-section .product-name {
   font-family: var(--font-body);
   font-weight: 600;
@@ -224,12 +261,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .collection-section .product-price {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: var(--space-md);
 }
+
 .collection-section .product-info .btn {
   width: 100%;
   justify-content: center;
@@ -238,6 +277,7 @@
   color: var(--background);
   border: 2px solid var(--text-primary);
 }
+
 .collection-section .product-info .btn:hover {
   background-color: var(--primary);
   border-color: var(--primary);
@@ -245,10 +285,12 @@
   transform: none;
   box-shadow: none;
 }
+
 .collection-swiper .swiper-scrollbar {
   background: var(--surface);
   height: 4px !important;
 }
+
 .collection-swiper .swiper-scrollbar-drag {
   background: var(--primary);
 }
@@ -256,18 +298,24 @@
 /* ===== CREW SECTION ===== */
 .crew {
   background-color: var(--surface);
+  width: 100%;
+  overflow: hidden;
 }
+
 .crew-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
   align-items: center;
+  width: 100%;
 }
+
 .crew-image-stack {
   position: relative;
   width: 100%;
   height: 450px;
 }
+
 .image-card {
   position: absolute;
   width: 280px;
@@ -277,21 +325,26 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   transition: var(--transition-slow);
 }
+
 .image-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+
 .image-card:nth-child(1) {
   transform: rotate(-10deg) translate(-30%, 0);
 }
+
 .image-card:nth-child(2) {
   transform: rotate(5deg) translate(0, 20%);
   z-index: 2;
 }
+
 .image-card:nth-child(3) {
   transform: rotate(15deg) translate(30%, 0);
 }
+
 .crew-content:hover .image-card {
   transform: rotate(0) translate(0, 0) scale(1.05);
 }
@@ -299,14 +352,19 @@
 /* ===== NEWSLETTER ===== */
 .newsletter {
   text-align: center;
+  width: 100%;
+  overflow: hidden;
 }
+
 .newsletter h2 {
   font-size: 3rem;
 }
+
 .newsletter p {
   color: var(--text-secondary);
   margin-bottom: var(--space-lg);
 }
+
 #newsletterForm {
   display: flex;
   max-width: 550px;
@@ -314,7 +372,9 @@
   background-color: var(--surface);
   padding: var(--space-xs);
   border-radius: 4px;
+  width: 100%;
 }
+
 #newsletterForm input {
   flex: 1;
   padding: 0.9rem;
@@ -323,192 +383,261 @@
   background: transparent;
   color: var(--text-primary);
   font-size: 1rem;
+  width: 100%;
 }
+
 #newsletterForm input:focus {
   outline: none;
 }
 
 /* ==========================================================
-    RESPONSIVIDADE MOBILE - CORRIGIDA PARA MANTER LAYOUT DESKTOP
+    RESPONSIVIDADE MOBILE - CORREÇÃO DA BARRA PRETA
    ========================================================== */
 
 /* Mobile (até 768px) */
 @media (max-width: 768px) {
-  /* --- HERO SECTION MOBILE --- */
+  /* CORREÇÃO GERAL - ELIMINAR BARRA PRETA */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    position: relative;
+  }
+
+  body {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 1rem !important;
+    margin: 0 auto !important;
+  }
+
+  /* --- HERO SECTION MOBILE - CORRIGIDA --- */
   .hero {
-    height: 60vh;
-    min-height: 500px;
+    height: 100vh;
+    min-height: 100vh;
     align-items: flex-start;
     padding-top: var(--header-height);
-    background: linear-gradient(to bottom, var(--background) 0%, transparent 30%), 
-                url("../IMG/tiger.png") center top/contain no-repeat;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
+    width: 100vw;
+    left: 0;
+    right: 0;
   }
 
   .hero-content {
-    padding-left: 0;
-    text-align: center;
+    padding-left: 1.5rem;
+    text-align: left;
     width: 100%;
-    padding: 0 var(--space-md);
-    margin-top: 40vh; /* Posiciona o conteúdo abaixo da imagem */
+    position: relative;
+    z-index: 2;
+    margin-top: 15vh;
+    max-width: 100%;
   }
 
   .hero-title {
-    font-size: clamp(2rem, 8vw, 3rem);
+    font-size: clamp(2.8rem, 14vw, 4.5rem);
+    line-height: 0.9;
     margin-bottom: var(--space-sm);
+    background: linear-gradient(45deg, var(--text-primary), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    width: 100%;
   }
 
   .hero-subtitle {
-    font-size: 0.9rem;
-    max-width: 300px;
-    margin: 0 auto var(--space-lg);
+    font-size: 1rem;
+    max-width: 320px;
+    margin: var(--space-md) 0 var(--space-lg);
     line-height: 1.5;
+    color: var(--text-secondary);
+    font-weight: 500;
+    width: 100%;
   }
 
+  /* Background dominando toda a tela SEM BARRAS PRETAS */
   .hero-background {
-    display: none; /* Remove o background original */
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100%;
+    z-index: 0;
+    right: 0;
+  }
+
+  .hero-bg-image {
+    background-image: url("../IMG/tiger.png");
+    width: 100vw !important;
+    height: 100%;
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+    transform: scale(1);
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+
+  .hero-background::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100%;
+    background: linear-gradient(90deg, var(--background) 15%, transparent 90%),
+                linear-gradient(180deg, var(--background) 5%, transparent 30%);
+    right: 0;
   }
 
   .hero-socials {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    flex-direction: row;
-    justify-content: center;
-    gap: var(--space-lg);
-    margin-top: var(--space-lg);
+    position: absolute;
+    bottom: var(--space-xl);
+    left: 1.5rem;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
   }
 
-  /* --- FEATURED SNEAKER MOBILE --- */
+  /* --- SEÇÕES SECUNDÁRIAS - CORRIGIDAS --- */
+  .featured-sneaker {
+    padding: var(--space-xl) 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
   .featured-sneaker-content {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
     text-align: center;
+    width: 100%;
   }
 
   .featured-image-wrapper.swiper {
     height: 300px;
-    order: -1; /* Coloca a imagem antes do texto */
+    order: -1;
+    width: 100%;
   }
 
-  /* --- COLLECTION SECTION MOBILE --- */
+  .collection-section {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+    width: 100%;
+  }
+
   .collection-section .section-header {
     flex-direction: column;
     align-items: center;
     gap: var(--space-lg);
-    padding: 0 var(--space-md);
+    padding: 0 1rem !important;
     text-align: center;
+    width: 100%;
   }
 
   .collection-swiper {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: 100%;
   }
 
   .collection-swiper .swiper-slide {
     width: 260px;
   }
 
-  /* --- CREW SECTION MOBILE --- */
+  .crew {
+    padding: var(--space-xl) 0;
+    width: 100%;
+  }
+
   .crew-content {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
     text-align: center;
+    width: 100%;
   }
 
-  .crew-image-stack {
-    height: 300px;
-    order: -1;
+  .newsletter {
+    padding: var(--space-xl) 0;
+    width: 100%;
   }
 
-  .image-card {
-    width: 180px;
-    height: 240px;
-  }
-
-  .image-card:nth-child(1) {
-    transform: rotate(-8deg) translate(-30px, 0);
-  }
-
-  .image-card:nth-child(2) {
-    transform: rotate(2deg) translate(0, 20px);
-  }
-
-  .image-card:nth-child(3) {
-    transform: rotate(8deg) translate(30px, 0);
-  }
-
-  /* --- NEWSLETTER MOBILE --- */
   #newsletterForm {
-    flex-direction: column;
-    gap: var(--space-sm);
-    background: transparent;
-  }
-
-  #newsletterForm input {
-    background: var(--surface);
-    border-radius: 4px;
-    text-align: center;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
 /* Mobile Pequeno (até 480px) */
 @media (max-width: 480px) {
   .hero {
-    height: 55vh;
-    min-height: 450px;
+    height: 100vh;
+    min-height: 100vh;
   }
 
   .hero-content {
-    margin-top: 35vh;
+    padding-left: 1rem;
+    margin-top: 12vh;
   }
 
-  .featured-image-wrapper.swiper {
-    height: 250px;
+  .hero-title {
+    font-size: clamp(2.2rem, 12vw, 3.5rem);
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    max-width: 280px;
+  }
+
+  .hero-background::after {
+    background: linear-gradient(90deg, var(--background) 10%, transparent 85%),
+                linear-gradient(180deg, var(--background) 3%, transparent 25%);
   }
 
   .collection-swiper .swiper-slide {
     width: 240px;
   }
+}
 
-  .collection-section .product-image-wrapper {
-    height: 200px;
+/* iPhone XR específico - 414px width */
+@media (max-width: 414px) {
+  .hero-content {
+    padding-left: 1rem;
   }
-
-  .crew-image-stack {
-    height: 250px;
+  
+  .hero-title {
+    font-size: clamp(2.5rem, 13vw, 4rem);
   }
-
-  .image-card {
-    width: 150px;
-    height: 200px;
+  
+  .hero-subtitle {
+    font-size: 0.9rem;
+    max-width: 300px;
   }
 }
 
-/* Tablet (769px a 1024px) - Garante que o desktop volte ao normal */
+/* Tablet (769px a 1024px) */
 @media (min-width: 769px) {
   .hero {
     height: 100vh;
     min-height: 700px;
     align-items: center;
-    background: none;
   }
 
   .hero-content {
     padding-left: 10%;
-    text-align: left;
     margin-top: 0;
   }
 
-  .hero-background {
-    display: block;
-  }
-
-  .hero-socials {
-    position: absolute;
-    flex-direction: column;
-    justify-content: flex-start;
-    bottom: var(--space-lg);
-    left: var(--space-md);
-    margin-top: 0;
+  .hero-title {
+    background: none;
+    -webkit-text-fill-color: initial;
   }
 }
