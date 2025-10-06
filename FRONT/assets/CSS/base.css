@@ -38,51 +38,6 @@
   --header-height: 80px;
 }
 
-/* ===== SAFE AREA UNIVERSAL ===== */
-.safe-area {
-  padding-top: env(safe-area-inset-top);
-  padding-right: env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-top: constant(safe-area-inset-top);
-  padding-right: constant(safe-area-inset-right);
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-left: constant(safe-area-inset-left);
-}
-
-.safe-area-top {
-  padding-top: env(safe-area-inset-top);
-  padding-top: constant(safe-area-inset-top);
-}
-
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-bottom: constant(safe-area-inset-bottom);
-}
-
-.safe-area-horizontal {
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  padding-left: constant(safe-area-inset-left);
-  padding-right: constant(safe-area-inset-right);
-}
-
-/* Fallback para Android/Browsers sem suporte */
-@supports not (padding-top: env(safe-area-inset-top)) {
-  .safe-area {
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-  
-  .safe-area-top {
-    padding-top: 25px;
-  }
-  
-  .safe-area-bottom {
-    padding-bottom: 25px;
-  }
-}
-
 /* ===== BASE & RESET ===== */
 * {
   margin: 0;
@@ -94,12 +49,10 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   position: relative;
-  height: 100%;
 }
 
 html {
   scroll-behavior: smooth;
-  height: -webkit-fill-available;
 }
 
 body {
@@ -111,11 +64,12 @@ body {
   overflow-x: hidden;
   width: 100%;
   position: relative;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-display);
   line-height: 1.1;
   letter-spacing: 1px;
@@ -217,8 +171,6 @@ button {
   justify-content: center;
   align-items: center;
   transition: opacity 0.5s ease-out;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .loader-logo {
@@ -236,13 +188,21 @@ button {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
 }
 
 /* ===== HEADER ===== */
@@ -256,8 +216,6 @@ button {
   background-color: transparent;
   transition: background-color var(--transition-normal),
     backdrop-filter var(--transition-normal);
-  padding-top: env(safe-area-inset-top);
-  padding-top: constant(safe-area-inset-top);
 }
 
 .main-header.scrolled {
@@ -367,6 +325,7 @@ button {
   transform: scale(1.3);
 }
 
+/* Estilos para os novos ícones do header de perfil e logout */
 .nav-icon-btn {
   background: none;
   border: none;
@@ -390,8 +349,6 @@ button {
   border-top: 1px solid var(--border-color);
   width: 100%;
   overflow: hidden;
-  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
-  padding-bottom: calc(var(--space-md) + constant(safe-area-inset-bottom));
 }
 
 .footer-grid {
@@ -487,10 +444,6 @@ button {
   flex-direction: column;
   transform: translateX(100%);
   transition: transform var(--transition-slow);
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-top: constant(safe-area-inset-top);
-  padding-bottom: constant(safe-area-inset-bottom);
 }
 
 .cart-modal.active .modal-content {
@@ -685,7 +638,7 @@ body.nav-open::before {
   color: #fff;
 }
 
-/* ===== ESTILOS DO MODAL DO CARRINHO ===== */
+/* ===== ESTILOS DO MODAL DO CARRINHO (ADICIONAR NO FINAL) ===== */
 .cart-item {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -776,8 +729,6 @@ input[type=number]::-webkit-outer-spin-button {
 .modal-footer {
   padding: var(--space-md);
   border-top: 1px solid var(--border-color);
-  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
-  padding-bottom: calc(var(--space-md) + constant(safe-area-inset-bottom));
 }
 
 .cart-subtotal {
@@ -798,10 +749,9 @@ input[type=number]::-webkit-outer-spin-button {
 .checkout-btn {
   width: 100%;
   justify-content: center;
-  margin-bottom: env(safe-area-inset-bottom);
-  margin-bottom: constant(safe-area-inset-bottom);
 }
 
+/* Notificação "Adicionado ao Carrinho" */
 .cart-notification {
   position: fixed;
   bottom: 20px;
@@ -814,8 +764,6 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   z-index: 3000;
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  bottom: calc(20px + env(safe-area-inset-bottom));
-  bottom: calc(20px + constant(safe-area-inset-bottom));
 }
 
 .cart-notification.show {
@@ -855,16 +803,6 @@ input[type=number]::-webkit-outer-spin-button {
     padding: 0 1rem;
     width: 100%;
   }
-
-  @supports not (padding-top: env(safe-area-inset-top)) {
-    .main-header {
-      padding-top: 15px;
-    }
-    
-    .cart-notification {
-      bottom: 25px;
-    }
-  }
 }
 
 /* Mobile (até 768px) */
@@ -882,8 +820,6 @@ input[type=number]::-webkit-outer-spin-button {
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
     border-top: 1px solid var(--border-color);
-    padding-top: calc(2rem + env(safe-area-inset-top));
-    padding-top: calc(2rem + constant(safe-area-inset-top));
   }
 
   .main-nav.active {
@@ -945,6 +881,7 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 0.75rem;
   }
 
+  /* CORREÇÃO DA BARRA PRETA - FORÇAR LARGURA TOTAL */
   body, html {
     width: 100% !important;
     max-width: 100% !important;
@@ -966,26 +903,6 @@ input[type=number]::-webkit-outer-spin-button {
     width: 100% !important;
     max-width: 100% !important;
   }
-
-  @supports not (padding-top: env(safe-area-inset-top)) {
-    .main-header {
-      padding-top: 20px;
-      height: calc(var(--header-height) + 20px);
-    }
-    
-    .modal-content {
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
-    
-    .main-footer {
-      padding-bottom: calc(var(--space-md) + 25px);
-    }
-    
-    .cart-notification {
-      bottom: 30px;
-    }
-  }
 }
 
 /* Tablet (769px a 1024px) */
@@ -1004,22 +921,5 @@ input[type=number]::-webkit-outer-spin-button {
 @media (min-width: 1025px) {
   .main-nav {
     display: flex !important;
-  }
-  
-  .main-header {
-    padding-top: 0;
-  }
-  
-  .main-footer {
-    padding-bottom: var(--space-md);
-  }
-  
-  .modal-content {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  
-  .cart-notification {
-    bottom: 20px;
   }
 }

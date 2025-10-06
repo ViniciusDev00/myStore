@@ -6,8 +6,6 @@
 .collection-section {
   padding-top: var(--space-lg);
   padding-bottom: var(--space-lg);
-  width: 100%;
-  overflow: hidden;
 }
 
 .collection-section .section-header {
@@ -15,7 +13,6 @@
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: var(--space-xl);
-  width: 100%;
 }
 
 /* --- Títulos das Seções --- */
@@ -81,7 +78,7 @@
   background: var(--primary);
 }
 
-/* ===== ESTILOS DO CARD DE PRODUTO ===== */
+/* ===== ESTILOS DO CARD DE PRODUTO (Baseado na sua referência) ===== */
 
 .product-card {
   background-color: var(--surface);
@@ -146,13 +143,6 @@
   color: var(--primary);
 }
 
-.add-to-cart-btn {
-  width: 100%;
-  margin-top: var(--space-sm);
-  margin-bottom: env(safe-area-inset-bottom);
-  margin-bottom: constant(safe-area-inset-bottom);
-}
-
 /* ===================================
     RESPONSIVIDADE MOBILE - CORRIGIDA
    =================================== */
@@ -164,8 +154,7 @@
     align-items: center;
     gap: var(--space-lg);
     text-align: center;
-    padding: 0 var(--space-md) !important;
-    width: 100%;
+    padding: 0 var(--space-md);
   }
 
   .section-titleRECEM {
@@ -174,9 +163,8 @@
   }
 
   .swiper[class*="collection-swiper"] {
-    padding-left: var(--space-md) !important;
-    padding-right: var(--space-md) !important;
-    width: 100%;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
   }
 
   .swiper[class*="collection-swiper"] .swiper-slide {
@@ -198,17 +186,6 @@
 
   .product-price {
     font-size: 1.1rem;
-  }
-
-  .add-to-cart-btn {
-    margin-bottom: env(safe-area-inset-bottom);
-    margin-bottom: constant(safe-area-inset-bottom);
-  }
-
-  @supports not (margin-bottom: env(safe-area-inset-bottom)) {
-    .add-to-cart-btn {
-      margin-bottom: 15px;
-    }
   }
 }
 
@@ -236,9 +213,5 @@
   .section-titleRECEM {
     font-size: 5rem;
     text-align: left;
-  }
-
-  .add-to-cart-btn {
-    margin-bottom: 0;
   }
 }

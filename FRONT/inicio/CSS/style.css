@@ -11,8 +11,6 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-  padding-top: calc(var(--header-height) + constant(safe-area-inset-top));
 }
 
 .hero-content {
@@ -393,11 +391,12 @@
 }
 
 /* ==========================================================
-    RESPONSIVIDADE MOBILE - COM SAFE AREA COMPLETA
+    RESPONSIVIDADE MOBILE - CORREÇÃO DA BARRA PRETA
    ========================================================== */
 
 /* Mobile (até 768px) */
 @media (max-width: 768px) {
+  /* CORREÇÃO GERAL - ELIMINAR BARRA PRETA */
   html, body {
     width: 100% !important;
     max-width: 100% !important;
@@ -417,28 +416,22 @@
     margin: 0 auto !important;
   }
 
-  /* --- HERO SECTION MOBILE - COM SAFE AREA --- */
+  /* --- HERO SECTION MOBILE - CORRIGIDA --- */
   .hero {
     height: 100vh;
     min-height: 100vh;
     align-items: flex-start;
-    padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-    padding-top: calc(var(--header-height) + constant(safe-area-inset-top));
+    padding-top: var(--header-height);
     position: relative;
     overflow: hidden;
     margin-bottom: 0;
     width: 100vw;
     left: 0;
     right: 0;
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-bottom: constant(safe-area-inset-bottom);
   }
 
   .hero-content {
-    padding-left: calc(1.5rem + env(safe-area-inset-left));
-    padding-right: calc(1.5rem + env(safe-area-inset-right));
-    padding-left: calc(1.5rem + constant(safe-area-inset-left));
-    padding-right: calc(1.5rem + constant(safe-area-inset-right));
+    padding-left: 1.5rem;
     text-align: left;
     width: 100%;
     position: relative;
@@ -468,6 +461,7 @@
     width: 100%;
   }
 
+  /* Background dominando toda a tela SEM BARRAS PRETAS */
   .hero-background {
     display: block !important;
     position: absolute;
@@ -490,10 +484,6 @@
     position: absolute;
     left: 0;
     right: 0;
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-    padding-left: constant(safe-area-inset-left);
-    padding-right: constant(safe-area-inset-right);
   }
 
   .hero-background::after {
@@ -510,17 +500,15 @@
 
   .hero-socials {
     position: absolute;
-    bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
-    bottom: calc(var(--space-xl) + constant(safe-area-inset-bottom));
-    left: calc(1.5rem + env(safe-area-inset-left));
-    left: calc(1.5rem + constant(safe-area-inset-left));
+    bottom: var(--space-xl);
+    left: 1.5rem;
     z-index: 3;
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
   }
 
-  /* --- SEÇÕES SECUNDÁRIAS - COM SAFE AREA --- */
+  /* --- SEÇÕES SECUNDÁRIAS - CORRIGIDAS --- */
   .featured-sneaker {
     padding: var(--space-xl) 0;
     width: 100%;
@@ -586,28 +574,6 @@
     width: 100%;
     max-width: 100%;
   }
-
-  @supports not (padding-top: env(safe-area-inset-top)) {
-    .hero {
-      padding-top: calc(var(--header-height) + 25px);
-      padding-bottom: 25px;
-    }
-    
-    .hero-content {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-    
-    .hero-socials {
-      bottom: calc(var(--space-xl) + 25px);
-      left: 1.5rem;
-    }
-    
-    .hero-bg-image {
-      padding-left: 0;
-      padding-right: 0;
-    }
-  }
 }
 
 /* Mobile Pequeno (até 480px) */
@@ -618,10 +584,7 @@
   }
 
   .hero-content {
-    padding-left: calc(1rem + env(safe-area-inset-left));
-    padding-right: calc(1rem + env(safe-area-inset-right));
-    padding-left: calc(1rem + constant(safe-area-inset-left));
-    padding-right: calc(1rem + constant(safe-area-inset-right));
+    padding-left: 1rem;
     margin-top: 12vh;
   }
 
@@ -642,22 +605,12 @@
   .collection-swiper .swiper-slide {
     width: 240px;
   }
-
-  @supports not (padding-top: env(safe-area-inset-top)) {
-    .hero-content {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
 }
 
 /* iPhone XR específico - 414px width */
 @media (max-width: 414px) {
   .hero-content {
-    padding-left: calc(1rem + env(safe-area-inset-left));
-    padding-right: calc(1rem + env(safe-area-inset-right));
-    padding-left: calc(1rem + constant(safe-area-inset-left));
-    padding-right: calc(1rem + constant(safe-area-inset-right));
+    padding-left: 1rem;
   }
   
   .hero-title {
@@ -686,15 +639,5 @@
   .hero-title {
     background: none;
     -webkit-text-fill-color: initial;
-  }
-  
-  .hero {
-    padding-top: var(--header-height);
-    padding-bottom: 0;
-  }
-  
-  .hero-bg-image {
-    padding-left: 0;
-    padding-right: 0;
   }
 }

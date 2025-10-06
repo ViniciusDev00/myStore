@@ -17,14 +17,14 @@
   border-radius: 16px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  display: flex;
+  display: flex; /* Garante que o contêiner do slide ocupe todo o espaço */
 }
 
 /* Imagens dentro do Carrossel */
 .featured-sneaker-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Faz a imagem cobrir todo o slide sem distorcer */
 }
 
 /* Estilos para a Navegação do Carrossel (Setas) */
