@@ -8,41 +8,63 @@
   align-items: center;
 }
 
+/* Text Content - Centraliza o conteúdo visualmente */
+.featured-sneaker-content .text-content {
+    padding-right: var(--space-md);
+}
+.featured-sneaker-content .section-title {
+    font-size: 4rem; /* Um pouco maior para destaque */
+    line-height: 1.1;
+    margin-bottom: var(--space-sm);
+}
+.featured-sneaker-content .hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+
 /* Container do Carrossel */
 .featured-image-wrapper.swiper {
   position: relative;
   width: 100%;
   min-width: 0;
-  background-color: #1c1c1c;
+  background-color: var(--surface); /* Fundo sutil */
   border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  /* Sombra mais proeminente */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); 
   overflow: hidden;
-  display: flex; /* Garante que o contêiner do slide ocupe todo o espaço */
+  display: flex;
+  height: 500px; /* Altura fixa para impacto visual */
 }
 
 /* Imagens dentro do Carrossel */
 .featured-sneaker-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Faz a imagem cobrir todo o slide sem distorcer */
+  object-fit: contain; /* Mostra o tênis inteiro */
+  padding: var(--space-lg); /* Padding para não tocar nas bordas */
+  background-color: #1c1c1c; /* Fundo escuro para a imagem */
 }
 
 /* Estilos para a Navegação do Carrossel (Setas) */
 .featured-image-wrapper .swiper-button-next,
 .featured-image-wrapper .swiper-button-prev {
-  color: var(--primary);
-  background-color: rgba(10, 10, 10, 0.5);
+  color: #fff;
+  background-color: var(--primary); /* Seta com cor primária */
   width: 50px;
   height: 50px;
   border-radius: 50%;
   backdrop-filter: blur(5px);
   transition: var(--transition-fast);
+  opacity: 0.8;
 }
 
 .featured-image-wrapper .swiper-button-next:hover,
 .featured-image-wrapper .swiper-button-prev:hover {
-  background-color: var(--primary);
-  color: #fff;
+  background-color: var(--primary-light);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .featured-image-wrapper .swiper-button-next::after,
@@ -53,7 +75,6 @@
 
 /* Estilos para a Paginação do Carrossel (Pontos) */
 .featured-image-wrapper .swiper-pagination {
-  position: absolute;
   bottom: 15px !important;
   left: 50%;
   transform: translateX(-50%);
@@ -73,10 +94,11 @@
   opacity: 1;
 }
 
-/* ===== COLLECTION SECTION ("Recém-Chegados") ===== */
+/* ===== COLLECTION SECTION ("Recém-Chegados") - REESTILIZADO ===== */
 
 .collection-section {
-  background-color: var(--surface);
+  /* Fundo sutilmente diferente ou padrão para alternância */
+  background-color: var(--surface); 
   padding-top: var(--space-xxl);
   padding-bottom: var(--space-xxl);
 }
@@ -88,94 +110,77 @@
   margin-bottom: var(--space-xl);
 }
 
-.collection-nav button {
-  width: 50px;
-  height: 50px;
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  transition: all var(--transition-fast);
-}
+/* Botões de Navegação (Mantidos em style.css/recentes.css para herança) */
 
-.collection-nav button:hover {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-}
-
-.collection-nav button.swiper-button-disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.collection-nav {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.collection-swiper {
-  width: 100%;
-  padding-left: calc((100% - 1300px) / 2 + 1.5rem);
-  padding-right: calc((100% - 1300px) / 2 + 1.5rem);
-  padding-bottom: var(--space-xl);
-}
+/* Swiper da Coleção (Mantido em style.css/recentes.css para herança) */
 
 /* Redefine o width do swiper-slide para a coleção, para não conflitar */
 .collection-swiper .swiper-slide {
-  width: 320px !important;
+  width: 300px !important;
 }
 
+/* Card de Produto (Estilo Moderno e Elevado) */
 .product-card {
-  background-color: transparent;
+  background-color: var(--surface);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
   transition: transform var(--transition-normal),
-    box-shadow var(--transition-normal);
+    box-shadow var(--transition-normal),
+    border-color var(--transition-normal);
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   border-color: var(--primary);
 }
 
+.product-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
 .product-image-wrapper {
-  height: 350px;
-  background-color: var(--background);
+  height: 280px;
+  background-color: #0a0a0a; /* Fundo mais escuro para o contraste do tênis */
   padding: var(--space-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .product-image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-normal);
+  object-fit: contain;
+  transition: transform var(--transition-normal), 
+              filter var(--transition-normal);
 }
 
 .product-card:hover .product-image-wrapper img {
-  transform: scale(1.08) rotate(-3deg);
+  transform: scale(1.05); /* Zoom sutil */
 }
 
 .product-info {
   padding: var(--space-md);
   background-color: var(--surface);
+  flex-grow: 1;
 }
 
 .product-brand {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--text-secondary);
+  text-transform: uppercase;
 }
 
 .product-name {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   letter-spacing: 0;
   color: var(--text-primary);
   margin: var(--space-xs) 0;
@@ -185,10 +190,29 @@
 }
 
 .product-price {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary);
+  margin-bottom: var(--space-sm);
 }
+
+.add-to-cart-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 0;
+    margin-top: auto;
+    border-radius: 0 0 8px 8px; /* Borda arredondada apenas embaixo */
+    box-shadow: none;
+    transform: none;
+}
+.product-card:hover .add-to-cart-btn {
+    transform: none; /* Desabilita o hover do card principal no botão */
+}
+.add-to-cart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
 
 .swiper-scrollbar {
   background: var(--surface);
@@ -214,8 +238,15 @@
     gap: var(--space-lg);
   }
 
+  .featured-sneaker-content .text-content {
+    padding-right: 0;
+  }
+  .featured-sneaker-content .section-title {
+    font-size: clamp(3rem, 10vw, 3.5rem);
+  }
+
   .featured-image-wrapper.swiper {
-    height: 400px;
+    height: 380px;
     border-radius: 12px;
   }
 
@@ -226,13 +257,18 @@
   }
 
   .product-image-wrapper {
-    height: 280px;
+    height: 250px;
+    padding: var(--space-sm);
+  }
+  
+  .collection-swiper .swiper-slide {
+    width: 250px !important;
   }
 }
 
 @media (max-width: 480px) {
   .featured-image-wrapper.swiper {
-    height: 350px;
+    height: 300px;
   }
 
   .featured-image-wrapper .swiper-pagination {
@@ -240,6 +276,6 @@
   }
 
   .product-image-wrapper {
-    height: 220px;
+    height: 200px;
   }
 }

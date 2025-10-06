@@ -16,13 +16,19 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  padding-left: 10%;
+  /* Centraliza o texto no container para desktop */
+  padding-left: 10%; 
   width: 100%;
 }
 
 .hero-title {
   font-size: clamp(3rem, 10vw, 7rem);
   line-height: 1;
+  /* Efeito de gradiente para destacar o título */
+  background: linear-gradient(45deg, var(--text-primary), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-subtitle {
@@ -42,13 +48,15 @@
 }
 
 .hero-bg-image {
+  /* Usando a imagem tiger.png */
   background-image: url("../IMG/tiger.png");
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transform: scale(1.05);
+  /* Transform: scale(1.05) REMOVIDO para mobile */
+  transform: scale(1.03); 
 }
 
 .hero-background::after {
@@ -58,7 +66,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--background) 30%, transparent 70%);
+  /* Gradiente mais suave para dark mode, melhorando a visibilidade do texto */
+  background: linear-gradient(90deg, var(--background) 30%, transparent 70%),
+              linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 30%);
 }
 
 .hero-socials {
@@ -74,6 +84,7 @@
 .hero-socials a {
   color: var(--text-secondary);
   transition: var(--transition-fast);
+  text-shadow: 0 0 10px rgba(0,0,0,0.5); /* Sombra para visibilidade no bg */
 }
 
 .hero-socials a:hover {
@@ -81,75 +92,8 @@
   transform: scale(1.2);
 }
 
-/* ===== FEATURED SNEAKER SECTION ===== */
-.featured-sneaker-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-xl);
-  align-items: center;
-  width: 100%;
-}
-
-.featured-image-wrapper.swiper {
-  position: relative;
-  width: 100%;
-  min-width: 0;
-  background-color: #1c1c1c;
-  border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-  display: flex;
-}
-
-.featured-sneaker-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.featured-image-wrapper .swiper-button-next,
-.featured-image-wrapper .swiper-button-prev {
-  color: var(--primary);
-  background-color: rgba(10, 10, 10, 0.5);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  backdrop-filter: blur(5px);
-  transition: var(--transition-fast);
-}
-
-.featured-image-wrapper .swiper-button-next:hover,
-.featured-image-wrapper .swiper-button-prev:hover {
-  background-color: var(--primary);
-  color: #fff;
-}
-
-.featured-image-wrapper .swiper-button-next::after,
-.featured-image-wrapper .swiper-button-prev::after {
-  font-size: 1.2rem;
-  font-weight: 900;
-}
-
-.featured-image-wrapper .swiper-pagination {
-  position: absolute;
-  bottom: 15px !important;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  width: auto;
-}
-
-.featured-image-wrapper .swiper-pagination-bullet {
-  background-color: var(--text-secondary);
-  width: 10px;
-  height: 10px;
-  opacity: 0.7;
-}
-
-.featured-image-wrapper .swiper-pagination-bullet-active {
-  background-color: var(--primary);
-  opacity: 1;
-}
+/* ===== FEATURED SNEAKER SECTION (Removido e mantido em amostra.css) ===== */
+/* Removido o conteúdo do featured-sneaker para evitar duplicação com amostra.css */
 
 /* ===== COLLECTION SECTION ("Recém-Chegados") ===== */
 .collection-section {
@@ -167,11 +111,14 @@
   justify-content: space-between;
   align-items: flex-end;
   margin-bottom: var(--space-xl);
+  /* Centraliza o conteúdo da barra de cabeçalho com o container */
   padding-left: calc((100% - 1300px) / 2 + 1.5rem);
   padding-right: calc((100% - 1300px) / 2 + 1.5rem);
   width: 100%;
 }
 
+/* Botões e Swiper da coleção - Estilizado em recentes.css/amostra.css */
+/* Mantendo as classes de swiper de coleção para herança de estilo */
 .collection-nav button {
   width: 50px;
   height: 50px;
@@ -210,82 +157,6 @@
   height: auto;
 }
 
-.collection-section .product-card {
-  background-color: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.collection-section .product-image-wrapper {
-  background-color: #eaeaea;
-  padding: 0;
-  height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.collection-section .product-image-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.collection-section .product-info {
-  padding: var(--space-md);
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.collection-section .product-brand {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.collection-section .product-name {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  margin: var(--space-xs) 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.collection-section .product-price {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: var(--space-md);
-}
-
-.collection-section .product-info .btn {
-  width: 100%;
-  justify-content: center;
-  margin-top: auto;
-  background-color: var(--text-primary);
-  color: var(--background);
-  border: 2px solid var(--text-primary);
-}
-
-.collection-section .product-info .btn:hover {
-  background-color: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-  transform: none;
-  box-shadow: none;
-}
-
 .collection-swiper .swiper-scrollbar {
   background: var(--surface);
   height: 4px !important;
@@ -295,7 +166,9 @@
   background: var(--primary);
 }
 
-/* ===== CREW SECTION ===== */
+/* Cartões de Produto (Estilos removidos para usar a versão unificada e melhor de recentes.css) */
+
+/* ===== CREW SECTION (Melhoria Visual) ===== */
 .crew {
   background-color: var(--surface);
   width: 100%;
@@ -313,7 +186,8 @@
 .crew-image-stack {
   position: relative;
   width: 100%;
-  height: 450px;
+  /* Aumentando a altura para melhor impacto visual */
+  height: 500px; 
 }
 
 .image-card {
@@ -322,31 +196,52 @@
   height: 380px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
   transition: var(--transition-slow);
+  border: 4px solid var(--background); /* Adicionando borda de separação */
 }
 
 .image-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: grayscale(0.5); /* Suavemente cinza */
+  transition: filter var(--transition-slow);
+}
+
+.crew-content:hover .image-card img {
+  filter: grayscale(0); /* Cores no hover */
 }
 
 .image-card:nth-child(1) {
-  transform: rotate(-10deg) translate(-30%, 0);
+  top: 0;
+  left: 0;
+  transform: rotate(-10deg) translate(-10%, 0);
+  width: 260px;
+  height: 360px;
 }
 
 .image-card:nth-child(2) {
-  transform: rotate(5deg) translate(0, 20%);
-  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(5deg);
+  z-index: 3; /* Central na frente */
+  width: 320px;
+  height: 420px;
 }
 
 .image-card:nth-child(3) {
-  transform: rotate(15deg) translate(30%, 0);
+  bottom: 0;
+  right: 0;
+  transform: rotate(15deg) translate(10%, 0);
+  width: 270px;
+  height: 370px;
 }
 
+/* Efeito Hover do Container */
 .crew-content:hover .image-card {
-  transform: rotate(0) translate(0, 0) scale(1.05);
+  transform: rotate(0) translate(0, 0) scale(1.0);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
 
 /* ===== NEWSLETTER ===== */
@@ -354,15 +249,19 @@
   text-align: center;
   width: 100%;
   overflow: hidden;
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-xl);
 }
 
 .newsletter h2 {
   font-size: 3rem;
+  color: var(--primary); /* Cor primária no título do newsletter */
 }
 
 .newsletter p {
   color: var(--text-secondary);
-  margin-bottom: var(--space-lg);
+  max-width: 600px;
+  margin: var(--space-md) auto var(--space-lg);
 }
 
 #newsletterForm {
@@ -371,8 +270,9 @@
   margin: 0 auto;
   background-color: var(--surface);
   padding: var(--space-xs);
-  border-radius: 4px;
+  border-radius: 6px;
   width: 100%;
+  border: 1px solid var(--border-color);
 }
 
 #newsletterForm input {
@@ -389,6 +289,22 @@
 #newsletterForm input:focus {
   outline: none;
 }
+/* Estilo do botão de Assinar */
+#newsletterForm .btn-primary {
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  height: 100%;
+  align-self: center;
+  margin: 0;
+  transform: none;
+  box-shadow: none;
+}
+#newsletterForm .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
 
 /* ==========================================================
     RESPONSIVIDADE MOBILE - CORREÇÃO DA BARRA PRETA
@@ -404,11 +320,6 @@
     position: relative;
   }
 
-  body {
-    width: 100vw;
-    overflow-x: hidden;
-  }
-
   .container {
     width: 100% !important;
     max-width: 100% !important;
@@ -422,32 +333,24 @@
     min-height: 100vh;
     align-items: flex-start;
     padding-top: var(--header-height);
-    position: relative;
-    overflow: hidden;
     margin-bottom: 0;
     width: 100vw;
-    left: 0;
-    right: 0;
+    padding-bottom: 2rem;
   }
 
   .hero-content {
     padding-left: 1.5rem;
     text-align: left;
-    width: 100%;
-    position: relative;
-    z-index: 2;
     margin-top: 15vh;
     max-width: 100%;
+    padding-bottom: 1rem;
   }
 
   .hero-title {
     font-size: clamp(2.8rem, 14vw, 4.5rem);
     line-height: 0.9;
     margin-bottom: var(--space-sm);
-    background: linear-gradient(45deg, var(--text-primary), var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    /* Mantém o gradiente */
     width: 100%;
   }
 
@@ -461,60 +364,28 @@
     width: 100%;
   }
 
-  /* Background dominando toda a tela SEM BARRAS PRETAS */
   .hero-background {
-    display: block !important;
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100vw !important;
-    height: 100%;
-    z-index: 0;
-    right: 0;
   }
 
   .hero-bg-image {
-    background-image: url("../IMG/tiger.png");
     width: 100vw !important;
-    height: 100%;
-    background-size: cover;
     background-position: center 30%;
-    background-repeat: no-repeat;
     transform: scale(1);
-    position: absolute;
-    left: 0;
-    right: 0;
   }
 
   .hero-background::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100vw !important;
-    height: 100%;
     background: linear-gradient(90deg, var(--background) 15%, transparent 90%),
                 linear-gradient(180deg, var(--background) 5%, transparent 30%);
-    right: 0;
   }
 
   .hero-socials {
-    position: absolute;
-    bottom: var(--space-xl);
+    bottom: var(--space-lg);
     left: 1.5rem;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
   }
 
   /* --- SEÇÕES SECUNDÁRIAS - CORRIGIDAS --- */
-  .featured-sneaker {
-    padding: var(--space-xl) 0;
-    width: 100%;
-    overflow: hidden;
-  }
-
   .featured-sneaker-content {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -523,7 +394,6 @@
   }
 
   .featured-image-wrapper.swiper {
-    height: 300px;
     order: -1;
     width: 100%;
   }
@@ -531,7 +401,6 @@
   .collection-section {
     padding-top: var(--space-xl);
     padding-bottom: var(--space-xl);
-    width: 100%;
   }
 
   .collection-section .section-header {
@@ -540,52 +409,79 @@
     gap: var(--space-lg);
     padding: 0 1rem !important;
     text-align: center;
-    width: 100%;
   }
 
   .collection-swiper {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
-    width: 100%;
   }
 
   .collection-swiper .swiper-slide {
     width: 260px;
   }
 
+  /* MELHORIA: Crew para Mobile */
   .crew {
     padding: var(--space-xl) 0;
-    width: 100%;
   }
 
   .crew-content {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
     text-align: center;
-    width: 100%;
   }
 
+  .crew-image-stack {
+    height: 350px; /* Reduzindo a altura do stack no mobile */
+  }
+
+  .image-card {
+    position: static;
+    transform: none !important;
+    width: 100% !important;
+    height: 300px !important;
+    margin: 0 auto;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    display: none; /* Esconde os outros 2 cards */
+  }
+  
+  /* Exibe apenas o card principal (o segundo do HTML) */
+  .image-card:nth-child(2) {
+    display: block;
+    z-index: 1;
+    height: 320px !important;
+  }
+  
   .newsletter {
     padding: var(--space-xl) 0;
-    width: 100%;
   }
 
   #newsletterForm {
     width: 100%;
     max-width: 100%;
   }
+  
+  #newsletterForm input {
+    padding: 0.8rem;
+  }
+  
+  #newsletterForm .btn-primary {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
 }
 
 /* Mobile Pequeno (até 480px) */
 @media (max-width: 480px) {
   .hero {
-    height: 100vh;
-    min-height: 100vh;
+    padding-bottom: 1.5rem;
   }
 
   .hero-content {
     padding-left: 1rem;
     margin-top: 12vh;
+    padding-bottom: 0.5rem;
   }
 
   .hero-title {
@@ -595,11 +491,16 @@
   .hero-subtitle {
     font-size: 0.9rem;
     max-width: 280px;
+    margin: var(--space-sm) 0 var(--space-md);
   }
 
   .hero-background::after {
     background: linear-gradient(90deg, var(--background) 10%, transparent 85%),
                 linear-gradient(180deg, var(--background) 3%, transparent 25%);
+  }
+
+  .hero-socials {
+    bottom: var(--space-md);
   }
 
   .collection-swiper .swiper-slide {
@@ -625,19 +526,11 @@
 
 /* Tablet (769px a 1024px) */
 @media (min-width: 769px) {
-  .hero {
-    height: 100vh;
-    min-height: 700px;
-    align-items: center;
-  }
-
   .hero-content {
     padding-left: 10%;
-    margin-top: 0;
   }
 
   .hero-title {
-    background: none;
-    -webkit-text-fill-color: initial;
+    /* Mantém o gradiente para desktop */
   }
 }
