@@ -86,6 +86,9 @@
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -101,6 +104,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .product-image-wrapper img {
@@ -117,6 +121,10 @@
 .product-info {
   padding: var(--space-md);
   background-color: var(--surface);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .product-brand {
@@ -124,6 +132,7 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
   text-transform: uppercase;
+  margin-bottom: 0.5rem;
 }
 
 .product-name {
@@ -135,31 +144,216 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .product-price {
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--primary);
+  margin-top: auto;
+}
+
+.add-to-cart-btn {
+  margin-top: var(--space-sm);
+  width: 100%;
+  justify-content: center;
+  padding: 0.8rem;
+  font-size: 0.9rem;
 }
 
 /* ===================================
-    RESPONSIVIDADE MOBILE - CORRIGIDA
+    RESPONSIVIDADE MOBILE - CORRIGIDA E MELHORADA
    =================================== */
 
 /* Mobile (até 768px) */
 @media (max-width: 768px) {
+  .collection-section {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+  }
+
   .collection-section .section-header {
     flex-direction: column;
     align-items: center;
-    gap: var(--space-lg);
+    gap: var(--space-md);
     text-align: center;
-    padding: 0 var(--space-md);
+    padding: 0 var(--space-sm);
+    margin-bottom: var(--space-lg);
   }
 
   .section-titleRECEM {
-    font-size: clamp(2.5rem, 10vw, 3rem);
+    font-size: clamp(2.2rem, 8vw, 3rem);
     margin-bottom: 0;
+    padding: 10px;
+    line-height: 1.1;
+  }
+
+  .collection-nav {
+    margin-top: var(--space-sm);
+  }
+
+  .collection-nav button,
+  [class*="collection-prev-"],
+  [class*="collection-next-"] {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  .swiper[class*="collection-swiper"] {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+    padding-bottom: var(--space-lg);
+  }
+
+  /* MELHORIA: Slides mais adequados para mobile */
+  .swiper[class*="collection-swiper"] .swiper-slide {
+    width: 280px !important;
+    height: auto;
+  }
+
+  .product-card {
+    border-radius: 12px;
+    margin: 0 5px;
+  }
+
+  .product-image-wrapper {
+    height: 200px;
+    padding: var(--space-sm);
+  }
+
+  .product-info {
+    padding: var(--space-sm);
+    gap: 0.5rem;
+  }
+
+  .product-brand {
+    font-size: 0.75rem;
+  }
+
+  .product-name {
+    font-size: 1rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.2;
+    min-height: 2.4em;
+  }
+
+  .product-price {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+  }
+
+  .add-to-cart-btn {
+    padding: 0.7rem;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Scrollbar mais visível no mobile */
+  .swiper[class*="collection-swiper"] .swiper-scrollbar {
+    height: 6px !important;
+    margin-top: var(--space-sm);
+  }
+}
+
+/* Mobile Small (até 480px) */
+@media (max-width: 480px) {
+  .collection-section {
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+
+  .section-titleRECEM {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+    padding: 5px;
+  }
+
+  .swiper[class*="collection-swiper"] {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* MELHORIA: Slides menores para telas muito pequenas */
+  .swiper[class*="collection-swiper"] .swiper-slide {
+    width: 260px !important;
+  }
+
+  .product-image-wrapper {
+    height: 180px;
+    padding: 0.75rem;
+  }
+
+  .product-info {
+    padding: 0.75rem;
+  }
+
+  .product-brand {
+    font-size: 0.7rem;
+  }
+
+  .product-name {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
+    min-height: 2.2em;
+  }
+
+  .product-price {
+    font-size: 1rem;
+  }
+
+  .add-to-cart-btn {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .collection-nav button,
+  [class*="collection-prev-"],
+  [class*="collection-next-"] {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile Muito Pequeno (até 360px) */
+@media (max-width: 360px) {
+  .swiper[class*="collection-swiper"] .swiper-slide {
+    width: 240px !important;
+  }
+
+  .product-image-wrapper {
+    height: 160px;
+  }
+
+  .product-name {
+    font-size: 0.85rem;
+  }
+
+  .swiper[class*="collection-swiper"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* Tablet (769px a 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .collection-section .section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: left;
+    padding: 0;
+  }
+
+  .section-titleRECEM {
+    font-size: 4rem;
+    text-align: left;
   }
 
   .swiper[class*="collection-swiper"] {
@@ -168,40 +362,16 @@
   }
 
   .swiper[class*="collection-swiper"] .swiper-slide {
-    width: 280px !important;
+    width: 300px !important;
   }
 
   .product-image-wrapper {
-    height: 220px;
-    padding: var(--space-sm);
-  }
-
-  .product-info {
-    padding: var(--space-sm);
-  }
-
-  .product-name {
-    font-size: 1rem;
-  }
-
-  .product-price {
-    font-size: 1.1rem;
+    height: 250px;
   }
 }
 
-/* Mobile Small (até 480px) */
-@media (max-width: 480px) {
-  .swiper[class*="collection-swiper"] .swiper-slide {
-    width: 260px !important;
-  }
-
-  .product-image-wrapper {
-    height: 200px;
-  }
-}
-
-/* Tablet (769px a 1024px) - Garante layout desktop */
-@media (min-width: 769px) {
+/* Desktop (acima de 1025px) */
+@media (min-width: 1025px) {
   .collection-section .section-header {
     flex-direction: row;
     justify-content: space-between;
@@ -213,5 +383,40 @@
   .section-titleRECEM {
     font-size: 5rem;
     text-align: left;
+  }
+}
+
+/* Melhorias de acessibilidade e interação */
+@media (hover: hover) {
+  .product-card:hover .product-image-wrapper img {
+    transform: scale(1.05);
+  }
+}
+
+/* Para dispositivos que não suportam hover (touch) */
+@media (hover: none) {
+  .product-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Garantir que os botões sejam tocáveis em mobile */
+@media (max-width: 768px) {
+  .add-to-cart-btn,
+  .collection-nav button {
+    min-height: 44px; /* Tamanho mínimo para toque */
+  }
+
+  .product-card-link {
+    display: block;
+    height: 100%;
+  }
+}
+
+/* Melhorar o espaçamento entre seções em mobile */
+@media (max-width: 768px) {
+  .collection-section + .collection-section {
+    margin-top: var(--space-sm);
   }
 }

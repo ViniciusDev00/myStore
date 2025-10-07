@@ -352,6 +352,7 @@ button {
 }
 
 .footer-grid {
+  /* Aumentando o número de colunas para o novo layout */
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--space-xl);
@@ -359,17 +360,26 @@ button {
   width: 100%;
 }
 
+.footer-branding {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
 .footer-logo {
-  font-size: 1.5rem;
-  margin-bottom: var(--space-sm);
+  font-size: 2rem; /* Aumenta o logo para destaque */
+  margin-bottom: 0.5rem;
 }
 
 .footer-title {
   font-family: var(--font-body);
-  font-weight: 600;
+  font-weight: 700; /* Mais negrito */
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 1rem; /* Maior e mais legível */
   margin-bottom: var(--space-md);
+  color: var(--text-primary);
+  border-left: 3px solid var(--primary); /* Destaque visual */
+  padding-left: 10px;
 }
 
 .footer-col ul li {
@@ -396,6 +406,13 @@ button {
   width: 100%;
 }
 
+/* Move a estilização dos sociais para o bloco de branding no footer */
+.footer-branding .footer-socials {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: 0.5rem;
+}
+
 .footer-socials a {
   color: var(--text-secondary);
   font-size: 1.2rem;
@@ -404,6 +421,58 @@ button {
 
 .footer-socials a:hover {
   color: var(--primary);
+}
+
+
+/* ===================================
+    RESPONSIVIDADE - FOOTER
+   =================================== */
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr; /* Colunas 2x2 no mobile */
+        gap: var(--space-lg);
+    }
+    
+    .footer-col:nth-child(1) { /* Ajusta o branding para o topo */
+        grid-column: 1 / -1;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: var(--space-lg);
+        margin-bottom: 0;
+        gap: var(--space-xs);
+    }
+
+    .footer-logo {
+        font-size: 2.5rem;
+        margin-bottom: 0;
+    }
+
+    .footer-branding .footer-socials {
+        justify-content: center;
+        margin-top: var(--space-sm);
+    }
+
+    .footer-title {
+        border-left: none;
+        padding-left: 0;
+        text-align: center;
+    }
+
+    .footer-col ul {
+        text-align: center;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: var(--space-sm);
+        text-align: center;
+    }
+
+    /* Remove socials do footer-bottom em mobile */
+    .footer-bottom .footer-socials {
+        display: none;
+    }
 }
 
 /* ===== CART MODAL ===== */
