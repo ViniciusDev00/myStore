@@ -66,8 +66,15 @@ body {
   position: relative;
 }
 
+/* --- ATUALIZAÇÃO DEFINITIVA PARA TRAVAR O SCROLL --- */
+html.nav-open {
+    overflow: hidden;
+}
 body.nav-open {
-    overflow: hidden; /* Impede o scroll da página quando o menu está aberto */
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    /* A propriedade 'top' será adicionada via JS */
 }
 
 h1,

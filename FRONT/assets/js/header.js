@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const userName = userData.nome ? userData.nome.split(' ')[0].toUpperCase() : 'USUÁRIO';
     const isAdmin = userData.authorities && userData.authorities.some(auth => auth.authority === 'ROLE_ADMIN');
 
-    // Monta o menu dropdown para desktop
     actionsHTML += `
             <div class="user-account-menu">
                 <div class="user-info">
@@ -79,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
     
-    // Adiciona os links da conta ao menu de navegação (para uso no mobile)
     if (navList) {
         const mobileAccountLinks = `
             <li class="nav-separator"></li>
@@ -91,10 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
   } else {
-    // Botão de Login para o cabeçalho (desktop)
     actionsHTML += `<a href="${loginUrl}" class="btn btn-outline desktop-login-btn">Login</a>`;
 
-    // Botão de Login para o menu de navegação (mobile)
     if (navList) {
         const mobileLoginLink = `
             <li class="nav-separator"></li>
@@ -111,25 +107,42 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = homeUrl;
   };
 
-  // Listeners de logout para ambos os botões
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
   
   const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
   if (mobileLogoutBtn) mobileLogoutBtn.addEventListener("click", handleLogout);
 
-  // Listener do menu hamburguer
+  // --- LÓGICA DE TRAVAMENTO DE SCROLL ATUALIZADA ---
+  let scrollPosition = 0;
+  const body = document.body;
+  const html = document.documentElement;
+
+  const openNav = () => {
+      scrollPosition = window.pageYOffset;
+      html.classList.add('nav-open');
+      body.classList.add('nav-open');
+      body.style.top = `-${scrollPosition}px`;
+  };
+
+  const closeNav = () => {
+      html.classList.remove('nav-open');
+      body.classList.remove('nav-open');
+      body.style.top = '';
+      window.scrollTo(0, scrollPosition);
+  };
+
   const toggleBtn = document.querySelector(".mobile-nav-toggle");
   if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
-      document.body.classList.toggle("nav-open");
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      body.classList.contains('nav-open') ? closeNav() : openNav();
     });
   }
 
-  // Adiciona um listener para fechar o menu ao clicar no overlay
   document.body.addEventListener('click', (e) => {
-      if (document.body.classList.contains('nav-open') && e.target === document.body) {
-          document.body.classList.remove('nav-open');
+      if (body.classList.contains('nav-open') && e.target === body) {
+          closeNav();
       }
   });
 });
