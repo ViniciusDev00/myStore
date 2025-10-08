@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageModalTitle = document.getElementById('message-modal-title');
     let adminMessages = [];
 
-    // --- Lógica de Responsividade (NOVA) ---
+    // --- Lógica de Responsividade ---
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const toggleBtn = document.querySelector('.mobile-admin-toggle');
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
     navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
 
-    // --- Lógica dos Modais ---
+    // --- Lógica dos Modais (ATUALIZADA) ---
     const openModal = (produto = null) => {
         productForm.reset();
         productImageInput.value = '';
@@ -245,23 +245,20 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-description').value = produto.descricao;
 
             if (produto.imagemUrl) {
-                imagePreview.src = `/${produto.imagemUrl}`; // Caminho relativo para a imagem
+                imagePreview.src = `/${produto.imagemUrl}`;
                 imagePreview.classList.remove('hidden');
                 imagePreviewText.textContent = 'Imagem atual do produto.';
-            } else {
-                imagePreview.classList.add('hidden');
-                imagePreviewText.textContent = 'Nenhuma imagem atual.';
             }
 
         } else {
             modalTitle.textContent = 'Adicionar Novo Produto';
             document.getElementById('product-id').value = '';
         }
-        productModal.style.display = 'flex';
+        productModal.classList.add('active');
     };
 
     const closeModal = () => {
-        productModal.style.display = 'none';
+        productModal.classList.remove('active');
     };
 
     const openMessageModal = (message) => {
@@ -272,11 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <h4>Assunto: ${message.assunto}</h4>
             <p>${message.mensagem}</p>
         `;
-        messageModal.style.display = 'flex';
+        messageModal.classList.add('active');
     };
 
     const closeMessageModal = () => {
-        messageModal.style.display = 'none';
+        messageModal.classList.remove('active');
     };
     
     addProductBtn.addEventListener('click', () => openModal());

@@ -75,6 +75,7 @@ body {
 .main-content {
     padding: var(--space-xl);
     overflow-y: auto;
+    position: relative;
 }
 
 .content-section {
@@ -103,20 +104,20 @@ body {
     background-color: var(--surface);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    overflow-x: auto; /* Permite scroll horizontal em tabelas */
+    overflow-x: auto;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px; /* Garante que a tabela tenha um tamanho mínimo */
+    min-width: 600px;
 }
 
 .data-table th, .data-table td {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
-    white-space: nowrap; /* Impede que o texto quebre */
+    white-space: nowrap;
 }
 
 .data-table thead {
@@ -188,7 +189,7 @@ body {
     color: #d32f2f;
 }
 
-/* --- ESTILOS GENÉRICOS DE MODAL --- */
+/* --- ESTILOS GENÉRICOS DE MODAL (ATUALIZADO) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -199,8 +200,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
     padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .modal-content {
@@ -211,10 +220,15 @@ body {
     max-width: 800px;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    position: relative;
-    z-index: 1001;
+    z-index: 2001;
     max-height: 90vh;
     overflow-y: auto;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
 }
 
 .modal-header {
@@ -379,11 +393,7 @@ body {
     line-height: 1.8;
 }
 
-/* --- ESTILOS RESPONSIVOS (NOVOS) --- */
-.mobile-admin-toggle {
-    display: none;
-}
-
+/* --- ESTILOS RESPONSIVOS --- */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -400,6 +410,10 @@ body {
 .sidebar-overlay.active {
     opacity: 1;
     visibility: visible;
+}
+
+.mobile-admin-toggle {
+    display: none;
 }
 
 @media (max-width: 900px) {
@@ -442,7 +456,7 @@ body {
 
     .main-content {
         padding: var(--space-md);
-        padding-top: 80px; /* Espaço para o botão do menu */
+        padding-top: 80px;
     }
 
     .section-header {
