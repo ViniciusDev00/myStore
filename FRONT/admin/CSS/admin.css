@@ -1,5 +1,5 @@
 /* Importa variáveis globais da loja principal para consistência */
-@import url('../../inicio/CSS/style.css');
+@import url('../../assets/CSS/base.css');
 
 body {
     background-color: var(--background);
@@ -11,7 +11,7 @@ body {
 .admin-layout {
     display: grid;
     grid-template-columns: 260px 1fr;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* --- Sidebar --- */
@@ -103,18 +103,20 @@ body {
     background-color: var(--surface);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: auto; /* Permite scroll horizontal em tabelas */
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px; /* Garante que a tabela tenha um tamanho mínimo */
 }
 
 .data-table th, .data-table td {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap; /* Impede que o texto quebre */
 }
 
 .data-table thead {
@@ -168,22 +170,22 @@ body {
     font-size: 0.8rem;
 }
 .btn-edit {
-    color: #ffc107; /* Amarelo */
+    color: #ffc107;
     background: none;
     border: none;
     cursor: pointer;
 }
 .btn-edit:hover {
-    color: #e0a800; /* Amarelo mais escuro */
+    color: #e0a800;
 }
 .btn-delete {
-    color: #f44336; /* Vermelho */
+    color: #f44336;
     background: none;
     border: none;
     cursor: pointer;
 }
 .btn-delete:hover {
-    color: #d32f2f; /* Vermelho mais escuro */
+    color: #d32f2f;
 }
 
 /* --- ESTILOS GENÉRICOS DE MODAL --- */
@@ -198,18 +200,21 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 1rem;
 }
 
 .modal-content {
     background-color: var(--surface);
     padding: var(--space-lg);
     border-radius: 8px;
-    width: 90%;
+    width: 100%;
     max-width: 800px;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     position: relative;
     z-index: 1001;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -244,12 +249,10 @@ body {
     text-align: right;
 }
 
-/* --- Estilos Específicos do Modal de Produto --- */
 #product-form .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-md) var(--space-lg);
-    margin-bottom: var(--space-lg);
 }
 #product-form .form-group {
     display: flex;
@@ -328,58 +331,75 @@ body {
     color: var(--text-secondary);
 }
 
-/* --- Estilos Específicos do Modal de Mensagem (APRIMORADO) --- */
-#message-modal-title { /* Ajuste do título para corresponder ao header do modal */
+#message-modal-title {
     font-size: 1.8rem;
     font-family: var(--font-display);
     color: var(--text-primary);
-    margin: 0; /* Remover margem padrão */
+    margin: 0;
 }
-
 .modal-body-view {
     padding: var(--space-md) 0;
     line-height: 1.7;
     max-height: 60vh;
     overflow-y: auto;
-    font-size: 1rem; /* Tamanho base da fonte */
-    color: var(--text-primary); /* Cor do texto principal */
+    font-size: 1rem;
+    color: var(--text-primary);
 }
-
 .modal-body-view .message-info {
-    display: block; /* Garante que cada item de info fique em sua própria linha */
-    margin-bottom: var(--space-sm); /* Espaçamento entre as linhas de informação */
-    font-size: 0.95rem; /* Um pouco menor para as informações */
-    color: var(--text-secondary); /* Cor secundária para detalhes */
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
     background: none;
     border: none;
     padding: 0;
 }
-
 .modal-body-view .message-info strong {
-    color: var(--text-primary); /* Deixar o label em cor primária */
-    font-weight: 600; /* Negrito mais forte */
+    color: var(--text-primary);
+    font-weight: 600;
 }
-
-.modal-body-view h4 { /* Assunto da mensagem */
-    font-size: 1.4rem; /* Um pouco maior para o assunto */
-    margin-top: var(--space-lg); /* Espaço antes do assunto */
-    margin-bottom: var(--space-md); /* Espaço depois do assunto */
+.modal-body-view h4 {
+    font-size: 1.4rem;
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-md);
     font-family: var(--font-display);
-    color: var(--primary); /* Destacar o assunto com a cor primária */
-    border-bottom: 1px solid var(--border-color); /* Linha para separar o assunto */
+    color: var(--primary);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--space-sm);
 }
-
-.modal-body-view p:not(.message-info) { /* Mensagem em si */
+.modal-body-view p:not(.message-info) {
     background-color: var(--background);
     padding: var(--space-md);
-    border-radius: 6px; /* Borda mais arredondada */
-    border: 1px solid var(--border-color-light); /* Borda mais clara */
+    border-radius: 6px;
+    border: 1px solid var(--border-color-light);
     white-space: pre-wrap;
-    margin-bottom: 0; /* Remover margem extra no final */
+    margin-bottom: 0;
     font-size: 1rem;
     color: var(--text-primary);
-    line-height: 1.8; /* Melhorar legibilidade do corpo da mensagem */
+    line-height: 1.8;
+}
+
+/* --- ESTILOS RESPONSIVOS (NOVOS) --- */
+.mobile-admin-toggle {
+    display: none;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 @media (max-width: 900px) {
@@ -392,20 +412,37 @@ body {
         top: 0;
         left: 0;
         bottom: 0;
-        width: 70%;
+        width: 80%;
         max-width: 300px;
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;
         z-index: 1002;
+        border-right: 1px solid var(--border-color);
     }
     
-    /* Adicione uma classe 'active' ao sidebar via JavaScript para exibir */
     .sidebar.active {
         transform: translateX(0);
     }
     
+    .mobile-admin-toggle {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        width: 45px;
+        height: 45px;
+        border-radius: 6px;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
     .main-content {
         padding: var(--space-md);
+        padding-top: 80px; /* Espaço para o botão do menu */
     }
 
     .section-header {
@@ -419,15 +456,11 @@ body {
     }
 
     .data-table {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
     }
     
     .data-table th, .data-table td {
         padding: 0.8rem;
-    }
-
-    .modal-content {
-        max-width: 90%;
     }
 
     #product-form .form-grid {

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (userRole !== 'ROLE_ADMIN') {
         alert('Acesso negado. Você precisa ser um administrador.');
-        window.location.href = '../../login/HTML/login.html';
+        window.location.href = '../../../login/HTML/login.html';
         return;
     }
 
@@ -67,6 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageModalBody = document.getElementById('message-modal-body');
     const messageModalTitle = document.getElementById('message-modal-title');
     let adminMessages = [];
+
+    // --- Lógica de Responsividade (NOVA) ---
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    const toggleBtn = document.querySelector('.mobile-admin-toggle');
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
 
     // --- Funções de Carregamento de Dados ---
     const populateSelect = (selectElement, items, placeholder) => {
@@ -226,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-description').value = produto.descricao;
 
             if (produto.imagemUrl) {
-                imagePreview.src = `http://localhost:8080${produto.imagemUrl}`;
+                imagePreview.src = `/${produto.imagemUrl}`; // Caminho relativo para a imagem
                 imagePreview.classList.remove('hidden');
                 imagePreviewText.textContent = 'Imagem atual do produto.';
             } else {
@@ -271,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === messageModal) closeMessageModal();
     });
     
-    // --- Lógica de Pré-visualização da Imagem ---
     productImageInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {

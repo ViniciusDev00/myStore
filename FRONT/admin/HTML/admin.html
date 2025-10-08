@@ -6,9 +6,14 @@
     <title>Admin Dashboard | Japa Universe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/FRONT/admin/CSS/admin.css">
+    <link rel="stylesheet" href="../CSS/admin.css">
 </head>
 <body>
+    <div class="sidebar-overlay"></div>
+    <button class="mobile-admin-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="admin-layout">
         <aside class="sidebar">
             <h1 class="logo">Japa<span> Universe</span></h1>
@@ -18,7 +23,7 @@
                 <a href="#" id="nav-mensagens" class="nav-item"><i class="fas fa-envelope"></i> Mensagens</a>
             </nav>
             <div class="sidebar-footer">
-                <a href="/index.html" class="nav-item"><i class="fas fa-store"></i> Voltar para Loja</a>
+                <a href="../../../index.html" class="nav-item"><i class="fas fa-store"></i> Voltar para Loja</a>
             </div>
         </aside>
 
@@ -158,6 +163,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/FRONT/admin/js/admin.js"></script>
+    <script src="../js/admin.js"></script>
 </body>
 </html>
