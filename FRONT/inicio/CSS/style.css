@@ -500,7 +500,7 @@
 
   .hero-socials {
     position: absolute;
-    bottom: var(--space-xl);
+    bottom: 85px;  /* Alterado para um valor maior para subir os ícones */
     left: 1.5rem;
     z-index: 3;
     display: flex;
