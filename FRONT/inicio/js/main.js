@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
             checkoutBtn.addEventListener('click', () => {
                 // Determina o caminho correto para o checkout
                 const basePath = document.querySelector('header.main-header')?.dataset?.basepath || '.';
-                window.location.href = `${basePath}/checkout/HTML/checkout.html`;
+                window.location.href = `${basePath}/FRONT/checkout/HTML/checkout.html`;
             });
         }
         

@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -16,33 +18,28 @@ public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + username));
     }
 
-    public UsuarioDTO registrarUsuario(Usuario usuario) {
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
-            throw new RuntimeException("Email já registrado.");
-        }
+    @Transactional(readOnly = true)
+    public UsuarioDTO getDadosUsuario(Usuario usuarioLogado) {
+        // Re-busca o usuário dentro de uma transação para garantir que a sessão esteja aberta
+        Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        usuario.setRole("ROLE_USER");
-
-        Usuario novoUsuario = usuarioRepository.save(usuario);
-        return convertToDTO(novoUsuario);
-    }
-
-    private UsuarioDTO convertToDTO(Usuario usuario) {
+        // Agora, podemos acessar as coleções lazy com segurança
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(usuario.getId());
         dto.setNome(usuario.getNome());
         dto.setEmail(usuario.getEmail());
-        dto.setRole(usuario.getRole());
+        
+        // Inicializa as coleções antes de colocá-las no DTO
+        dto.setEnderecos(new ArrayList<>(usuario.getEnderecos()));
+        dto.setPedidos(new ArrayList<>(usuario.getPedidos()));
+
         return dto;
     }
 }

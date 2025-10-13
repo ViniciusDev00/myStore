@@ -19,14 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const userData = token ? parseJwt(token) : null;
   const isLoggedIn = userData !== null;
   
-  const basePath = headerElement.dataset.basepath || ".";
-  
-  const homeUrl = `${basePath}/index.html`;
-  const catalogoUrl = `${basePath}/FRONT/catalogo/HTML/catalogo.html`;
-  const contatoUrl = `${basePath}/FRONT/contato/HTML/contato.html`;
-  const adminUrl = `${basePath}/FRONT/admin/HTML/admin.html`;
-  const perfilUrl = `${basePath}/FRONT/perfil/HTML/perfil.html`;
-  const loginUrl = `${basePath}/FRONT/login/HTML/login.html`;
+  // === CORREÇÃO APLICADA AQUI ===
+  // Agora usamos caminhos absolutos a partir da raiz do site.
+  // Isso garante que os links funcionem em qualquer página.
+  const homeUrl = "/index.html";
+  const catalogoUrl = "/FRONT/catalogo/HTML/catalogo.html";
+  const contatoUrl = "/FRONT/contato/HTML/contato.html";
+  const adminUrl = "/FRONT/admin/HTML/admin.html";
+  const perfilUrl = "/FRONT/perfil/HTML/perfil.html";
+  const loginUrl = "/FRONT/login/HTML/login.html";
 
   headerElement.innerHTML = `
         <div class="container">
@@ -50,9 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span class="nav-title">Menu</span>
                 </div>
                 <ul class="nav-list">
-                    <li><a href="${homeUrl}" class="nav-link">Início</a></li>
-                    <li><a href="${catalogoUrl}" class="nav-link">Catálogo</a></li>
-                    <li><a href="${contatoUrl}" class="nav-link">Contato</a></li>
+                    <li><a href="${homeUrl}" class="nav-link"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="${catalogoUrl}" class="nav-link"><i class="fas fa-search"></i> Catálogo</a></li>
+                    <li><a href="${contatoUrl}" class="nav-link"><i class="fas fa-envelope"></i> Contato</a></li>
                 </ul>
             </nav>
             <div class="header-actions" id="header-actions"></div>
