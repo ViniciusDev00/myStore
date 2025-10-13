@@ -257,20 +257,16 @@ button {
   color: var(--text-primary);
 }
 
-/* ===== AQUI ESTÁ A CORREÇÃO PRINCIPAL ===== */
-/* Esconde o menu desktop por padrão (mobile-first) */
 .desktop-nav {
     display: none;
 }
 
-/* Mostra o menu desktop apenas em telas maiores */
 @media (min-width: 769px) {
     .desktop-nav {
         display: flex;
         align-items: center;
     }
 }
-/* ============================================== */
 
 .nav-list {
   display: flex;
@@ -313,7 +309,6 @@ button {
   gap: 1rem;
 }
 
-/* Cart Button */
 .cart-btn {
   position: relative;
   color: var(--text-primary);
@@ -347,7 +342,6 @@ button {
   transform: scale(1.3);
 }
 
-/* Estilos para os novos ícones do header de perfil e logout */
 .nav-icon-btn {
   background: none;
   border: none;
@@ -374,7 +368,6 @@ button {
 }
 
 .footer-grid {
-  /* Aumentando o número de colunas para o novo layout */
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--space-xl);
@@ -389,18 +382,18 @@ button {
 }
 
 .footer-logo {
-  font-size: 2rem; /* Aumenta o logo para destaque */
+  font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 
 .footer-title {
   font-family: var(--font-body);
-  font-weight: 700; /* Mais negrito */
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 1rem; /* Maior e mais legível */
+  font-size: 1rem;
   margin-bottom: var(--space-md);
   color: var(--text-primary);
-  border-left: 3px solid var(--primary); /* Destaque visual */
+  border-left: 3px solid var(--primary);
   padding-left: 10px;
 }
 
@@ -428,7 +421,6 @@ button {
   width: 100%;
 }
 
-/* Move a estilização dos sociais para o bloco de branding no footer */
 .footer-branding .footer-socials {
     display: flex;
     gap: var(--space-md);
@@ -445,18 +437,13 @@ button {
   color: var(--primary);
 }
 
-
-/* ===================================
-    RESPONSIVIDADE - FOOTER
-   =================================== */
-
 @media (max-width: 768px) {
     .footer-grid {
-        grid-template-columns: 1fr 1fr; /* Colunas 2x2 no mobile */
+        grid-template-columns: 1fr 1fr;
         gap: var(--space-lg);
     }
     
-    .footer-col:nth-child(1) { /* Ajusta o branding para o topo */
+    .footer-col:nth-child(1) {
         grid-column: 1 / -1;
         text-align: center;
         border-bottom: 1px solid var(--border-color);
@@ -491,7 +478,6 @@ button {
         text-align: center;
     }
 
-    /* Remove socials do footer-bottom em mobile */
     .footer-bottom .footer-socials {
         display: none;
     }
@@ -571,14 +557,12 @@ button {
   padding: var(--space-md);
 }
 
-/* ===== ANIMATIONS & HELPERS ===== */
 .hidden {
   opacity: 0;
   filter: blur(5px);
   transform: translateY(30px);
 }
 
-/* ===== MENU MOBILE PREMIUM - APENAS ESTILOS VISUAIS ===== */
 .main-nav {
   position: fixed;
   top: 0;
@@ -597,7 +581,6 @@ button {
   border-right: 1px solid rgba(255, 122, 0, 0.2);
 }
 
-/* Header do Menu Mais Estiloso */
 .nav-header {
   padding: var(--space-lg);
   padding-top: calc(var(--header-height) + 1.5rem);
@@ -630,7 +613,6 @@ button {
   text-shadow: 0 0 20px rgba(255, 122, 0, 0.3);
 }
 
-/* Lista de Navegação Premium */
 .main-nav .nav-list {
   flex-direction: column;
   align-items: flex-start;
@@ -642,7 +624,6 @@ button {
   overflow-y: auto;
 }
 
-/* Itens Principais com Design Moderno */
 .main-nav .nav-list > li:not(.nav-separator):not(.nav-item-account) {
   width: 100%;
   margin-bottom: 4px;
@@ -709,7 +690,6 @@ button {
   filter: drop-shadow(0 0 12px rgba(255, 122, 0, 0.5));
 }
 
-/* Separador Elegante */
 .nav-separator {
   width: calc(100% - 2rem);
   height: 2px;
@@ -724,7 +704,6 @@ button {
   border-radius: 2px;
 }
 
-/* Seção da Conta com Destaque */
 .nav-item-account {
   width: 100%;
   margin-bottom: 8px;
@@ -756,7 +735,6 @@ button {
   filter: drop-shadow(0 0 8px rgba(255, 122, 0, 0.4));
 }
 
-/* Botão de Logout com Destaque */
 .nav-link-logout {
   width: 100%;
   border: none;
@@ -820,7 +798,6 @@ button {
   color: #ff5252;
 }
 
-/* Botão de Login Mobile Premium */
 .nav-login-btn {
   width: calc(100% - 2rem);
   justify-content: center;
@@ -869,7 +846,6 @@ button {
   left: 100%;
 }
 
-/* Overlay Premium */
 body.nav-open::before {
   content: '';
   position: fixed;
@@ -880,7 +856,6 @@ body.nav-open::before {
   transition: all 0.4s ease-in-out;
 }
 
-/* Scrollbar Elegante */
 .main-nav .nav-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -899,7 +874,6 @@ body.nav-open::before {
   background: linear-gradient(135deg, var(--primary-light) 0%, #ff9d45 100%);
 }
 
-/* Botão Hamburguer Premium */
 .mobile-nav-toggle {
   display: none;
   z-index: 1100;
@@ -968,7 +942,6 @@ body.nav-open .hamburger-icon::after {
   background-color: var(--primary);
 }
 
-/* ===== ESTILOS DO MODAL DO CARRINHO (ADICIONAR NO FINAL) ===== */
 .cart-item {
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -1081,7 +1054,6 @@ input[type=number]::-webkit-outer-spin-button {
   justify-content: center;
 }
 
-/* Notificação "Adicionado ao Carrinho" */
 .cart-notification {
   position: fixed;
   bottom: 20px;
@@ -1100,11 +1072,6 @@ input[type=number]::-webkit-outer-spin-button {
   transform: translateX(-50%) translateY(0);
 }
 
-/* ===================================
-    RESPONSIVIDADE PROFISSIONAL - MOBILE FIRST
-   =================================== */
-
-/* Mobile Small (até 480px) */
 @media (max-width: 480px) {
   :root {
     --header-height: 60px;
@@ -1135,9 +1102,8 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
-/* =========== NOVOS ESTILOS A ADICIONAR =========== */
+/* =========== CORREÇÃO DO MENU DROPDOWN =========== */
 
-/* Estilos para o menu de usuário logado (Desktop) */
 .user-account-menu {
     position: relative;
     margin-left: 1rem;
@@ -1167,7 +1133,12 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .account-dropdown {
-    display: none;
+    /* MUDANÇA 1: Esconde o menu com opacidade e o torna não-clicável */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+
     position: absolute;
     right: 0;
     top: 100%;
@@ -1181,8 +1152,11 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
+/* MUDANÇA 2: Mostra o menu quando o mouse está sobre QUALQUER parte do .user-account-menu */
 .user-account-menu:hover .account-dropdown {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .account-dropdown a, .logout-button {
@@ -1449,7 +1423,6 @@ input[type=number]::-webkit-outer-spin-button {
     left: 100%;
   }
 
-  /* Overlay Premium */
   body.nav-open::before {
     content: '';
     position: fixed;
@@ -1460,7 +1433,6 @@ input[type=number]::-webkit-outer-spin-button {
     transition: all 0.4s ease-in-out;
   }
 
-  /* Scrollbar Elegante */
   .main-nav .nav-list::-webkit-scrollbar {
     width: 6px;
   }
@@ -1479,7 +1451,6 @@ input[type=number]::-webkit-outer-spin-button {
     background: linear-gradient(135deg, var(--primary-light) 0%, #ff9d45 100%);
   }
 
-  /* Botão Hamburguer Premium */
   .mobile-nav-toggle {
     display: block;
     z-index: 1100;
@@ -1601,7 +1572,6 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
-/* Tablet (769px a 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .container {
     padding: 0 1.5rem;
@@ -1613,9 +1583,8 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
-/* Desktop (acima de 1025px) */
 @media (min-width: 1025px) {
   .main-nav {
-    display: flex !important; /* Força a exibição do menu desktop */
+    display: flex !important;
   }
 }

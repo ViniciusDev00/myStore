@@ -5,9 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutButton = document.getElementById('checkout-button');
     const token = localStorage.getItem('jwtToken');
 
-    // Redireciona para o login se não houver token
     if (!token) {
-        // --- CORREÇÃO APLICADA AQUI ---
         window.location.href = '../../login/HTML/login.html'; 
         return;
     }
@@ -20,18 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const getCart = () => {
-        return JSON.parse(localStorage.getItem('cart')) || [];
+        // --- CORREÇÃO APLICADA AQUI: Usando a chave correta do carrinho ---
+        return JSON.parse(localStorage.getItem('japaUniverseCart')) || [];
     };
 
     const saveCart = (cart) => {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        // --- CORREÇÃO APLICADA AQUI: Usando a chave correta do carrinho ---
+        localStorage.setItem('japaUniverseCart', JSON.stringify(cart));
         renderCart(); 
     };
 
     const renderCart = () => {
         const cart = getCart();
 
-        // Redireciona para o catálogo se o carrinho estiver vazio
+        if (!cartItemsContainer || !checkoutButton) return;
+
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = `
                 <div class="empty-cart">
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="item-details">
                     <h3 class="item-name">${item.name}</h3>
                     <p class="item-size">Tamanho: ${item.size}</p>
-                    <p class="item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                    <p class="item-price">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</p>
                 </div>
                 <div class="item-actions">
                     <input type="number" value="${item.quantity}" min="1" class="item-quantity" data-index="${index}" readonly>
@@ -65,8 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateSummary = (subtotal) => {
-        summarySubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-        summaryTotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        if (summarySubtotal) summarySubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        if (summaryTotal) summaryTotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
     };
 
     const attachEventListeners = () => {
@@ -97,20 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 quantidade: item.quantity,
                 tamanho: item.size
             })),
-            // Outros detalhes do pedido podem ser adicionados aqui se necessário
         };
 
         try {
             checkoutButton.disabled = true;
             checkoutButton.textContent = 'Processando...';
 
-            await apiClient.post('/pedidos', pedido);
+            // ATENÇÃO: A lógica aqui foi alterada para criar o pedido e redirecionar para o pagamento
+            const response = await apiClient.post('/pedidos', cart.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                size: item.size
+            })));
             
-            alert('Pedido realizado com sucesso!');
-            localStorage.removeItem('cart');
+            const novoPedido = response.data;
             
-            // --- CORREÇÃO APLICADA AQUI ---
-            window.location.href = '../../perfil/HTML/perfil.html';
+            alert('Pedido realizado com sucesso! Você será redirecionado para o pagamento.');
+            localStorage.removeItem('japaUniverseCart');
+            
+            window.location.href = `../pagamento/HTML/pagamento.html?pedidoId=${novoPedido.id}`;
 
         } catch (error) {
             console.error('Erro ao finalizar a compra:', error);
