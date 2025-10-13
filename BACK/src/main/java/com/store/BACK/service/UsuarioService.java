@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Importe a anotação Transactional
+
+import java.util.stream.Collectors; // Importe Collectors
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -36,6 +39,26 @@ public class UsuarioService implements UserDetailsService {
         Usuario novoUsuario = usuarioRepository.save(usuario);
         return convertToDTO(novoUsuario);
     }
+
+    // --- MÉTODO NOVO E CORRIGIDO ADICIONADO AQUI ---
+    @Transactional(readOnly = true)
+    public UsuarioDTO getDadosUsuario(Usuario usuarioLogado) {
+        Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setId(usuario.getId());
+        dto.setNome(usuario.getNome());
+        dto.setEmail(usuario.getEmail());
+        dto.setRole(usuario.getRole());
+        
+        // Inicializa as coleções "preguiçosas" dentro da transação
+        dto.setEnderecos(usuario.getEnderecos().stream().collect(Collectors.toList()));
+        dto.setPedidos(usuario.getPedidos().stream().collect(Collectors.toList()));
+
+        return dto;
+    }
+    // --- FIM DA ADIÇÃO ---
 
     private UsuarioDTO convertToDTO(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
