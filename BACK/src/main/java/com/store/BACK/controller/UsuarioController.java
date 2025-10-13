@@ -1,8 +1,10 @@
 package com.store.BACK.controller;
 
+import com.store.BACK.dto.UsuarioDTO; // 1. IMPORTAR O DTO
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.PedidoService;
+import com.store.BACK.service.UsuarioService; // 2. IMPORTAR O SERVICE
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,9 +21,15 @@ public class UsuarioController {
     @Autowired
     private PedidoService pedidoService;
 
+    @Autowired // 3. INJETAR O USUARIO SERVICE
+    private UsuarioService usuarioService;
+
+    // --- MÉTODO "/meus-dados" CORRIGIDO ---
     @GetMapping("/meus-dados")
-    public ResponseEntity<Usuario> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
-        return ResponseEntity.ok(usuarioLogado);
+    public ResponseEntity<UsuarioDTO> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
+        // 4. CHAMAR O NOVO MÉTODO DO SERVICE QUE RETORNA O DTO
+        UsuarioDTO usuarioDTO = usuarioService.getDadosUsuario(usuarioLogado);
+        return ResponseEntity.ok(usuarioDTO);
     }
 
     @GetMapping("/meus-pedidos")
