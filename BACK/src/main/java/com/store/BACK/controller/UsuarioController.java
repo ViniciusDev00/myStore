@@ -1,10 +1,8 @@
 package com.store.BACK.controller;
 
-import com.store.BACK.dto.UsuarioDTO;
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.PedidoService;
-import com.store.BACK.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,13 +19,9 @@ public class UsuarioController {
     @Autowired
     private PedidoService pedidoService;
 
-    @Autowired
-    private UsuarioService usuarioService;
-
     @GetMapping("/meus-dados")
-    public ResponseEntity<UsuarioDTO> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
-        UsuarioDTO usuarioDTO = usuarioService.getDadosUsuario(usuarioLogado);
-        return ResponseEntity.ok(usuarioDTO);
+    public ResponseEntity<Usuario> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
+        return ResponseEntity.ok(usuarioLogado);
     }
 
     @GetMapping("/meus-pedidos")
