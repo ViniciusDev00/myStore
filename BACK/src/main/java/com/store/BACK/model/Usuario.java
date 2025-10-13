@@ -33,12 +33,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String role = "ROLE_USER";
 
-    // --- CORREÇÃO APLICADA AQUI ---
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("usuario-enderecos")
     private List<Endereco> enderecos;
 
-    // --- CORREÇÃO APLICADA AQUI ---
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("usuario-pedidos")
     private List<Pedido> pedidos;
@@ -47,7 +45,6 @@ public class Usuario implements UserDetails {
         return this.nome;
     }
 
-    // Métodos da interface UserDetails...
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role));
