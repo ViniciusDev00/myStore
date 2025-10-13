@@ -9,9 +9,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Importe a anotação Transactional
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors; // Importe Collectors
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -40,7 +40,7 @@ public class UsuarioService implements UserDetailsService {
         return convertToDTO(novoUsuario);
     }
 
-    // --- MÉTODO NOVO E CORRIGIDO ADICIONADO AQUI ---
+    // --- MÉTODO CORRIGIDO E AGORA FUNCIONAL ---
     @Transactional(readOnly = true)
     public UsuarioDTO getDadosUsuario(Usuario usuarioLogado) {
         Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
@@ -52,13 +52,12 @@ public class UsuarioService implements UserDetailsService {
         dto.setEmail(usuario.getEmail());
         dto.setRole(usuario.getRole());
         
-        // Inicializa as coleções "preguiçosas" dentro da transação
+        // Agora isso funciona, pois o DTO tem os campos corretos.
         dto.setEnderecos(usuario.getEnderecos().stream().collect(Collectors.toList()));
         dto.setPedidos(usuario.getPedidos().stream().collect(Collectors.toList()));
 
         return dto;
     }
-    // --- FIM DA ADIÇÃO ---
 
     private UsuarioDTO convertToDTO(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
