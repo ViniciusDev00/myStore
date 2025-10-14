@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = 'https://api.japauniverse.com.br/api/produtos';
     const grid = document.getElementById('products-grid');
-    const headerElement = document.querySelector("header.main-header");
-    const basePath = headerElement ? headerElement.dataset.basepath || "." : ".";
-
+    
     if (grid) {
         let allProducts = [];
         let displayedProducts = 8;
@@ -12,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderGrid = (productsToRender) => {
             grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
-                    <a href="${basePath}/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
+                    <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                         <div class="product-image-wrapper">
-                            <img src="${basePath}/${product.imagemUrl}" alt="${product.nome}">
+                            <img src="${product.imagemUrl}" alt="${product.nome}">
                         </div>
                         <div class="product-info">
                             <span class="product-brand">${product.marca.nome}</span>
@@ -67,28 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadMoreBtn.addEventListener('click', () => {
             displayedProducts += 8;
             applyFiltersAndRender();
-        });
-
-        // Adiciona a funcionalidade de "Adicionar ao Carrinho" nesta página
-        grid.addEventListener('click', (e) => {
-            if (e.target.classList.contains('add-to-cart-btn')) {
-                const productId = e.target.dataset.productId;
-                const product = allProducts.find(p => p.id.toString() === productId);
-                if (product) {
-                    const productToAdd = {
-                        id: product.id.toString(),
-                        name: product.nome,
-                        price: product.preco,
-                        image: `${basePath}/${product.imagemUrl}`,
-                        size: '39' // Tamanho padrão
-                    };
-                    if (window.addToCart) {
-                        window.addToCart(productToAdd);
-                    } else {
-                        console.error("Função addToCart não encontrada.");
-                    }
-                }
-            }
         });
 
         fetchProducts();
