@@ -2,6 +2,7 @@ package com.store.BACK.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder; // 1. IMPORTAR
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +44,13 @@ public class FileStorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // Retorna o caminho que será usado no navegador
-            return "/uploads/" + newFileName;
+            // --- CORREÇÃO APLICADA AQUI ---
+            // Retorna a URL completa e acessível publicamente para a imagem
+            return ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/uploads/")
+                    .path(newFileName)
+                    .toUriString();
+
         } catch (IOException e) {
             throw new RuntimeException("Falha ao armazenar o arquivo.", e);
         }
