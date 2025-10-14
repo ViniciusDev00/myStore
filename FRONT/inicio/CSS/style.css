@@ -27,7 +27,7 @@
 
 .hero-subtitle {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: rgb(243, 229, 203);
   max-width: 450px;
   margin: var(--space-md) 0 var(--space-lg);
 }
@@ -436,7 +436,7 @@
     width: 100%;
     position: relative;
     z-index: 2;
-    margin-top: 15vh;
+    margin-top: 10vh;
     max-width: 100%;
   }
 
@@ -456,7 +456,7 @@
     max-width: 320px;
     margin: var(--space-md) 0 var(--space-lg);
     line-height: 1.5;
-    color: var(--text-secondary);
+    color: rgb(199, 185, 160);
     font-weight: 500;
     width: 100%;
   }
@@ -585,7 +585,7 @@
 
   .hero-content {
     padding-left: 1rem;
-    margin-top: 12vh;
+    margin-top: 10vh;
   }
 
   .hero-title {
@@ -611,6 +611,7 @@
 @media (max-width: 414px) {
   .hero-content {
     padding-left: 1rem;
+      transform: translateY(-57px); 
   }
   
   .hero-title {
