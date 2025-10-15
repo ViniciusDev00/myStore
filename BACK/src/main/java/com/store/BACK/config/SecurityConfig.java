@@ -30,9 +30,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults()) // Habilita a configuração de CORS definida abaixo
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
@@ -50,19 +51,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // Lista de domínios que podem acessar sua API
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
                 "http://localhost:5500",
                 "http://127.0.0.1:5501",
                 "http://localhost:5501",
                 "https://japa-front-production.up.railway.app",
-                "https://www.japauniverse.com.br", // Seu domínio com www
-                "https://japauniverse.com.br"      // Seu domínio sem www
+                "https://www.japauniverse.com.br",
+                "https://japauniverse.com.br"
         ));
-        
-        // Métodos e cabeçalhos permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
