@@ -48,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pedidosTableBody = document.getElementById('pedidos-table-body');
     const produtosTableBody = document.getElementById('produtos-table-body');
     const mensagensTableBody = document.getElementById('mensagens-table-body');
-    
-    // --- Elementos do Modal de Produto ---
     const productModal = document.getElementById('product-modal');
     const modalTitle = document.getElementById('modal-title');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -60,15 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const productImageInput = document.getElementById('product-image');
     const imagePreview = document.getElementById('image-preview');
     const imagePreviewText = document.getElementById('image-preview-text');
-
-    // --- Elementos do Modal de Mensagem ---
     const messageModal = document.getElementById('message-modal');
     const closeMessageModalBtn = document.getElementById('close-message-modal-btn');
     const messageModalBody = document.getElementById('message-modal-body');
     const messageModalTitle = document.getElementById('message-modal-title');
     let adminMessages = [];
 
-    // --- Lógica de Responsividade ---
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const toggleBtn = document.querySelector('.mobile-admin-toggle');
@@ -87,7 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Funções de Carregamento de Dados ---
+    const getImageUrl = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http')) {
+            return path;
+        }
+        return `/${path}`;
+    };
+
     const populateSelect = (selectElement, items, placeholder) => {
         selectElement.innerHTML = `<option value="">${placeholder}</option>`;
         items.forEach(item => {
@@ -105,11 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
             populateSelect(categorySelect, categoriesRes.data, 'Selecione uma categoria');
         } catch (error) {
             console.error("Erro ao buscar marcas e categorias:", error);
-            alert('Não foi possível carregar as opções de marcas e categorias.');
         }
     };
 
-    // --- Funções de Renderização ---
     const renderPedidos = (pedidos) => {
         pedidosTableBody.innerHTML = pedidos.map(pedido => `
             <tr>
@@ -126,9 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <option value="CANCELADO" ${pedido.status === 'CANCELADO' ? 'selected' : ''}>Cancelado</option>
                     </select>
                 </td>
-                <td>
-                    <button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button>
-                </td>
+                <td><button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button></td>
             </tr>
         `).join('');
     };
@@ -152,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderMensagens = (mensagens) => {
         adminMessages = mensagens;
         mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
-
         mensagensTableBody.innerHTML = mensagens.map(msg => `
             <tr>
                 <td>${msg.id}</td>
@@ -160,9 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${msg.email}</td>
                 <td>${msg.assunto}</td>
                 <td>${new Date(msg.dataEnvio).toLocaleString('pt-BR')}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm view-message-btn" data-message-id="${msg.id}">Visualizar</button>
-                </td>
+                <td><button class="btn btn-primary btn-sm view-message-btn" data-message-id="${msg.id}">Visualizar</button></td>
             </tr>
         `).join('');
     };
@@ -197,15 +192,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- Navegação ---
     const switchView = (view) => {
-        pedidosSection.classList.remove('active');
-        produtosSection.classList.remove('active');
-        mensagensSection.classList.remove('active');
-        navPedidos.classList.remove('active');
-        navProdutos.classList.remove('active');
-        navMensagens.classList.remove('active');
-
+        [pedidosSection, produtosSection, mensagensSection].forEach(s => s.classList.remove('active'));
+        [navPedidos, navProdutos, navMensagens].forEach(n => n.classList.remove('active'));
+        
         if (view === 'pedidos') {
             pedidosSection.classList.add('active');
             navPedidos.classList.add('active');
@@ -225,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
     navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
     navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
 
-    // --- Lógica dos Modais (ATUALIZADA) ---
     const openModal = (produto = null) => {
         productForm.reset();
         productImageInput.value = '';
@@ -243,13 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('product-original-price').value = produto.precoOriginal || '';
             document.getElementById('product-stock').value = produto.estoque;
             document.getElementById('product-description').value = produto.descricao;
-
             if (produto.imagemUrl) {
-                imagePreview.src = `/${produto.imagemUrl}`;
+                imagePreview.src = getImageUrl(produto.imagemUrl);
                 imagePreview.classList.remove('hidden');
                 imagePreviewText.textContent = 'Imagem atual do produto.';
             }
-
         } else {
             modalTitle.textContent = 'Adicionar Novo Produto';
             document.getElementById('product-id').value = '';
@@ -257,35 +244,19 @@ document.addEventListener('DOMContentLoaded', () => {
         productModal.classList.add('active');
     };
 
-    const closeModal = () => {
-        productModal.classList.remove('active');
-    };
-
+    const closeModal = () => productModal.classList.remove('active');
     const openMessageModal = (message) => {
         messageModalTitle.textContent = `Mensagem de: ${message.nome}`;
-        messageModalBody.innerHTML = `
-            <p class="message-info"><strong>De:</strong> ${message.nome} (${message.email})</p>
-            <p class="message-info"><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p>
-            <h4>Assunto: ${message.assunto}</h4>
-            <p>${message.mensagem}</p>
-        `;
+        messageModalBody.innerHTML = `<p><strong>De:</strong> ${message.nome} (${message.email})</p><p><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p><h4>Assunto: ${message.assunto}</h4><p>${message.mensagem}</p>`;
         messageModal.classList.add('active');
     };
-
-    const closeMessageModal = () => {
-        messageModal.classList.remove('active');
-    };
+    const closeMessageModal = () => messageModal.classList.remove('active');
     
     addProductBtn.addEventListener('click', () => openModal());
     closeModalBtn.addEventListener('click', closeModal);
-    productModal.addEventListener('click', (e) => {
-        if (e.target === productModal) closeModal();
-    });
-    
+    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeModal(); });
     closeMessageModalBtn.addEventListener('click', closeMessageModal);
-    messageModal.addEventListener('click', (e) => {
-        if (e.target === messageModal) closeMessageModal();
-    });
+    messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
     
     productImageInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -297,30 +268,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 imagePreviewText.textContent = file.name;
             };
             reader.readAsDataURL(file);
-        } else {
-            const productId = document.getElementById('product-id').value;
-            if (!productId) {
-                imagePreview.classList.add('hidden');
-                imagePreview.src = '#';
-                imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
-            }
+        } else if (!document.getElementById('product-id').value) {
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '#';
+            imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
         }
     });
 
-    // --- Lógica de Ações ---
     pedidosTableBody.addEventListener('click', async (e) => {
         if (e.target.classList.contains('update-status-btn')) {
             const pedidoId = e.target.dataset.pedidoId;
-            const select = document.querySelector(`.status-select[data-pedido-id="${pedidoId}"]`);
-            const newStatus = select.value;
-
+            const newStatus = document.querySelector(`.status-select[data-pedido-id="${pedidoId}"]`).value;
             try {
                 await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: newStatus });
-                alert(`Status do pedido #${pedidoId} atualizado para ${newStatus}.`);
+                alert(`Status do pedido #${pedidoId} atualizado.`);
                 fetchPedidos();
             } catch (error) {
-                console.error("Erro ao atualizar status do pedido:", error);
-                alert('Falha ao atualizar o status do pedido.');
+                alert('Falha ao atualizar o status.');
             }
         }
     });
@@ -328,27 +292,21 @@ document.addEventListener('DOMContentLoaded', () => {
     produtosTableBody.addEventListener('click', async (e) => {
         const target = e.target.closest('button');
         if (!target) return;
-
         const productId = target.dataset.productId;
-
         if (target.classList.contains('btn-edit')) {
             try {
                 const response = await publicApiClient.get(`/produtos/${productId}`);
                 openModal(response.data);
             } catch (error) {
-                console.error("Erro ao buscar dados do produto para edição:", error);
                 alert('Não foi possível carregar os dados do produto.');
             }
-        }
-
-        if (target.classList.contains('btn-delete')) {
-            if (confirm(`Tem certeza que deseja excluir o produto com ID ${productId}?`)) {
+        } else if (target.classList.contains('btn-delete')) {
+            if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}?`)) {
                 try {
                     await apiClient.delete(`/produtos/${productId}`);
-                    alert('Produto excluído com sucesso!');
+                    alert('Produto excluído!');
                     fetchProdutos();
                 } catch (error) {
-                    console.error("Erro ao excluir produto:", error);
                     alert('Falha ao excluir o produto.');
                 }
             }
@@ -358,27 +316,22 @@ document.addEventListener('DOMContentLoaded', () => {
     mensagensTableBody.addEventListener('click', (e) => {
         const target = e.target.closest('.view-message-btn');
         if (target) {
-            const messageId = parseInt(target.dataset.messageId, 10);
-            const message = adminMessages.find(m => m.id === messageId);
-            if (message) {
-                openMessageModal(message);
-            }
+            const message = adminMessages.find(m => m.id === parseInt(target.dataset.messageId, 10));
+            if (message) openMessageModal(message);
         }
     });
 
     productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        const brandId = parseInt(brandSelect.value, 10);
-        const categoryId = parseInt(categorySelect.value, 10);
-
+        const [brandId, categoryId] = [parseInt(brandSelect.value, 10), parseInt(categorySelect.value, 10)];
         if (isNaN(brandId) || isNaN(categoryId)) {
-            alert('Por favor, selecione uma marca e uma categoria válidas.');
+            alert('Selecione marca e categoria.');
             return;
         }
         
         const id = document.getElementById('product-id').value;
-        const produtoData = {
+        const formData = new FormData();
+        formData.append('produto', JSON.stringify({
             nome: document.getElementById('product-name').value,
             marca: { id: brandId },
             categoria: { id: categoryId },
@@ -386,37 +339,22 @@ document.addEventListener('DOMContentLoaded', () => {
             precoOriginal: document.getElementById('product-original-price').value ? parseFloat(document.getElementById('product-original-price').value) : null,
             estoque: parseInt(document.getElementById('product-stock').value),
             descricao: document.getElementById('product-description').value,
-        };
-
-        const formData = new FormData();
-        formData.append('produto', JSON.stringify(produtoData));
+        }));
         
-        const imageFile = productImageInput.files[0];
-        if (imageFile) {
-            formData.append('imagem', imageFile);
-        }
+        if (productImageInput.files[0]) formData.append('imagem', productImageInput.files[0]);
 
         try {
-            if (id) {
-                await apiClient.put(`/produtos/${id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                alert('Produto atualizado com sucesso!');
-            } else {
-                await apiClient.post('/produtos', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                alert('Produto adicionado com sucesso!');
-            }
+            const url = id ? `/produtos/${id}` : '/produtos';
+            const method = id ? 'put' : 'post';
+            await apiClient[method](url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+            alert(`Produto ${id ? 'atualizado' : 'adicionado'}!`);
             closeModal();
             fetchProdutos();
         } catch (error) {
-            console.error("Erro ao salvar produto:", error);
-            alert('Falha ao salvar o produto. Verifique os dados e tente novamente.');
+            alert('Falha ao salvar o produto.');
         }
     });
 
-    // --- Inicialização ---
     fetchBrandsAndCategories();
     switchView('pedidos');
 });

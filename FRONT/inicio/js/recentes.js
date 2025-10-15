@@ -1,6 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_URL = "https://api.japauniverse.com.br/api/produtos";
 
+  const getImageUrl = (path) => {
+      if (!path) return '';
+      if (path.startsWith('http')) {
+          return path;
+      }
+      return `/${path}`;
+  };
+
   const renderProductRow = (productsToRender, containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -9,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="product-card" data-id="${product.id}">
           <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
             <div class="product-image-wrapper">
-              <img src="/${product.imagemUrl}" alt="${product.nome}">
+              <img src="${getImageUrl(product.imagemUrl)}" alt="${product.nome}">
             </div>
             <div class="product-info">
               <span class="product-brand">${product.marca.nome}</span>
@@ -57,31 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Falha ao carregar produtos:", error);
     }
   };
-
-  document.body.addEventListener('click', (e) => {
-    if (e.target.classList.contains('add-to-cart-btn')) {
-      const productId = e.target.dataset.productId;
-      if (!window.allProducts) {
-        console.error("Lista de produtos não carregada.");
-        return;
-      }
-      const product = window.allProducts.find(p => p.id.toString() === productId);
-      if (product) {
-        const productToAdd = {
-          id: product.id.toString(),
-          name: product.nome,
-          price: product.preco,
-          image: `/${product.imagemUrl}`, // Caminho corrigido para o carrinho
-          size: '39' // Tamanho padrão para adição rápida
-        };
-        if (window.addToCart) {
-          window.addToCart(productToAdd);
-        } else {
-          console.error("Função addToCart não encontrada.");
-        }
-      }
-    }
-  });
 
   fetchAndDistributeProducts();
 });

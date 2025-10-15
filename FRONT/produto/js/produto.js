@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const formatPrice = (price) => `R$ ${price.toFixed(2).replace('.', ',')}`;
 
+    // --- FUNÇÃO INTELIGENTE PARA OBTER A URL CORRETA ---
+    const getImageUrl = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http')) {
+            return path; // Já é uma URL completa, use-a diretamente
+        }
+        return `/${path}`; // É um caminho relativo, adicione a barra
+    };
+
     const fetchProductData = async () => {
         try {
             const response = await axios.get(`${API_URL}/${productId}`);
@@ -31,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const discount = product.precoOriginal ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
         const discountTagHTML = discount > 0 ? `<span class="discount-tag">-${discount}%</span>` : '';
 
-        // --- CAMINHOS DAS IMAGENS CORRIGIDOS AQUI ---
-        const imageUrl = `/${product.imagemUrl}`;
+        // --- CORREÇÃO APLICADA AQUI ---
+        const imageUrl = getImageUrl(product.imagemUrl);
 
         const productHTML = `
             <div class="product-detail-grid">
@@ -100,7 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderRelatedProducts = (products) => {
         const grid = document.getElementById('related-products-grid');
         if (!products || products.length === 0) {
-            document.querySelector('.related-products-section').style.display = 'none';
+            if(document.querySelector('.related-products-section')) {
+                document.querySelector('.related-products-section').style.display = 'none';
+            }
             return;
         }
 
@@ -108,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
             const discountPercentage = hasDiscount ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
             
-            // --- CAMINHOS DE IMAGEM E LINK CORRIGIDOS AQUI ---
-            const imageUrl = `/${product.imagemUrl}`;
+            // --- CORREÇÃO APLICADA AQUI ---
+            const imageUrl = getImageUrl(product.imagemUrl);
             const productUrl = `/FRONT/produto/HTML/produto.html?id=${product.id}`;
 
             return `
@@ -168,13 +179,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await axios.get(`${API_URL}/${productId}`);
                 const product = response.data;
     
-                // --- CAMINHO DA IMAGEM CORRIGIDO PARA O CARRINHO ---
+                // --- CORREÇÃO APLICADA AQUI ---
                 const productToAdd = {
                     id: product.id.toString(),
                     name: product.nome,
                     price: product.preco,
-                    image: `/${product.imagemUrl}`,
-                    size: size
+                    image: getImageUrl(product.imagemUrl),
+                    size: size,
+                    quantity: 1 // Adicionado para consistência
                 };
     
                 if (window.addToCart) {

@@ -7,12 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let displayedProducts = 8;
         const loadMoreBtn = document.getElementById('loadMoreBtn');
 
+        const getImageUrl = (path) => {
+            if (!path) return '';
+            if (path.startsWith('http')) {
+                return path;
+            }
+            return `/${path}`;
+        };
+
         const renderGrid = (productsToRender) => {
             grid.innerHTML = productsToRender.slice(0, displayedProducts).map(product => `
                 <div class="product-card" data-id="${product.id}">
                     <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                         <div class="product-image-wrapper">
-                            <img src="${product.imagemUrl}" alt="${product.nome}">
+                            <img src="${getImageUrl(product.imagemUrl)}" alt="${product.nome}">
                         </div>
                         <div class="product-info">
                             <span class="product-brand">${product.marca.nome}</span>
@@ -24,7 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
 
-            loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
+            if (loadMoreBtn) {
+                loadMoreBtn.style.display = (displayedProducts >= productsToRender.length) ? 'none' : 'inline-flex';
+            }
         };
 
         const applyFiltersAndRender = () => {
@@ -62,10 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('searchInput').addEventListener('input', () => { displayedProducts = 8; applyFiltersAndRender(); });
         document.getElementById('brandFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
         document.getElementById('sortFilter').addEventListener('change', () => { displayedProducts = 8; applyFiltersAndRender(); });
-        loadMoreBtn.addEventListener('click', () => {
-            displayedProducts += 8;
-            applyFiltersAndRender();
-        });
+        
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                displayedProducts += 8;
+                applyFiltersAndRender();
+            });
+        }
 
         fetchProducts();
     }
