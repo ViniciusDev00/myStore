@@ -44,8 +44,8 @@ public class FileStorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // --- CORREÇÃO DEFINITIVA ---
-            // Retorna a URL completa e acessível publicamente para a imagem
+            // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
+            // Retorna a URL completa e acessível publicamente para a imagem.
             return ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/uploads/")
                     .path(newFileName)
