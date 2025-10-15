@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_URL = "https://api.japauniverse.com.br/api/produtos";
 
+  // --- FUNÇÃO CORRIGIDA ---
   const getImageUrl = (path) => {
       if (!path) return '';
       if (path.startsWith('http')) {
           return path;
       }
-      return `/${path}`;
+      // Adiciona o endereço da API antes do caminho da imagem
+      return `https://api.japauniverse.com.br/${path}`;
   };
 
   const renderProductRow = (productsToRender, containerId) => {
