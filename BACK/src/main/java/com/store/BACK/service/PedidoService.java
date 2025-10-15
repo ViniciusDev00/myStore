@@ -1,20 +1,12 @@
 package com.store.BACK.service;
 
-import com.store.BACK.model.ItemPedido;
 import com.store.BACK.model.Pedido;
-import com.store.BACK.model.Produto;
-import com.store.BACK.model.Usuario;
 import com.store.BACK.repository.PedidoRepository;
-import com.store.BACK.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class PedidoService {
@@ -23,44 +15,30 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private ProdutoRepository produtoRepository;
+    private EmailService emailService; // Injetando o serviço de email
 
-    public List<Pedido> buscarPorUsuario(Long usuarioId) {
-        return pedidoRepository.findByUsuarioId(usuarioId);
+    public List<Pedido> findAll() {
+        return pedidoRepository.findAll();
+    }
+
+    public Pedido findById(Long id) {
+        return pedidoRepository.findById(id).orElse(null);
     }
 
     @Transactional
-    public Pedido criarPedido(List<Map<String, Object>> cartItems, Usuario usuario) {
-        Pedido pedido = new Pedido();
-        pedido.setUsuario(usuario);
-        pedido.setDataPedido(LocalDateTime.now());
-        pedido.setStatus("PENDENTE");
-
-        List<ItemPedido> itensDoPedido = new ArrayList<>();
-        BigDecimal valorTotal = BigDecimal.ZERO;
-
-        for (Map<String, Object> item : cartItems) {
-            Long produtoId = Long.parseLong(item.get("id").toString());
-            int quantidade = Integer.parseInt(item.get("quantity").toString());
-            String tamanho = (String) item.get("size"); // LINHA ADICIONADA
-
-            Produto produto = produtoRepository.findById(produtoId)
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + produtoId));
-
-            ItemPedido itemPedido = new ItemPedido();
-            itemPedido.setProduto(produto);
-            itemPedido.setQuantidade(quantidade);
-            itemPedido.setPrecoUnitario(produto.getPreco());
-            itemPedido.setTamanho(tamanho); // LINHA ADICIONADA
-            itemPedido.setPedido(pedido);
-            itensDoPedido.add(itemPedido);
-
-            valorTotal = valorTotal.add(produto.getPreco().multiply(BigDecimal.valueOf(quantidade)));
+    public Pedido createPedido(Pedido pedido) {
+        // Salva o pedido no banco de dados
+        Pedido savedPedido = pedidoRepository.save(pedido);
+        
+        // Envia o email de confirmação após o pedido ser salvo com sucesso
+        try {
+            emailService.sendOrderConfirmationEmail(savedPedido);
+        } catch (Exception e) {
+            // Mesmo que o email falhe, o pedido foi criado.
+            // É importante logar o erro do email para análise posterior.
+            System.err.println("Pedido " + savedPedido.getId() + " criado, mas falha ao enviar email: " + e.getMessage());
         }
 
-        pedido.setItens(itensDoPedido);
-        pedido.setValorTotal(valorTotal);
-
-        return pedidoRepository.save(pedido);
+        return savedPedido;
     }
 }

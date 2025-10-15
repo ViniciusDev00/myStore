@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const formatPrice = (price) => `R$ ${price.toFixed(2).replace('.', ',')}`;
 
-    // --- FUNÇÃO CORRIGIDA ---
     const getImageUrl = (path) => {
         if (!path) return '';
         if (path.startsWith('http')) {
             return path;
         }
-        // Adiciona o endereço da API antes do caminho da imagem
         return `https://api.japauniverse.com.br/${path}`;
     };
 
@@ -70,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <span class="price-installments">ou em até 10x de ${formatPrice(product.preco / 10)} sem juros</span>
                     </div>
+
+                    <div class="shipping-tag" style="margin-bottom: 20px;">Frete Grátis</div>
 
                     <div class="size-selector">
                         <h3>Tamanho do calçado:</h3>
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="related-price-current">${formatPrice(product.preco)}</span>
                             ${hasDiscount ? `<span class="related-price-original">${formatPrice(product.precoOriginal)}</span>` : ''}
                         </div>
-                        <div class="related-shipping-tag">FRETE GRÁTIS</div>
+                        <div class="shipping-tag">FRETE GRÁTIS</div>
                     </div>
                 </a>
             </div>

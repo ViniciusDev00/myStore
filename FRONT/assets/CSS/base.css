@@ -1588,3 +1588,18 @@ input[type=number]::-webkit-outer-spin-button {
     display: flex !important;
   }
 }
+
+/* TAG DE FRETE GRÁTIS */
+.shipping-tag {
+    background-color: #00a65a; /* Verde */
+    color: white;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 4px;
+    margin-top: 8px;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+

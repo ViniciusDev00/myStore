@@ -1,19 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = 'https://api.japauniverse.com.br/api/produtos';
     const grid = document.getElementById('products-grid');
-    
+
     if (grid) {
         let allProducts = [];
         let displayedProducts = 8;
         const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-        // --- FUNÇÃO CORRIGIDA ---
         const getImageUrl = (path) => {
             if (!path) return '';
             if (path.startsWith('http')) {
                 return path;
             }
-            // Adiciona o endereço da API antes do caminho da imagem
             return `https://api.japauniverse.com.br/${path}`;
         };
 
@@ -27,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="product-info">
                             <span class="product-brand">${product.marca.nome}</span>
                             <h3 class="product-name">${product.nome}</h3>
+                            <div class="shipping-tag">Frete Grátis</div>
                             <p class="product-price">R$ ${product.preco.toFixed(2).replace('.', ',')}</p>
                         </div>
                     </a>
