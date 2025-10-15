@@ -1,8 +1,8 @@
 package com.store.BACK.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +16,10 @@ import java.util.UUID;
 public class FileStorageService {
 
     private final Path uploadDir = Paths.get("src/main/resources/static/uploads");
+    
+    // Adicione esta propriedade no application.properties: app.base-url=https://api.japauniverse.com.br
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
 
     public FileStorageService() {
         try {
@@ -44,12 +48,9 @@ public class FileStorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
-            // Retorna a URL completa e acessível publicamente para a imagem.
-            return ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/uploads/")
-                    .path(newFileName)
-                    .toUriString();
+            // CORREÇÃO: Retorna apenas o caminho relativo consistente
+            // O frontend irá adicionar o baseUrl conforme necessário
+            return "uploads/" + newFileName;
 
         } catch (IOException e) {
             throw new RuntimeException("Falha ao armazenar o arquivo.", e);
