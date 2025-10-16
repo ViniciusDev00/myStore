@@ -2,13 +2,14 @@ package com.store.BACK.service;
 
 import com.store.BACK.model.ItemPedido;
 import com.store.BACK.model.Pedido;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.store.BACK.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
 @Service
@@ -17,52 +18,49 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendOrderConfirmationEmail(Pedido pedido) {
+    @Async
+    public void enviarConfirmacaoDePedido(Usuario usuario, Pedido pedido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message,
                     MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                     StandardCharsets.UTF_8.name());
 
-            String to = pedido.getUsuario().getEmail();
-            String subject = "Confirmação do seu Pedido #" + pedido.getId() + " na Japa Universe";
-            String htmlBody = buildOrderConfirmationHtml(pedido);
+            helper.setTo(usuario.getEmail());
+            helper.setFrom("seu-email@gmail.com"); // Substitua pelo seu e-mail de envio
+            helper.setSubject("Confirmação do seu Pedido - Japa Universe");
 
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true); // true indica que o conteúdo é HTML
+            String content = buildEmailContent(usuario, pedido);
+            helper.setText(content, true);
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            // Em um projeto real, é bom logar esse erro
-            System.err.println("Erro ao enviar email de confirmação: " + e.getMessage());
+            // Logar o erro ou lidar com ele de forma apropriada
+            e.printStackTrace();
         }
     }
 
-    private String buildOrderConfirmationHtml(Pedido pedido) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>");
-        sb.append("<h1 style='color: #5e35b1;'>Obrigado pela sua compra, ").append(pedido.getUsuario().getNome()).append("!</h1>");
-        sb.append("<p>Seu pedido <strong>#").append(pedido.getId()).append("</strong> foi recebido e está sendo processado.</p>");
-        sb.append("<h2>Detalhes do Pedido:</h2>");
-        sb.append("<table border='1' cellpadding='10' style='border-collapse: collapse; width: 100%;'>");
-        sb.append("<thead style='background-color: #f2f2f2;'><tr><th>Produto</th><th>Quantidade</th><th>Preço</th></tr></thead>");
-        sb.append("<tbody>");
-
+    private String buildEmailContent(Usuario usuario, Pedido pedido) {
+        StringBuilder itemsHtml = new StringBuilder();
         for (ItemPedido item : pedido.getItens()) {
-            sb.append("<tr>");
-            sb.append("<td>").append(item.getProduto().getNome()).append("</td>");
-            sb.append("<td style='text-align: center;'>").append(item.getQuantidade()).append("</td>");
-            sb.append("<td style='text-align: right;'>R$ ").append(String.format("%.2f", item.getPreco())).append("</td>");
-            sb.append("</tr>");
+            itemsHtml.append("<tr>")
+                    .append("<td style='padding: 8px; border-bottom: 1px solid #ddd;'>").append(item.getProduto().getNome()).append(" (Tamanho: ").append(item.getTamanho()).append(")</td>")
+                    .append("<td style='padding: 8px; border-bottom: 1px solid #ddd;'>").append(item.getQuantidade()).append("</td>")
+                    // --- CORREÇÃO APLICADA AQUI ---
+                    .append("<td style='padding: 8px; border-bottom: 1px solid #ddd;'>R$ ").append(String.format("%.2f", item.getPrecoUnitario())).append("</td>")
+                    .append("</tr>");
         }
-
-        sb.append("</tbody></table>");
-        sb.append("<h3 style='text-align: right; margin-top: 20px;'>Total: R$ ").append(String.format("%.2f", pedido.getTotal())).append("</h3>");
-        sb.append("<p>Enviaremos uma nova notificação assim que seu pedido for enviado.</p>");
-        sb.append("<p>Atenciosamente,<br>Equipe Japa Universe</p>");
-        sb.append("</body></html>");
-
-        return sb.toString();
-    }
+    
+        return "<!DOCTYPE html>..." + // Corpo do HTML do e-mail
+               "<h2>Olá, " + usuario.getNome() + "!</h2>" +
+               "<p>Obrigado por comprar na Japa Universe. Seu pedido #" + pedido.getId() + " foi recebido e está sendo processado.</p>" +
+               "<h3>Detalhes do Pedido:</h3>" +
+               "<table style='width: 100%; border-collapse: collapse;'>" +
+               "<thead><tr><th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Produto</th><th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Qtd</th><th style='text-align: left; padding: 8px; background-color: #f2f2f2;'>Preço</th></tr></thead>" +
+               "<tbody>" + itemsHtml.toString() + "</tbody>" +
+               "</table>" +
+               // --- CORREÇÃO APLICADA AQUI ---
+               "<h3 style='text-align: right;'>Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "</h3>" +
+               "<p>Atenciosamente,<br>Equipe Japa Universe</p>";
+    }    
 }
