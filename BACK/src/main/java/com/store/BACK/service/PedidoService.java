@@ -1,11 +1,19 @@
 package com.store.BACK.service;
 
+import com.store.BACK.dto.ItemPedidoDTO;
+import com.store.BACK.model.ItemPedido;
 import com.store.BACK.model.Pedido;
+import com.store.BACK.model.Produto;
+import com.store.BACK.model.Usuario;
 import com.store.BACK.repository.PedidoRepository;
+import com.store.BACK.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,30 +23,52 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private EmailService emailService; // Injetando o serviço de email
-
-    public List<Pedido> findAll() {
-        return pedidoRepository.findAll();
-    }
-
-    public Pedido findById(Long id) {
-        return pedidoRepository.findById(id).orElse(null);
-    }
+    private ProdutoRepository produtoRepository;
+    
+    @Autowired
+    private EmailService emailService;
 
     @Transactional
-    public Pedido createPedido(Pedido pedido) {
-        // Salva o pedido no banco de dados
-        Pedido savedPedido = pedidoRepository.save(pedido);
-        
-        // Envia o email de confirmação após o pedido ser salvo com sucesso
-        try {
-            emailService.sendOrderConfirmationEmail(savedPedido);
-        } catch (Exception e) {
-            // Mesmo que o email falhe, o pedido foi criado.
-            // É importante logar o erro do email para análise posterior.
-            System.err.println("Pedido " + savedPedido.getId() + " criado, mas falha ao enviar email: " + e.getMessage());
+    public Pedido criarPedido(List<ItemPedidoDTO> itensDTO, Usuario usuario) {
+        Pedido pedido = new Pedido();
+        pedido.setUsuario(usuario);
+        pedido.setDataPedido(LocalDateTime.now());
+        pedido.setStatus("PENDENTE");
+
+        List<ItemPedido> itensPedido = new ArrayList<>();
+        BigDecimal valorTotal = BigDecimal.ZERO;
+
+        for (ItemPedidoDTO itemDTO : itensDTO) {
+            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado: " + itemDTO.getProdutoId()));
+
+            ItemPedido itemPedido = new ItemPedido();
+            itemPedido.setPedido(pedido);
+            itemPedido.setProduto(produto);
+            itemPedido.setQuantidade(itemDTO.getQuantidade());
+            itemPedido.setTamanho(itemDTO.getTamanho());
+            itemPedido.setPrecoUnitario(produto.getPreco());
+
+            itensPedido.add(itemPedido);
+            valorTotal = valorTotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDTO.getQuantidade())));
         }
 
-        return savedPedido;
+        pedido.setItens(itensPedido);
+        pedido.setValorTotal(valorTotal);
+        
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+        
+        // Enviar e-mail de confirmação
+        emailService.enviarConfirmacaoDePedido(usuario, pedidoSalvo);
+
+        return pedidoSalvo;
+    }
+    
+    public List<Pedido> getPedidosByUsuarioId(Long usuarioId){
+        return pedidoRepository.findByUsuarioId(usuarioId);
+    }
+
+    public Pedido getPedidoById(Long id) {
+        return pedidoRepository.findById(id).orElse(null);
     }
 }
