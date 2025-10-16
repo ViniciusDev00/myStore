@@ -32,7 +32,8 @@ public class UsuarioController {
 
     @GetMapping("/meus-pedidos")
     public ResponseEntity<List<Pedido>> getMeusPedidos(@AuthenticationPrincipal Usuario usuarioLogado) {
-        List<Pedido> pedidos = pedidoService.buscarPorUsuario(usuarioLogado.getId());
+        // --- CORREÇÃO APLICADA AQUI ---
+        List<Pedido> pedidos = pedidoService.getPedidosByUsuarioId(usuarioLogado.getId());
         return ResponseEntity.ok(pedidos);
     }
 }
