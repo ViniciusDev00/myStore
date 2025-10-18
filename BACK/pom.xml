@@ -17,6 +17,8 @@
         <java.version>17</java.version>
     </properties>
 
+    <!-- O repositório problemático (JitPack) foi removido daqui -->
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -41,11 +43,16 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- =================================================================== -->
+        <!-- ================= BIBLIOTECA PIX CORRIGIDA ======================== -->
+        <!-- Esta biblioteca está no repositório central e é mais estável -->
         <dependency>
             <groupId>br.com.nordestefomento</groupId>
             <artifactId>pix-qrcode</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <!-- =================================================================== -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
