@@ -17,13 +17,6 @@
         <java.version>17</java.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,17 +41,15 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- =================================================================== -->
+        <!-- ================= BIBLIOTECA PIX SUBSTITUÍDA AQUI ================= -->
+        <!-- Esta biblioteca está no repositório central e é mais estável -->
         <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>2.11.5</version> 
+            <groupId>br.com.nordestefomento</groupId>
+            <artifactId>pix-qrcode</artifactId>
+            <version>0.0.1</version>
         </dependency>
-        
-        <dependency>
-            <groupId>com.github.jpst-technologies</groupId>
-            <artifactId>pix-payload-generator</artifactId>
-            <version>1.1.0</version> 
-        </dependency>
+        <!-- =================================================================== -->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -128,3 +119,4 @@
         </plugins>
     </build>
 </project>
+

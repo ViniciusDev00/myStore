@@ -1,7 +1,7 @@
 package com.store.BACK.service;
 
-import com.dev.jpestana.challenges.pix.payloadgenerator.classes.PixPayloadGenerator;
-import com.dev.jpestana.challenges.pix.payloadgenerator.interfaces.PayloadGenerator;
+// Importa a classe da nova biblioteca
+import br.com.nordestefomento.jrpix.JRPix;
 import com.store.BACK.model.Pedido;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +12,13 @@ public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
     // Coloque sua chave PIX (CPF, CNPJ, E-mail, Celular ou Chave Aleatória)
-    private final String PIX_KEY = "japauniverse@gmail.com"; 
+    private final String PIX_KEY = "seu-pix@email.com"; 
     
     // O nome da sua loja (max 25 caracteres)
-    private final String MERCHANT_NAME = "Japa Universe Store"; 
+    private final String MERCHANT_NAME = "Japa Universe"; 
     
     // O nome da sua cidade (sem acentos, max 15 caracteres)
-    private final String MERCHANT_CITY = "SAO CARLOS"; 
+    private final String MERCHANT_CITY = "Sua Cidade"; 
     // ---------------------------------
 
     /**
@@ -28,27 +28,30 @@ public class PixPayloadService {
      */
     public String generatePayload(Pedido pedido) {
         try {
-            PayloadGenerator payloadGenerator = PixPayloadGenerator.create()
-                    .setPixKey(PIX_KEY)
-                    .setMerchantName(MERCHANT_NAME)
-                    .setMerchantCity(MERCHANT_CITY)
-                    
-                    // Define o ID da transação como o ID do pedido. ISSO É O MAIS IMPORTANTE!
-                    // Usamos "JAPA-" como prefixo para garantir que seja único (TXID)
-                    .setTxId("JAPA-" + pedido.getId().toString())
-                    
-                    // Define o valor exato do pedido
-                    .setAmount(pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP));
+            // Cria uma instância do gerador da nova biblioteca
+            JRPix pix = new JRPix();
+
+            // Configura os dados
+            pix.setChave(PIX_KEY);
+            pix.setNome(MERCHANT_NAME);
+            pix.setCidade(MERCHANT_CITY);
+
+            // Define o ID da transação como o ID do pedido. ISSO É O MAIS IMPORTANTE!
+            // Esta biblioteca já adiciona "***" automaticamente, então só passamos o ID.
+            pix.setTxId(String.valueOf(pedido.getId()));
+            
+            // Define o valor exato do pedido. A biblioteca espera um Double.
+            double valor = pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).doubleValue();
+            pix.setValor(valor);
 
             // Retorna a string do payload
-            return payloadGenerator.getPayload();
+            return pix.getPayload();
             
         } catch (Exception e) {
             // Em caso de erro, loga no console e retorna null
-            // Em produção, você deveria usar um sistema de log melhor (ex: SLF4J)
             System.err.println("Erro grave ao gerar payload PIX para Pedido ID " + pedido.getId() + ": " + e.getMessage());
-            e.printStackTrace(); // Mostra o stack trace do erro
-            return null; // Retorna null para que o PedidoService possa tratar
+            e.printStackTrace();
+            return null; 
         }
     }
 }
