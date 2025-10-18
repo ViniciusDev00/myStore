@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects; // Importar Objects para comparação segura
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,11 @@ public class AdminService {
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
     private final FileStorageService fileStorageService;
-    private final ContatoRepository contatoRepository; // Dependência adicionada
+    private final ContatoRepository contatoRepository; // Dependência existente
+
+    // --- NOVA INJEÇÃO DE DEPENDÊNCIA ---
+    private final EmailService emailService;
+    // ------------------------------------
 
     public List<Pedido> listarTodosOsPedidos() {
         return pedidoRepository.findAll();
@@ -35,12 +40,41 @@ public class AdminService {
         return contatoRepository.findAll();
     }
 
+    /**
+     * Atualiza o status de um pedido e envia um e-mail de confirmação
+     * se o status for alterado para "PAGO".
+     */
     @Transactional
-    public Pedido atualizarStatusPedido(Long pedidoId, String status) {
+    public Pedido atualizarStatusPedido(Long pedidoId, String novoStatus) {
         Pedido pedido = pedidoRepository.findById(pedidoId)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-        pedido.setStatus(status);
-        return pedidoRepository.save(pedido);
+
+        // Pega o status antigo ANTES de alterar
+        String statusAntigo = pedido.getStatus();
+
+        // Atualiza o status
+        pedido.setStatus(novoStatus);
+        Pedido pedidoSalvo = pedidoRepository.save(pedido);
+
+        // --- GATILHO DE E-MAIL ---
+        // Verifica se o NOVO status é "PAGO" e se o status ANTIGO era DIFERENTE de "PAGO"
+        // Isso evita enviar e-mails repetidos se você atualizar um pedido que já estava pago.
+        final String STATUS_PAGO = "PAGO"; // Define uma constante para evitar erros de digitação
+
+        if (STATUS_PAGO.equalsIgnoreCase(novoStatus) && !STATUS_PAGO.equalsIgnoreCase(statusAntigo)) {
+            // Se a condição for verdadeira, envia o e-mail de confirmação de pagamento
+            try {
+                emailService.enviarConfirmacaoPagamento(pedidoSalvo.getUsuario(), pedidoSalvo);
+            } catch (Exception e) {
+                // Mesmo que o e-mail falhe, o status foi salvo.
+                // Apenas registra o erro no console.
+                System.err.println("ERRO: Status do pedido " + pedidoId + " atualizado, mas falha ao enviar e-mail de confirmação.");
+                e.printStackTrace();
+            }
+        }
+        // -------------------------
+
+        return pedidoSalvo;
     }
 
     @Transactional

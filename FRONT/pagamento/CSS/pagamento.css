@@ -1,105 +1,112 @@
-@import url('../../inicio/CSS/style.css');
-
-body {
-    padding-top: var(--header-height);
-    background-color: var(--background);
-}
-
-main.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - var(--header-height));
-    padding-top: var(--space-xl);
-    padding-bottom: var(--space-xl);
-}
-
+/* Container principal da página de pagamento */
 .pix-container {
-    background-color: var(--surface);
-    padding: var(--space-xl);
-    border-radius: 12px;
-    text-align: center;
     max-width: 500px;
-    width: 100%;
-    border: 1px solid var(--border-color);
+    margin: 40px auto;
+    padding: 30px;
+    background-color: var(--color-white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
 }
 
 .pix-container h1 {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    margin-bottom: var(--space-sm);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 10px;
 }
 
 .pix-instructions {
-    color: var(--text-secondary);
-    margin-bottom: var(--space-lg);
+    font-size: 1.1rem;
+    color: var(--color-gray-700);
+    margin-bottom: 25px;
 }
 
-#pix-details {
-    margin-bottom: var(--space-lg);
+.pix-instructions strong {
+    color: var(--color-dark);
 }
 
-.qr-code-img {
-    max-width: 250px;
+/* Conteúdo do PIX (QR Code e Copia/Cola) */
+.pix-details-content {
     width: 100%;
-    border: 5px solid white;
-    border-radius: 8px;
-    margin: 0 auto;
+    margin-bottom: 25px;
 }
 
-.copia-cola-container {
-    margin-top: var(--space-lg);
+/* Spinner de carregamento */
+.spinner-container {
+    padding: 40px 0;
+    color: var(--color-gray-600);
 }
-
-.copia-cola-text {
-    background-color: var(--background);
-    border: 1px solid var(--border-color);
-    padding: var(--space-md);
-    border-radius: 6px;
-    word-wrap: break-word;
-    text-align: left;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: var(--space-sm);
-}
-
-.copy-btn {
-    width: 100%;
-    justify-content: center;
-}
-
-.waiting-payment {
-    font-weight: 500;
-    margin-top: var(--space-lg);
-    margin-bottom: var(--space-md);
-}
-
 .spinner {
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--color-gray-200);
+    border-bottom-color: var(--color-primary);
     border-radius: 50%;
-    border-left-color: var(--primary);
-    animation: spin 1s ease infinite;
-    margin: var(--space-xl) auto;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    margin-bottom: 15px;
 }
-
-@keyframes spin {
+@keyframes rotation {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 600px) {
-    .pix-container {
-        padding: var(--space-md);
-    }
-    .pix-container h1 {
-        font-size: 1.8rem;
-    }
-    .qr-code-img {
-        max-width: 200px;
-    }
-    .copia-cola-text {
-        font-size: 0.8rem;
-    }
+/* QR Code */
+.qr-code-canvas {
+    width: 250px !important; /* Força o tamanho do canvas */
+    height: 250px !important;
+    border: 5px solid var(--color-gray-300);
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+/* Copia e Cola */
+.copia-cola-container {
+    text-align: left;
+}
+.copia-cola-container p {
+    font-weight: 600;
+    color: var(--color-dark);
+    margin-bottom: 8px;
+}
+
+.copia-cola-text {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: 4px;
+    margin-bottom: 15px;
+    word-break: break-all; /* Quebra a linha se o código for muito longo */
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+/* Botão de Copiar */
+.copy-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 14px;
+    transition: background-color 0.3s ease;
+}
+.copy-btn .fa-copy, .copy-btn .fa-check, .copy-btn .fa-times {
+    margin-right: 8px;
+}
+
+/* Mensagens de status */
+.waiting-payment {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+.pix-info {
+    font-size: 0.9rem;
+    color: var(--color-gray-600);
+    line-height: 1.5;
+    margin-bottom: 25px;
 }

@@ -3,56 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Produto | Japa Universe</title>
-    
+    <title>Finalizar Pagamento | Japa Universe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="../../../FRONT/assets/CSS/base.css">
-    <link rel="stylesheet" href="../CSS/produto.css">
+    <link rel="stylesheet" href="../../assets/CSS/base.css">
+    <link rel="stylesheet" href="../CSS/pagamento.css">
 </head>
 <body>
-    
-    <header class="main-header" data-basepath="../../.."></header>
+
+    <header class="main-header" data-basepath="../.."></header>
 
     <main class="container">
-        <div id="product-detail-container">
-            <p class="loading-message">A carregar detalhes do produto...</p>
-        </div>
+        <div class="pix-container">
+            <h1>Quase lá!</h1>
+            <p class="pix-instructions">
+                Pedido <strong id="pedido-id">#...</strong> | Valor: <strong id="pedido-valor">R$ ...</strong>
+            </p>
+            <p class="pix-instructions">
+                Escaneie o QR Code abaixo com o app do seu banco ou use o Pix Copia e Cola.
+            </p>
 
-        <section class="related-products-section">
-            <h2 class="related-products-title">Talvez você goste</h2>
-            <div class="swiper related-products-swiper">
-                <div class="swiper-wrapper" id="related-products-grid"></div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-            </div>
-        </section>
-    </main>
-    
-    <div class="cart-modal" id="cartModal">
-        <div class="modal-overlay" id="modalOverlay"></div>
-        <aside class="modal-content">
-            <div class="modal-header">
-                <h3>Seu Carrinho</h3>
-                <button class="close-modal" id="closeCartBtn" aria-label="Fechar carrinho">&times;</button>
-            </div>
-            <div class="modal-body" id="cartItemsContainer"></div>
-            <div class="modal-footer">
-                <div class="cart-subtotal">
-                    <span>Subtotal</span>
-                    <span id="cartSubtotal">R$ 0,00</span>
+            <div id="pix-details" class="pix-details-content">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Gerando código de pagamento...</p>
                 </div>
-                <p class="shipping-note">O frete será calculado no checkout.</p>
-                <button class="btn btn-primary checkout-btn">Finalizar Compra</button>
             </div>
-        </aside>
-    </div>
+
+            <p class="waiting-payment">Aguardando confirmação do pagamento...</p>
+            <p class="pix-info">
+                Assim que o pagamento for identificado (o que pode levar alguns minutos), 
+                o status do seu pedido será atualizado. Você receberá um e-mail de confirmação.
+            </p>
+            <a href="../../perfil/HTML/perfil.html" class="btn btn-outline">Ver Meus Pedidos</a>
+        </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="../../../FRONT/assets/js/header.js"></script>
-    <script src="../../../FRONT/inicio/js/main.js"></script>
-    <script src="../js/produto.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../js/pagamento.js"></script>
 </body>
 </html>

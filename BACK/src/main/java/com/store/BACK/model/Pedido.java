@@ -45,4 +45,8 @@ public class Pedido {
 
     @Column(nullable = false)
     private String status;
+
+    // NOVO CAMPO ADICIONADO
+    @Column(length = 1000) // Coluna para armazenar o código Pix
+    private String pixCopiaECola;
 }

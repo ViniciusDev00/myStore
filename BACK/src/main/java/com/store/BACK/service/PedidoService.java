@@ -28,12 +28,17 @@ public class PedidoService {
     @Autowired
     private EmailService emailService;
 
+    // --- NOVA INJEÇÃO DE DEPENDÊNCIA ---
+    @Autowired
+    private PixPayloadService pixPayloadService;
+    // ---------------------------------
+
     @Transactional
     public Pedido criarPedido(List<ItemPedidoDTO> itensDTO, Usuario usuario) {
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setDataPedido(LocalDateTime.now());
-        pedido.setStatus("PENDENTE");
+        pedido.setStatus("PENDENTE"); // Status inicial
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         BigDecimal valorTotal = BigDecimal.ZERO;
@@ -41,6 +46,8 @@ public class PedidoService {
         for (ItemPedidoDTO itemDTO : itensDTO) {
             Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado: " + itemDTO.getProdutoId()));
+
+            // AQUI: Adicionar validação de estoque se necessário
 
             ItemPedido itemPedido = new ItemPedido();
             itemPedido.setPedido(pedido);
@@ -56,9 +63,25 @@ public class PedidoService {
         pedido.setItens(itensPedido);
         pedido.setValorTotal(valorTotal);
         
+        // --- 1. SALVA O PEDIDO PRIMEIRO (PARA OBTER O ID) ---
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
         
-        // Enviar e-mail de confirmação
+        // --- 2. GERA O CÓDIGO PIX USANDO O ID DO PEDIDO SALVO ---
+        String pixCode = pixPayloadService.generatePayload(pedidoSalvo);
+        
+        if (pixCode != null) {
+            // Se o código foi gerado, salva no pedido
+            pedidoSalvo.setPixCopiaECola(pixCode);
+            // --- 3. SALVA O PEDIDO NOVAMENTE, AGORA COM O CÓDIGO PIX ---
+            pedidoSalvo = pedidoRepository.save(pedidoSalvo);
+        } else {
+            // Se falhar a geração do Pix, lança um erro para cancelar a transação
+            // Isso impede que um pedido seja criado sem um código de pagamento
+            throw new RuntimeException("Falha crítica ao gerar o código PIX para o pedido. Pedido ID: " + pedidoSalvo.getId());
+        }
+
+        // --- 4. ENVIA O E-MAIL (AGORA COM O PEDIDO JÁ COMPLETO) ---
+        // Você pode (opcionalmente) modificar seu EmailService para incluir o pixCode no e-mail
         emailService.enviarConfirmacaoDePedido(usuario, pedidoSalvo);
 
         return pedidoSalvo;

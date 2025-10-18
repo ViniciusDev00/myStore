@@ -139,17 +139,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const response = await apiClient.post('/pedidos', pedidoItens);
             
-            const novoPedido = response.data;
+            const novoPedido = response.data; // Resposta agora contém id, valorTotal e pixCopiaECola
             
-            alert('Pedido criado com sucesso! Você será redirecionado para a página de detalhes do pedido.');
+            // Limpa o carrinho
             localStorage.removeItem('japaUniverseCart');
+            if (window.updateCartCounter) {
+                window.updateCartCounter(); // Atualiza o contador do header
+            }
             
-            // Redireciona para a página de perfil ou uma página de sucesso do pedido
-            window.location.href = `../../perfil/HTML/perfil.html`;
+            // ---- MUDANÇAS AQUI ----
+            // Salva os dados na sessão para a próxima página pegar
+            sessionStorage.setItem('ultimoPedidoId', novoPedido.id);
+            sessionStorage.setItem('ultimoPedidoValor', novoPedido.valorTotal);
+            sessionStorage.setItem('ultimoPedidoPixCode', novoPedido.pixCopiaECola);
+
+            // Redireciona para a NOVA página de pagamento
+            window.location.href = `../../pagamento/HTML/pagamento.html`;
+            // ---------------------
 
         } catch (error) {
             console.error('Erro ao finalizar a compra:', error);
-            alert('Não foi possível processar seu pedido. Por favor, tente novamente.');
+            let errorMsg = 'Não foi possível processar seu pedido. Por favor, tente novamente.';
+            if (error.response && error.response.data && error.response.data.message) {
+                 errorMsg = error.response.data.message; // Mostra erro do backend (ex: falha ao gerar PIX)
+            }
+            alert(errorMsg);
             checkoutButton.disabled = false;
             checkoutButton.textContent = 'Finalizar Compra';
         }
