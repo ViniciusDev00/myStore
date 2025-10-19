@@ -1,68 +1,222 @@
-:root {
-    --card-bg: #1a1a1a;
-    --border-light: #2f2f2f;
-    --text-muted: #888;
-}
+/* ===================================
+    LAYOUT HÍBRIDO DE CHECKOUT
+    (2 Colunas Desktop / 1 Coluna Mobile)
+   =================================== */
 
+/* Layout Base (Mobile-first) */
 .checkout-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr; /* 1 coluna por padrão */
     gap: var(--space-lg);
-    padding-top: var(--space-lg);
-    padding-bottom: var(--space-xl);
+    padding: var(--space-lg) var(--space-md);
     align-items: flex-start;
+    margin-top: var(--space-lg); /* <-- CORREÇÃO ADICIONADA AQUI */
+}
+
+.checkout-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg); /* Espaço entre os cards */
 }
 
 .checkout-title {
     font-size: 2.5rem;
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-sm);
+    font-family: var(--font-display);
+    color: var(--text-primary);
+}
+
+/* Estilo de "Card" Padrão */
+.checkout-card,
+.summary-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    padding: var(--space-md) var(--space-lg);
     border-bottom: 1px solid var(--border-light);
 }
 
+/* Número do Passo */
+.step-number {
+    background-color: var(--primary);
+    color: var(--background);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.card-content {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md); /* Espaço entre itens dentro do card */
+}
+
+/* ===================================
+    BARRA LATERAL / RESUMO
+   =================================== */
+
+.summary-card {
+    padding: 0; /* Padding será por seções */
+}
+.summary-card .card-title {
+    border-bottom: 1px solid var(--border-light);
+}
+.summary-card .summary-details {
+    border-bottom: 1px solid var(--border-light);
+}
+.summary-card .btn-block {
+    margin: var(--space-lg);
+    width: calc(100% - var(--space-lg) * 2); /* Botão com padding */
+    justify-content: center;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+.summary-card .continue-shopping-link {
+    margin-bottom: var(--space-lg);
+}
+
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+.summary-line span:last-child {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.summary-total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: var(--space-lg);
+}
+.summary-total-line span:last-child {
+    color: var(--primary); /* Total destacado */
+}
+
+.continue-shopping-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.continue-shopping-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* ===================================
+    CONTEÚDO INJETADO (Endereço e Itens)
+   =================================== */
+
+/* --- Estilos de Endereço --- */
+.address-option {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border: 2px solid var(--border-color); /* Borda mais grossa para clique */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+    background-color: var(--card-bg); /* Fundo mais escuro */
+}
+.address-option:hover {
+    border-color: var(--primary-light);
+}
+.address-option:has(input[type="radio"]:checked) {
+    border-color: var(--primary);
+    background-color: rgba(255, 122, 0, 0.05);
+}
+.address-option input[type="radio"] {
+    margin-top: 5px;
+    accent-color: var(--primary);
+    transform: scale(1.1);
+}
+.address-details p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+.address-details p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.add-address-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* --- Estilos dos Itens do Carrinho --- */
 .cart-item {
     display: grid;
-    grid-template-columns: 120px 1fr auto;
+    grid-template-columns: 80px 1fr auto; /* Imagem, Detalhes, Ações */
     gap: var(--space-md);
-    padding: var(--space-md) 0;
+    padding-bottom: var(--space-md);
     border-bottom: 1px solid var(--border-light);
     align-items: center;
 }
-
-.item-image {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-    background-color: var(--surface);
+.cart-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
+.item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    background-color: var(--card-bg);
+}
 .item-details .item-name {
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 1.1rem;
     margin-bottom: var(--space-xs);
 }
-
-.item-details .item-size,
-.item-details .item-price {
+.item-details .item-size {
     color: var(--text-muted);
     font-size: 0.9rem;
 }
-
 .item-details .item-price {
     font-weight: 600;
     color: var(--text-primary);
     margin-top: var(--space-xs);
 }
-
 .item-actions {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: var(--space-sm);
 }
-
 .quantity-control {
     display: flex;
     align-items: center;
@@ -70,131 +224,49 @@
     border-radius: 4px;
     overflow: hidden;
 }
-
 .quantity-control button {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
     color: var(--text-primary);
-    font-size: 1.2rem;
     background-color: var(--surface);
     transition: background-color 0.2s;
 }
-
-.quantity-control button:hover {
-    background-color: var(--primary);
-}
-
+.quantity-control button:hover { background-color: var(--primary); }
 .quantity-control .item-quantity {
-    width: 40px;
-    height: 35px;
+    width: 35px;
+    height: 30px;
     text-align: center;
     border: none;
     background: transparent;
     color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-    -moz-appearance: textfield;
 }
-
 .remove-item {
     color: var(--text-muted);
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     transition: color 0.2s;
 }
-
-.remove-item:hover {
-    color: #e53935; /* Vermelho para ação de remover */
-}
-
+.remove-item:hover { color: #e53935; }
 .empty-cart {
     text-align: center;
-    padding: var(--space-xl) 0;
+    padding: var(--space-lg) 0;
     color: var(--text-muted);
 }
 
-.empty-cart .btn {
-    margin-top: var(--space-md);
-}
+/* ===================================
+    RESPONSIVIDADE (Desktop)
+   =================================== */
 
-/* Resumo do Pedido */
-.checkout-summary {
-    background-color: var(--card-bg);
-    padding: var(--space-lg);
-    border-radius: 8px;
-    border: 1px solid var(--border-light);
-    position: sticky;
-    top: calc(var(--header-height) + var(--space-lg)); /* 80px + 2.5rem */
-}
-
-.summary-title {
-    font-size: 1.8rem;
-    margin-bottom: var(--space-md);
-}
-
-.summary-details .summary-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--space-sm);
-    color: var(--text-muted);
-}
-
-.summary-details .summary-item.total {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-top: var(--space-md);
-    padding-top: var(--space-md);
-    border-top: 1px dashed var(--border-light);
-}
-
-.checkout-summary .btn-block {
-    width: 100%;
-    justify-content: center;
-    margin-top: var(--space-md);
-}
-
-.continue-shopping-link {
-    display: block;
-    text-align: center;
-    color: var(--text-muted);
-    margin-top: var(--space-md);
-    font-size: 0.9rem;
-    text-decoration: underline;
-    transition: color 0.2s;
-}
-
-.continue-shopping-link:hover {
-    color: var(--primary);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
+@media (min-width: 992px) {
     .checkout-container {
-        grid-template-columns: 1fr;
+        /* 2 colunas: 2 partes para o fluxo, 1 para o resumo */
+        grid-template-columns: 2fr 1.2fr; 
+        gap: var(--space-xl);
     }
-    .checkout-summary {
-        position: static; /* Remove o 'sticky' em telas pequenas */
-    }
-    .cart-item {
-        grid-template-columns: 80px 1fr;
-        grid-template-areas: 
-            "image details"
-            "image actions";
-    }
-    .item-image {
-        grid-area: image;
-        width: 80px;
-        height: 80px;
-    }
-    .item-details {
-        grid-area: details;
-    }
-    .item-actions {
-        grid-area: actions;
-        flex-direction: row-reverse;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        margin-top: var(--space-sm);
+
+    .checkout-sidebar .summary-card {
+        /* Faz o resumo "grudar" no topo ao rolar */
+        position: sticky;
+        /* (80px header + 2.5rem gap) */
+        top: calc(var(--header-height, 80px) + var(--space-lg)); 
     }
 }
