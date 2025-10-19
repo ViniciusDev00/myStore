@@ -9,9 +9,9 @@ import java.math.RoundingMode;
 public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
-    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !! (Chave aleatória, email, cpf, etc)
+    private final String PIX_KEY = "japauniversestore@gmail.com"; // !! TROCAR ISSO !! (Chave aleatória, email, cpf, etc)
     private final String MERCHANT_NAME = "Japa Universe"; // Nome da loja (max 25)
-    private final String MERCHANT_CITY = "SUA CIDADE"; // !! TROCAR ISSO !! (max 15, sem acento)
+    private final String MERCHANT_CITY = "SAO CARLOS"; // !! TROCAR ISSO !! (max 15, sem acento)
     // ---------------------------------
 
     /**
