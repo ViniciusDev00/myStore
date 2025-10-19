@@ -2,44 +2,55 @@ package com.store.BACK.service;
 
 // ===================================================================
 // =================== IMPORTS DA NOVA BIBLIOTECA ====================
-import io.github.alesaudate.pix.qrcode.Payload;
-import io.github.alesaudate.pix.qrcode.builder.PayloadBuilder;
+import br.com.mvallim.emvqrcode.EmvQrcode;
+import br.com.mvallim.emvqrcode.builder.EmvQrcodeBuilder;
+import br.com.mvallim.emvqrcode.constants.EmvCountryCode;
+import br.com.mvallim.emvqrcode.constants.EmvCurrency;
+import br.com.mvallim.emvqrcode.constants.pix.PixKeyType;
 // ===================================================================
 
 import com.store.BACK.model.Pedido;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal; // Importe BigDecimal
 import java.math.RoundingMode;
 
 @Service
 public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
-    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !!
-    private final String MERCHANT_NAME = "Japa Universe";
-    private final String MERCHANT_CITY = "Sua Cidade"; // !! TROCAR ISSO !! Sem acentos, max 15 chars
+    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !! (Chave aleatória, email, cpf, etc)
+    private final String MERCHANT_NAME = "Japa Universe"; // Nome da loja (max 25)
+    private final String MERCHANT_CITY = "SUA CIDADE"; // !! TROCAR ISSO !! (max 15, sem acento)
     // ---------------------------------
 
     /**
-     * Gera o Payload (Pix Copia e Cola) para um pedido específico usando pix-qrcodegen.
+     * Gera o Payload (Pix Copia e Cola) para um pedido específico.
      * @param pedido O pedido que acabou de ser salvo (precisa ter ID)
      * @return A String do Pix Copia e Cola (BRCode)
      */
     public String generatePayload(Pedido pedido) {
         try {
-            // --- LÓGICA ATUALIZADA PARA A NOVA BIBLIOTECA ---
-            Payload payload = new PayloadBuilder()
-                    .pixKey(PIX_KEY)                // Chave PIX
-                    .merchantName(MERCHANT_NAME)    // Nome do recebedor (loja)
-                    .merchantCity(MERCHANT_CITY)    // Cidade do recebedor
-                    .txid(String.valueOf(pedido.getId())) // ID único da transação (ID do pedido)
-                    .amount(pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).doubleValue()) // Valor do pedido
-                    // .description("Descrição opcional") // Você pode adicionar uma descrição se quiser
+            // --- LÓGICA ATUALIZADA PARA A NOVA BIBLIOTECA 'emv-qrcode' ---
+            
+            // Converte o valor para o formato correto
+            String valorFormatado = pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString();
+            
+            // Define o tipo da sua chave PIX. Mude conforme necessário.
+            // Opções: CPF, CNPJ, EMAIL, PHONE, RANDOM
+            PixKeyType tipoChave = PixKeyType.EMAIL; 
+
+            EmvQrcode pix = new EmvQrcodeBuilder()
+                    .setCountryCode(EmvCountryCode.BRAZIL) // País
+                    .setCurrency(EmvCurrency.BRAZILIAN_REAL) // Moeda
+                    .setMerchantName(MERCHANT_NAME) // Nome da Loja
+                    .setMerchantCity(MERCHANT_CITY) // Cidade da Loja
+                    .setAmount(valorFormatado) // Valor do pedido
+                    .setTransactionId(String.valueOf(pedido.getId())) // ID do pedido
+                    .setPixKey(PIX_KEY, tipoChave) // Sua chave PIX e o tipo dela
                     .build();
 
             // Retorna a string do payload (Pix Copia e Cola)
-            return payload.toString();
+            return pix.toCode();
             // --- FIM DA ATUALIZAÇÃO ---
 
         } catch (Exception e) {
