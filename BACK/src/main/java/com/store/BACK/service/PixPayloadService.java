@@ -2,11 +2,8 @@ package com.store.BACK.service;
 
 // ===================================================================
 // =================== IMPORTS DA NOVA BIBLIOTECA ====================
-import br.com.mvallim.emvqrcode.EmvQrcode;
-import br.com.mvallim.emvqrcode.builder.EmvQrcodeBuilder;
-import br.com.mvallim.emvqrcode.constants.EmvCountryCode;
-import br.com.mvallim.emvqrcode.constants.EmvCurrency;
-import br.com.mvallim.emvqrcode.constants.pix.PixKeyType;
+import io.github.alesaudate.pix.qrcode.Payload;
+import io.github.alesaudate.pix.qrcode.builder.PayloadBuilder;
 // ===================================================================
 
 import com.store.BACK.model.Pedido;
@@ -18,7 +15,7 @@ import java.math.RoundingMode;
 public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
-    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !! (Chave aleatória, email, cpf, etc)
+    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !!
     private final String MERCHANT_NAME = "Japa Universe"; // Nome da loja (max 25)
     private final String MERCHANT_CITY = "SUA CIDADE"; // !! TROCAR ISSO !! (max 15, sem acento)
     // ---------------------------------
@@ -30,27 +27,23 @@ public class PixPayloadService {
      */
     public String generatePayload(Pedido pedido) {
         try {
-            // --- LÓGICA ATUALIZADA PARA A NOVA BIBLIOTECA 'emv-qrcode' ---
-            
-            // Converte o valor para o formato correto
-            String valorFormatado = pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).toString();
-            
-            // Define o tipo da sua chave PIX. Mude conforme necessário.
-            // Opções: CPF, CNPJ, EMAIL, PHONE, RANDOM
-            PixKeyType tipoChave = PixKeyType.EMAIL; 
+            // --- LÓGICA ATUALIZADA PARA A NOVA BIBLIOTECA 'pix-qrcodegen' ---
 
-            EmvQrcode pix = new EmvQrcodeBuilder()
-                    .setCountryCode(EmvCountryCode.BRAZIL) // País
-                    .setCurrency(EmvCurrency.BRAZILIAN_REAL) // Moeda
-                    .setMerchantName(MERCHANT_NAME) // Nome da Loja
-                    .setMerchantCity(MERCHANT_CITY) // Cidade da Loja
-                    .setAmount(valorFormatado) // Valor do pedido
-                    .setTransactionId(String.valueOf(pedido.getId())) // ID do pedido
-                    .setPixKey(PIX_KEY, tipoChave) // Sua chave PIX e o tipo dela
+            // Converte o valor para Double, arredondando
+            double valorFormatado = pedido.getValorTotal()
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .doubleValue();
+
+            Payload payload = new PayloadBuilder()
+                    .pixKey(PIX_KEY)                // Sua chave PIX
+                    .merchantName(MERCHANT_NAME)    // Nome da Loja
+                    .merchantCity(MERCHANT_CITY)    // Cidade da Loja
+                    .txid(String.valueOf(pedido.getId())) // ID do pedido como ID da transação
+                    .amount(valorFormatado) // Valor do pedido
                     .build();
 
             // Retorna a string do payload (Pix Copia e Cola)
-            return pix.toCode();
+            return payload.toString();
             // --- FIM DA ATUALIZAÇÃO ---
 
         } catch (Exception e) {

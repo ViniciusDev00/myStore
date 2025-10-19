@@ -17,12 +17,6 @@
         <java.version>17</java.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,9 +42,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.mvallim</groupId>
-            <artifactId>emv-qrcode</artifactId>
-            <version>1.0.5</version>
+            <groupId>io.github.alesaudate</groupId>
+            <artifactId>pix-qrcodegen</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
