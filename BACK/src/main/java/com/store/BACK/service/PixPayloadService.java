@@ -1,57 +1,51 @@
 package com.store.BACK.service;
 
-// Importa a classe da nova biblioteca
-import br.com.nordestefomento.jrpix.JRPix;
+// ===================================================================
+// =================== IMPORTS DA NOVA BIBLIOTECA ====================
+import io.github.alesaudate.pix.qrcode.Payload;
+import io.github.alesaudate.pix.qrcode.builder.PayloadBuilder;
+// ===================================================================
+
 import com.store.BACK.model.Pedido;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal; // Importe BigDecimal
 import java.math.RoundingMode;
 
 @Service
 public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
-    // Coloque sua chave PIX (CPF, CNPJ, E-mail, Celular ou Chave Aleatória)
-    private final String PIX_KEY = "seu-pix@email.com"; 
-    
-    // O nome da sua loja (max 25 caracteres)
-    private final String MERCHANT_NAME = "Japa Universe"; 
-    
-    // O nome da sua cidade (sem acentos, max 15 caracteres)
-    private final String MERCHANT_CITY = "Sua Cidade"; 
+    private final String PIX_KEY = "seu-pix@email.com"; // !! TROCAR ISSO !!
+    private final String MERCHANT_NAME = "Japa Universe";
+    private final String MERCHANT_CITY = "Sua Cidade"; // !! TROCAR ISSO !! Sem acentos, max 15 chars
     // ---------------------------------
 
     /**
-     * Gera o Payload (Pix Copia e Cola) para um pedido específico.
+     * Gera o Payload (Pix Copia e Cola) para um pedido específico usando pix-qrcodegen.
      * @param pedido O pedido que acabou de ser salvo (precisa ter ID)
      * @return A String do Pix Copia e Cola (BRCode)
      */
     public String generatePayload(Pedido pedido) {
         try {
-            // Cria uma instância do gerador da nova biblioteca
-            JRPix pix = new JRPix();
+            // --- LÓGICA ATUALIZADA PARA A NOVA BIBLIOTECA ---
+            Payload payload = new PayloadBuilder()
+                    .pixKey(PIX_KEY)                // Chave PIX
+                    .merchantName(MERCHANT_NAME)    // Nome do recebedor (loja)
+                    .merchantCity(MERCHANT_CITY)    // Cidade do recebedor
+                    .txid(String.valueOf(pedido.getId())) // ID único da transação (ID do pedido)
+                    .amount(pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).doubleValue()) // Valor do pedido
+                    // .description("Descrição opcional") // Você pode adicionar uma descrição se quiser
+                    .build();
 
-            // Configura os dados
-            pix.setChave(PIX_KEY);
-            pix.setNome(MERCHANT_NAME);
-            pix.setCidade(MERCHANT_CITY);
+            // Retorna a string do payload (Pix Copia e Cola)
+            return payload.toString();
+            // --- FIM DA ATUALIZAÇÃO ---
 
-            // Define o ID da transação como o ID do pedido. ISSO É O MAIS IMPORTANTE!
-            // Esta biblioteca já adiciona "***" automaticamente, então só passamos o ID.
-            pix.setTxId(String.valueOf(pedido.getId()));
-            
-            // Define o valor exato do pedido. A biblioteca espera um Double.
-            double valor = pedido.getValorTotal().setScale(2, RoundingMode.HALF_UP).doubleValue();
-            pix.setValor(valor);
-
-            // Retorna a string do payload
-            return pix.getPayload();
-            
         } catch (Exception e) {
-            // Em caso de erro, loga no console e retorna null
             System.err.println("Erro grave ao gerar payload PIX para Pedido ID " + pedido.getId() + ": " + e.getMessage());
             e.printStackTrace();
-            return null; 
+            return null;
         }
     }
 }
