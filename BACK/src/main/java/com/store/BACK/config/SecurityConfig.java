@@ -33,10 +33,20 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // --- CORREÇÃO: Permitir todos os recursos estáticos e front-end ---
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", 
-                                "/FRONT/**", "/index.html", "/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
-                        // ----------------------------------------------------------------
+                        // --- CORREÇÃO DEFINITIVA: Permitir acesso a todas as APIs públicas, uploads e estáticos ---
+                        .requestMatchers(
+                            "/api/auth/**", 
+                            "/api/public/**", 
+                            "/api/produtos/**", 
+                            "/uploads/**", 
+                            "/", // Permite acesso à raiz
+                            "/index.html", // Permite o arquivo principal
+                            "/css/**", // Permite todos os arquivos CSS
+                            "/js/**", // Permite todos os arquivos JS
+                            "/images/**", // Permite a pasta images
+                            "/assets/**", // Permite a pasta assets
+                            "/FRONT/**" // Permite todo o conteúdo da pasta FRONT
+                        ).permitAll()
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
