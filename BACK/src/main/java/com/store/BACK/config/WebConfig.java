@@ -13,13 +13,5 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("classpath:/static/uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
-                
-        // --- CORREÇÃO FINAL: Mapeamento explícito para a pasta FRONT ---
-        // Este handler é necessário porque o Spring não mapeia subdiretórios
-        // do classpath automaticamente com a mesma URL do handler.
-        registry.addResourceHandler("/FRONT/**")
-                .addResourceLocations("classpath:/static/FRONT/")
-                .setCachePeriod(3600);
-        // --- FIM DA CORREÇÃO ---
     }
 }

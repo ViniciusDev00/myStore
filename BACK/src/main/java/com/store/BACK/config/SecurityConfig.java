@@ -33,23 +33,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // --- CORREÇÃO DEFINITIVA: Permite acesso a todos os recursos públicos/estáticos/uploads ---
-                        .requestMatchers(
-                            // APIs Públicas
-                            "/api/auth/**", 
-                            "/api/public/**", 
-                            "/api/produtos/**",
-                            // Recursos Estáticos e Uploads (Caminhos mais amplos para garantir tudo)
-                            "/uploads/**", 
-                            "/css/**", 
-                            "/js/**", 
-                            "/images/**", 
-                            "/assets/**", 
-                            "/FRONT/**", // Este é o caminho mais importante para as suas imagens
-                            "/", 
-                            "/index.html" 
-                        ).permitAll()
-                        // Permissões Autenticadas (MANTIDAS)
+                        // --- CORREÇÃO PRINCIPAL PARA O ERRO 403 FORBIDDEN ---
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
