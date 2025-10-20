@@ -13,5 +13,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("classpath:/static/uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
+                
+        // --- CORREÇÃO: Mapeamento explícito para a pasta FRONT que contém as imagens ---
+        // Garante que o servidor consegue localizar arquivos como /FRONT/inicio/IMG/recentes/tnOreo.webp
+        registry.addResourceHandler("/FRONT/**")
+                .addResourceLocations("classpath:/static/FRONT/")
+                .setCachePeriod(3600);
+        // --- FIM DA CORREÇÃO ---
     }
 }
