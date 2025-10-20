@@ -105,6 +105,18 @@
                 <button class="btn btn-primary checkout-btn">Finalizar Compra</button>
             </div>
         </aside>
+    </div> 
+
+    <div id="sizeSelectionModal" class="size-modal-overlay">
+        <div class="size-modal-content">
+            <button class="close-button" id="closeSizeModalBtn" aria-label="Fechar seleção de tamanho">&times;</button>
+            <h3 id="modalProductName">Selecione o Tamanho</h3>
+            <div id="sizeOptions" class="size-options-container">
+                </div>
+            <p id="modalError" class="modal-error" style="display: none;">Por favor, selecione um tamanho.</p>
+            <button id="addToCartModalBtn" class="btn btn-primary">Adicionar ao Carrinho</button>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../../../FRONT/assets/js/header.js"></script>
     <script src="../../../FRONT/inicio/js/main.js"></script>
