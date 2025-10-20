@@ -45,9 +45,9 @@ public class SecurityConfig {
                             "/js/**", 
                             "/images/**", 
                             "/assets/**", 
-                            "/FRONT/**", // Inclui toda a pasta do Front-end
-                            "/", // Raiz do site
-                            "/index.html" // Arquivo principal
+                            "/FRONT/**", // Este é o caminho mais importante para as suas imagens
+                            "/", 
+                            "/index.html" 
                         ).permitAll()
                         // Permissões Autenticadas (MANTIDAS)
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

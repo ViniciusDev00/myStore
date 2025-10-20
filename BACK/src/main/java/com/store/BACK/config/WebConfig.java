@@ -14,8 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
                 
-        // --- CORREÇÃO: Mapeamento explícito para a pasta FRONT que contém as imagens ---
-        // Garante que o servidor consegue localizar arquivos como /FRONT/inicio/IMG/recentes/tnOreo.webp
+        // --- CORREÇÃO FINAL: Mapeamento explícito para a pasta FRONT ---
+        // Este handler é necessário porque o Spring não mapeia subdiretórios
+        // do classpath automaticamente com a mesma URL do handler.
         registry.addResourceHandler("/FRONT/**")
                 .addResourceLocations("classpath:/static/FRONT/")
                 .setCachePeriod(3600);
