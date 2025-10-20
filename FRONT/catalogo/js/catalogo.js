@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 search: '',
                 brand: 'all',
                 category: 'all',
+                price: 'all',
                 sort: 'featured'
             },
             isLoading: false,
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             searchClear: document.getElementById('searchClear'),
             brandFilter: document.getElementById('brandFilter'),
             categoryFilter: document.getElementById('categoryFilter'),
+            priceFilter: document.getElementById('priceFilter'),
             sortFilter: document.getElementById('sortFilter'),
             activeFilters: document.getElementById('activeFilters'),
             loadingState: document.getElementById('loadingState'),
@@ -45,8 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
             error: document.getElementById('modalError')
         };
 
+        // ===== QUICK VIEW MODAL =====
+        const quickViewElements = {
+            overlay: document.getElementById('quickViewModal'),
+            content: document.getElementById('quickViewContent'),
+            closeBtn: document.getElementById('closeQuickViewBtn')
+        };
+
         let selectedProductId = null;
         let selectedSize = null;
+        let quickViewProduct = null;
 
         // ===== SISTEMA DE NOTIFICAÇÕES =====
         const showNotification = (message, type = 'success') => {
@@ -54,17 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
             notification.className = `notification notification-${type}`;
             notification.innerHTML = `
                 <div class="notification-content">
-                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}"></i>
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation' : 'info'}"></i>
                     <span>${message}</span>
                 </div>
             `;
             
             document.body.appendChild(notification);
             
-            // Animação de entrada
             setTimeout(() => notification.classList.add('show'), 100);
             
-            // Remover após 3 segundos
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 300);
@@ -104,10 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `).join('');
+            },
+
+            parsePriceRange: (range) => {
+                if (range === 'all') return { min: 0, max: Infinity };
+                const [min, max] = range.split('-').map(Number);
+                return { min, max };
             }
         };
 
-        // ===== SISTEMA DE FILTROS =====
+        // ===== SISTEMA DE FILTROS AVANÇADOS =====
         const filterSystem = {
             applyFilters: () => {
                 let filtered = [...state.allProducts];
@@ -118,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     filtered = filtered.filter(product => 
                         product.nome.toLowerCase().includes(searchTerm) ||
                         product.marca.nome.toLowerCase().includes(searchTerm) ||
-                        product.categoria?.toLowerCase().includes(searchTerm)
+                        product.categoria?.toLowerCase().includes(searchTerm) ||
+                        product.descricao?.toLowerCase().includes(searchTerm)
                     );
                 }
                 
@@ -136,12 +151,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 }
                 
+                // Filtro de preço
+                if (state.filters.price !== 'all') {
+                    const priceRange = utils.parsePriceRange(state.filters.price);
+                    filtered = filtered.filter(product => 
+                        product.preco >= priceRange.min && product.preco <= priceRange.max
+                    );
+                }
+                
                 // Ordenação
                 filtered = filterSystem.sortProducts(filtered);
                 
                 state.filteredProducts = filtered;
                 state.displayedCount = 12;
                 state.hasMore = filtered.length > 12;
+                
+                filterSystem.updateActiveFilters();
+                filterSystem.updateFormElements();
             },
             
             sortProducts: (products) => {
@@ -153,33 +179,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'name-asc':
                         return products.sort((a, b) => a.nome.localeCompare(b.nome));
                     case 'newest':
-                        return products.sort((a, b) => new Date(b.dataLancamento) - new Date(a.dataLancamento));
+                        return products.sort((a, b) => new Date(b.dataLancamento || b.createdAt) - new Date(a.dataLancamento || a.createdAt));
                     default:
-                        return products; // featured
+                        return products; // featured - mantém ordem original
                 }
             },
             
             updateActiveFilters: () => {
                 elements.activeFilters.innerHTML = '';
                 
-                if (state.filters.search) {
-                    filterSystem.addFilterTag('search', `Busca: "${state.filters.search}"`);
-                }
-                if (state.filters.brand !== 'all') {
-                    filterSystem.addFilterTag('brand', `Marca: ${state.filters.brand}`);
-                }
-                if (state.filters.category !== 'all') {
-                    filterSystem.addFilterTag('category', `Categoria: ${state.filters.category}`);
-                }
-                if (state.filters.sort !== 'featured') {
-                    const sortLabels = {
-                        'newest': 'Mais Recentes',
-                        'price-asc': 'Menor Preço',
-                        'price-desc': 'Maior Preço',
-                        'name-asc': 'Nome A-Z'
-                    };
-                    filterSystem.addFilterTag('sort', `Ordenar: ${sortLabels[state.filters.sort]}`);
-                }
+                const filters = [
+                    { key: 'search', value: state.filters.search, label: `Busca: "${state.filters.search}"` },
+                    { key: 'brand', value: state.filters.brand, label: `Marca: ${state.filters.brand}`, show: state.filters.brand !== 'all' },
+                    { key: 'category', value: state.filters.category, label: `Categoria: ${state.filters.category}`, show: state.filters.category !== 'all' },
+                    { key: 'price', value: state.filters.price, label: filterSystem.getPriceFilterLabel(state.filters.price), show: state.filters.price !== 'all' },
+                    { key: 'sort', value: state.filters.sort, label: filterSystem.getSortFilterLabel(state.filters.sort), show: state.filters.sort !== 'featured' }
+                ];
+                
+                filters.forEach(({ key, value, label, show = true }) => {
+                    if (value && show) {
+                        filterSystem.addFilterTag(key, label);
+                    }
+                });
+            },
+            
+            getPriceFilterLabel: (priceRange) => {
+                const labels = {
+                    'all': 'Qualquer Preço',
+                    '0-200': 'Até R$ 200',
+                    '200-500': 'R$ 200 - R$ 500',
+                    '500-1000': 'R$ 500 - R$ 1000',
+                    '1000-99999': 'Acima de R$ 1000'
+                };
+                return `Preço: ${labels[priceRange]}`;
+            },
+            
+            getSortFilterLabel: (sort) => {
+                const labels = {
+                    'featured': 'Em Destaque',
+                    'newest': 'Mais Recentes',
+                    'price-asc': 'Menor Preço',
+                    'price-desc': 'Maior Preço',
+                    'name-asc': 'Nome A-Z'
+                };
+                return `Ordenar: ${labels[sort]}`;
             },
             
             addFilterTag: (type, label) => {
@@ -195,17 +238,24 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             
             removeFilter: (type) => {
-                state.filters[type] = type === 'search' ? '' : 'all';
+                const defaultValues = {
+                    search: '',
+                    brand: 'all',
+                    category: 'all',
+                    price: 'all',
+                    sort: 'featured'
+                };
+                
+                state.filters[type] = defaultValues[type];
                 filterSystem.applyFilters();
                 renderSystem.renderProducts();
-                filterSystem.updateActiveFilters();
-                filterSystem.updateFormElements();
             },
             
             updateFormElements: () => {
                 elements.searchInput.value = state.filters.search;
                 elements.brandFilter.value = state.filters.brand;
                 elements.categoryFilter.value = state.filters.category;
+                elements.priceFilter.value = state.filters.price;
                 elements.sortFilter.value = state.filters.sort;
                 elements.searchClear.style.display = state.filters.search ? 'block' : 'none';
             },
@@ -215,12 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     search: '',
                     brand: 'all',
                     category: 'all',
+                    price: 'all',
                     sort: 'featured'
                 };
                 filterSystem.applyFilters();
                 renderSystem.renderProducts();
-                filterSystem.updateActiveFilters();
-                filterSystem.updateFormElements();
             }
         };
 
@@ -249,14 +298,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderSystem.createProductCard(product, index)
                 ).join('');
                 
-                // Atualizar botão "Carregar Mais"
                 if (elements.loadMoreBtn) {
                     elements.loadMoreBtn.style.display = state.hasMore ? 'inline-flex' : 'none';
                     elements.loadMoreBtn.querySelector('.btn-text').textContent = 
                         state.hasMore ? 'Carregar Mais' : 'Todos os produtos carregados';
                 }
                 
-                // Adicionar event listeners
                 renderSystem.addProductEventListeners();
             },
             
@@ -327,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             
             addProductEventListeners: () => {
-                // Botões "Adicionar ao Carrinho"
                 document.querySelectorAll('.add-to-cart-btn:not([disabled])').forEach(button => {
                     if (button.dataset.listenerAdded) return;
                     
@@ -344,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             return;
                         }
                         
-                        // Simular estoque por tamanho (MELHORIA FUTURA: API)
                         const availableSizes = modalSystem.generateAvailableSizes(product);
                         modalSystem.openSizeSelectionModal(productId, productName, availableSizes);
                         
@@ -352,24 +397,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
                 
-                // Botões de visualização rápida
                 document.querySelectorAll('.quick-view-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         const productId = button.dataset.productId;
-                        // TODO: Implementar quick view
-                        showNotification('Visualização rápida em desenvolvimento', 'info');
+                        quickViewSystem.openQuickView(productId);
                     });
                 });
                 
-                // Botões de wishlist
                 document.querySelectorAll('.wishlist-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        // TODO: Implementar wishlist
-                        showNotification('Produto adicionado à lista de desejos');
+                        showNotification('Produto adicionado à lista de desejos!');
                     });
                 });
             },
@@ -382,7 +423,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.loadMoreBtn.querySelector('.btn-text').style.display = 'none';
                 elements.loadMoreBtn.querySelector('.btn-loading').style.display = 'inline-block';
                 
-                // Simular carregamento
                 setTimeout(() => {
                     state.displayedCount += 12;
                     state.hasMore = state.displayedCount < state.filteredProducts.length;
@@ -397,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // ===== SISTEMA DO MODAL =====
+        // ===== SISTEMA DO MODAL DE TAMANHOS =====
         const modalSystem = {
             openSizeSelectionModal: (productId, productName, availableSizes) => {
                 selectedProductId = productId;
@@ -453,14 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             
             generateAvailableSizes: (product) => {
-                // MELHORIA FUTURA: Substituir por dados reais da API
                 const sizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
                 const availableSizes = {};
                 
-                // Simular disponibilidade baseada no estoque geral
                 const totalStock = product.estoque || 0;
                 sizes.forEach(size => {
-                    // Distribuir estoque aleatoriamente entre tamanhos
                     availableSizes[size] = totalStock > 0 ? Math.floor(Math.random() * 5) + 1 : 0;
                 });
                 
@@ -497,6 +534,265 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // ===== SISTEMA QUICK VIEW =====
+        const quickViewSystem = {
+            openQuickView: async (productId) => {
+                const product = state.allProducts.find(p => p.id === parseInt(productId));
+                if (!product) {
+                    quickViewSystem.showError('Produto não encontrado.');
+                    return;
+                }
+
+                quickViewProduct = product;
+                quickViewSystem.selectedSize = null;
+                
+                quickViewSystem.showSkeleton();
+                quickViewElements.overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                try {
+                    await quickViewSystem.loadProductDetails(product);
+                } catch (error) {
+                    console.error('Erro ao carregar detalhes do produto:', error);
+                    quickViewSystem.showError('Erro ao carregar detalhes do produto.');
+                }
+            },
+
+            showSkeleton: () => {
+                quickViewElements.content.innerHTML = `
+                    <div class="quickview-skeleton">
+                        <div class="quickview-skeleton-image skeleton"></div>
+                        <div class="quickview-skeleton-details">
+                            <div class="quickview-skeleton-text short skeleton"></div>
+                            <div class="quickview-skeleton-text long skeleton"></div>
+                            <div class="quickview-skeleton-text medium skeleton"></div>
+                            <div class="quickview-skeleton-price skeleton"></div>
+                            <div class="quickview-skeleton-text long skeleton"></div>
+                            <div class="quickview-skeleton-text long skeleton"></div>
+                            <div class="quickview-skeleton-text long skeleton"></div>
+                            <div class="quickview-skeleton-button skeleton"></div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            loadProductDetails: async (product) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const productDetails = {
+                            ...product,
+                            description: product.descricao || "Tênis premium com tecnologia de amortecimento avançada. Ideal para uso casual e esportivo. Material de alta qualidade que oferece conforto e durabilidade.",
+                            images: [
+                                product.imagemUrl,
+                                product.imagemUrl,
+                                product.imagemUrl
+                            ],
+                            features: [
+                                { icon: 'fas fa-shoe-prints', text: 'Amortecimento React' },
+                                { icon: 'fas fa-wind', text: 'Respirável' },
+                                { icon: 'fas fa-weight-hanging', text: 'Leve' },
+                                { icon: 'fas fa-award', text: 'Garantia 6 meses' }
+                            ],
+                            sizes: quickViewSystem.generateAvailableSizes(product)
+                        };
+                        
+                        quickViewSystem.renderProductDetails(productDetails);
+                        resolve(productDetails);
+                    }, 800);
+                });
+            },
+
+            renderProductDetails: (product) => {
+                const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
+                const discountPercent = hasDiscount ? 
+                    Math.round((1 - product.preco / product.precoOriginal) * 100) : 0;
+
+                quickViewElements.content.innerHTML = `
+                    <div class="quickview-gallery">
+                        <img src="${utils.getImageUrl(product.images[0])}" 
+                             alt="${product.nome}" 
+                             class="quickview-main-image"
+                             id="quickviewMainImage">
+                        
+                        <div class="quickview-thumbnails">
+                            ${product.images.map((image, index) => `
+                                <img src="${utils.getImageUrl(image)}" 
+                                     alt="${product.nome} - Imagem ${index + 1}"
+                                     class="quickview-thumbnail ${index === 0 ? 'active' : ''}"
+                                     data-image-index="${index}">
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="quickview-details">
+                        <div class="quickview-brand">${product.marca.nome}</div>
+                        <h1 class="quickview-title">${product.nome}</h1>
+                        
+                        <div class="quickview-price">
+                            <span class="quickview-current-price">${utils.formatPrice(product.preco)}</span>
+                            ${hasDiscount ? `
+                                <span class="quickview-original-price">${utils.formatPrice(product.precoOriginal)}</span>
+                                <span class="quickview-discount">-${discountPercent}%</span>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="quickview-shipping">
+                            <i class="fas fa-shipping-fast"></i>
+                            <span>Frete Grátis para todo Brasil</span>
+                        </div>
+                        
+                        <p class="quickview-description">${product.description}</p>
+                        
+                        <div class="quickview-size-section">
+                            <div class="quickview-size-title">Selecione o Tamanho:</div>
+                            <div class="quickview-size-options" id="quickviewSizeOptions">
+                                ${Object.keys(product.sizes).map(size => {
+                                    const quantity = product.sizes[size];
+                                    const isDisabled = quantity <= 0;
+                                    return `
+                                        <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
+                                             data-size="${size}"
+                                             ${!isDisabled ? 'onclick="quickViewSystem.selectSize(this)"' : ''}>
+                                            ${size}
+                                            ${!isDisabled ? `<small style="display: block; font-size: 0.7em; opacity: 0.7;">${quantity} un</small>` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="quickview-actions">
+                            <button class="btn btn-primary quickview-add-to-cart" 
+                                    id="quickviewAddToCart"
+                                    onclick="quickViewSystem.addToCartFromQuickView()"
+                                    disabled>
+                                <i class="fas fa-shopping-bag"></i>
+                                Adicionar ao Carrinho
+                            </button>
+                            <button class="quickview-wishlist" 
+                                    onclick="quickViewSystem.toggleWishlist()"
+                                    aria-label="Adicionar à lista de desejos">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="quickview-features">
+                            ${product.features.map(feature => `
+                                <div class="quickview-feature">
+                                    <i class="${feature.icon}"></i>
+                                    <span>${feature.text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                quickViewSystem.addGalleryEventListeners();
+            },
+
+            addGalleryEventListeners: () => {
+                const thumbnails = document.querySelectorAll('.quickview-thumbnail');
+                const mainImage = document.getElementById('quickviewMainImage');
+                
+                thumbnails.forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        thumbnails.forEach(t => t.classList.remove('active'));
+                        thumb.classList.add('active');
+                        mainImage.src = thumb.src;
+                    });
+                });
+            },
+
+            selectSize: (element) => {
+                document.querySelectorAll('.quickview-size-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                element.classList.add('selected');
+                quickViewSystem.selectedSize = element.dataset.size;
+                
+                document.getElementById('quickviewAddToCart').disabled = false;
+            },
+
+            addToCartFromQuickView: () => {
+                if (!quickViewSystem.selectedSize) {
+                    showNotification('Por favor, selecione um tamanho.', 'error');
+                    return;
+                }
+
+                if (!quickViewProduct) {
+                    showNotification('Erro: Produto não encontrado.', 'error');
+                    return;
+                }
+
+                if (typeof window.addToCart === 'function') {
+                    const productToAdd = {
+                        id: quickViewProduct.id.toString(),
+                        name: quickViewProduct.nome,
+                        price: quickViewProduct.preco,
+                        image: utils.getImageUrl(quickViewProduct.imagemUrl),
+                        size: quickViewSystem.selectedSize,
+                        quantity: 1
+                    };
+                    
+                    window.addToCart(productToAdd);
+                    quickViewSystem.closeQuickView();
+                    showNotification(`${quickViewProduct.nome} (Tamanho: ${quickViewSystem.selectedSize}) adicionado ao carrinho!`);
+                } else {
+                    console.error("Função window.addToCart não encontrada");
+                    quickViewSystem.closeQuickView();
+                    showNotification('Produto adicionado ao carrinho (simulado)', 'info');
+                }
+            },
+
+            toggleWishlist: () => {
+                const wishlistBtn = document.querySelector('.quickview-wishlist');
+                const icon = wishlistBtn.querySelector('i');
+                
+                if (wishlistBtn.classList.contains('active')) {
+                    wishlistBtn.classList.remove('active');
+                    icon.className = 'far fa-heart';
+                    showNotification('Produto removido da lista de desejos');
+                } else {
+                    wishlistBtn.classList.add('active');
+                    icon.className = 'fas fa-heart';
+                    showNotification('Produto adicionado à lista de desejos!');
+                }
+            },
+
+            generateAvailableSizes: (product) => {
+                const sizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
+                const availableSizes = {};
+                
+                const totalStock = product.estoque || 0;
+                sizes.forEach(size => {
+                    availableSizes[size] = totalStock > 0 ? Math.floor(Math.random() * 5) + 1 : 0;
+                });
+                
+                return availableSizes;
+            },
+
+            closeQuickView: () => {
+                quickViewElements.overlay.classList.remove('active');
+                quickViewProduct = null;
+                quickViewSystem.selectedSize = null;
+                document.body.style.overflow = '';
+            },
+
+            showError: (message) => {
+                quickViewElements.content.innerHTML = `
+                    <div class="quickview-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Erro</h3>
+                        <p>${message}</p>
+                        <button class="btn btn-outline" onclick="quickViewSystem.closeQuickView()">
+                            Fechar
+                        </button>
+                    </div>
+                `;
+            }
+        };
+
         // ===== SISTEMA DE VIEW =====
         const viewSystem = {
             switchView: (viewType) => {
@@ -507,7 +803,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.classList.toggle('active', btn.dataset.view === viewType);
                 });
                 
-                // Salvar preferência
                 localStorage.setItem('catalogViewPreference', viewType);
             },
             
@@ -526,17 +821,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     elements.searchClear.style.display = state.filters.search ? 'block' : 'none';
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
                 }, 300));
                 
-                // Limpar busca
                 elements.searchClear.addEventListener('click', () => {
                     state.filters.search = '';
                     elements.searchInput.value = '';
                     elements.searchClear.style.display = 'none';
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
                 });
                 
                 // Filtros
@@ -544,21 +836,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.filters.brand = e.target.value;
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
                 });
                 
                 elements.categoryFilter.addEventListener('change', (e) => {
                     state.filters.category = e.target.value;
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
+                });
+                
+                elements.priceFilter.addEventListener('change', (e) => {
+                    state.filters.price = e.target.value;
+                    filterSystem.applyFilters();
+                    renderSystem.renderProducts();
                 });
                 
                 elements.sortFilter.addEventListener('change', (e) => {
                     state.filters.sort = e.target.value;
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
                 });
                 
                 // View controls
@@ -587,10 +882,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 modalElements.addToCartBtn.addEventListener('click', modalSystem.handleAddToCart);
                 
+                // Quick View events
+                quickViewElements.closeBtn.addEventListener('click', quickViewSystem.closeQuickView);
+                quickViewElements.overlay.addEventListener('click', (e) => {
+                    if (e.target === quickViewElements.overlay) {
+                        quickViewSystem.closeQuickView();
+                    }
+                });
+                
                 // Keyboard events
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && modalElements.overlay.classList.contains('active')) {
-                        modalSystem.closeSizeSelectionModal();
+                    if (e.key === 'Escape') {
+                        if (modalElements.overlay.classList.contains('active')) {
+                            modalSystem.closeSizeSelectionModal();
+                        }
+                        if (quickViewElements.overlay.classList.contains('active')) {
+                            quickViewSystem.closeQuickView();
+                        }
                     }
                 });
             },
@@ -604,18 +912,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const response = await axios.get(API_URL);
                     state.allProducts = response.data.map(product => ({
                         ...product,
-                        // Adicionar dados simulados para demonstração
                         isNew: Math.random() > 0.7,
                         isLimited: Math.random() > 0.8,
                         categoria: ['lifestyle', 'running', 'basketball', 'skateboarding'][
                             Math.floor(Math.random() * 4)
                         ],
-                        precoOriginal: product.preco * (1 + Math.random() * 0.3) // Preço original simulado
+                        precoOriginal: product.preco * (1 + Math.random() * 0.3)
                     }));
                     
                     filterSystem.applyFilters();
                     renderSystem.renderProducts();
-                    filterSystem.updateActiveFilters();
                     
                 } catch (error) {
                     console.error('Erro ao carregar produtos:', error);
@@ -643,19 +949,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 viewSystem.loadViewPreference();
                 init.fetchProducts();
                 
-                // Expor funções globais para debug
                 window.catalogApp = {
                     state,
                     filterSystem,
                     renderSystem,
                     modalSystem,
+                    quickViewSystem,
                     showNotification,
                     removeFilter: filterSystem.removeFilter
                 };
             }
         };
 
-        // ===== INICIAR APLICAÇÃO =====
         init.start();
     }
 });

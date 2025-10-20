@@ -64,6 +64,14 @@
                                 <option value="skateboarding">Skate</option>
                             </select>
                             
+                            <select id="priceFilter" class="filter-select">
+                                <option value="all">Qualquer Preço</option>
+                                <option value="0-200">Até R$ 200</option>
+                                <option value="200-500">R$ 200 - R$ 500</option>
+                                <option value="500-1000">R$ 500 - R$ 1000</option>
+                                <option value="1000-99999">Acima de R$ 1000</option>
+                            </select>
+                            
                             <select id="sortFilter" class="filter-select">
                                 <option value="featured">Em Destaque</option>
                                 <option value="newest">Mais Recentes</option>
@@ -169,11 +177,15 @@
         </div>
     </div>
 
-    <!-- Quick View Modal (NOVO - Para visualização rápida) -->
+    <!-- Quick View Modal -->
     <div id="quickViewModal" class="quickview-modal-overlay">
         <div class="quickview-modal-content">
-            <button class="close-button" id="closeQuickViewBtn">&times;</button>
-            <div class="quickview-content" id="quickViewContent"></div>
+            <button class="close-button" id="closeQuickViewBtn" aria-label="Fechar visualização rápida">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="quickview-content" id="quickViewContent">
+                <!-- Conteúdo carregado via JavaScript -->
+            </div>
         </div>
     </div>
 
