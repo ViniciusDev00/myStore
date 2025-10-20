@@ -45,15 +45,17 @@
 
 .search-wrapper i {
     position: absolute;
-    left: 1rem;
+    left: 1.2rem; /* Ajustado para melhor centralização */
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
+    font-size: 1.1rem;
     z-index: 2;
 }
 
 .search-wrapper input {
-    padding-left: 3rem;
+    /* CORREÇÃO LUPA: Padding para garantir espaço para o ícone. */
+    padding-left: 3.5rem;
     width: 100%;
     height: 48px;
     background-color: var(--surface);
@@ -63,6 +65,11 @@
     font-family: var(--font-body);
     font-size: 1rem;
     transition: all 0.3s ease;
+}
+
+/* LUPA: Remove o texto do placeholder */
+.search-wrapper input::placeholder {
+    color: transparent; 
 }
 
 .search-wrapper input:focus {
@@ -141,7 +148,7 @@
 
 .product-image-wrapper {
     background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    height: 180px; /* Altura reduzida para mobile */
+    height: 180px; /* Altura padrão para imagem (Desktop/Tablet) */
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -162,16 +169,17 @@
 }
 
 .product-info {
-    padding: 1rem; /* Padding reduzido */
+    /* AJUSTE PADRÃO (DESKTOP/GRANDE): Padding base reduzido */
+    padding: 0.6rem; /* Reduzido de 0.7rem */
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 0.5rem; /* Espaçamento interno reduzido */
+    gap: 0.1rem; /* Espaçamento interno reduzido */
 }
 
 .product-brand {
     font-family: var(--font-mono);
-    font-size: 0.7rem; /* Fonte menor */
+    font-size: 0.65rem; /* Fonte diminuída */
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -180,21 +188,21 @@
 
 .product-name {
     font-weight: 600;
-    font-size: 0.9rem; /* Fonte menor para mobile */
+    font-size: 0.85rem; /* Fonte diminuída */
     margin: 0;
-    line-height: 1.3;
+    line-height: 1.2; /* Line-height reduzida */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.6em; /* Altura fixa para 2 linhas */
+    height: 2.1em; /* Altura fixa para 2 linhas (1.2 * 1.75) */
 }
 
 .product-price {
-    font-size: 1rem; /* Fonte menor */
+    font-size: 1rem; /* Fonte diminuída */
     font-weight: 700;
     color: var(--primary);
-    margin: 0;
+    margin: 0.1rem 0 0.4rem; /* Margem reduzida */
 }
 
 .product-info .btn {
@@ -204,8 +212,9 @@
     background-color: var(--text-primary);
     color: var(--background);
     border: 2px solid var(--text-primary);
-    padding: 0.75rem 0.5rem; /* Padding reduzido */
-    font-size: 0.85rem; /* Fonte menor */
+    /* PADRÃO DESKTOP/MOBILE GRANDE: Diminuição do botão */
+    padding: 0.5rem 0.4rem; /* Reduzido de 0.6rem */
+    font-size: 0.75rem; /* Reduzido de 0.8rem */
     min-height: auto;
 }
 
@@ -241,27 +250,33 @@
     }
     
     .product-image-wrapper {
-        height: 150px;
+        height: 160px; /* Mantido para prevalecer a imagem */
         padding: 0.25rem;
     }
     
     .product-info {
-        padding: 0.75rem;
-        gap: 0.25rem;
+        padding: 0.35rem; /* Redução máxima */
+        gap: 0.05rem; /* Redução máxima */
     }
     
+    .product-brand {
+        font-size: 0.6rem; 
+    }
+
     .product-name {
-        font-size: 0.85rem;
-        height: 2.4em;
+        font-size: 0.7rem; /* Redução máxima */
+        height: 1.7em; /* 2 linhas mais apertadas (1.2 * 1.4) */
     }
     
     .product-price {
-        font-size: 0.9rem;
+        font-size: 0.85rem; /* Redução máxima */
+        margin: 0.1rem 0 0.3rem; 
     }
     
     .product-info .btn {
-        padding: 0.6rem 0.5rem;
-        font-size: 0.8rem;
+        /* Diminuição máxima do botão para Mobile Pequeno */
+        padding: 0.4rem; 
+        font-size: 0.65rem;
     }
 }
 
@@ -273,11 +288,27 @@
     }
     
     .product-image-wrapper {
-        height: 170px;
+        height: 180px; /* Mantido para prevalecer a imagem */
     }
     
     .product-info {
-        padding: 1rem;
+        padding: 0.5rem; /* Redução */
+        gap: 0.1rem; /* Redução */
+    }
+
+    .product-name {
+        font-size: 0.8rem;
+    }
+
+    .product-info .btn {
+        /* Diminuição do botão para Mobile Médio */
+        padding: 0.5rem; 
+        font-size: 0.75rem;
+    }
+    
+    .product-price {
+        font-size: 1.0rem;
+        margin: 0.2rem 0 0.5rem;
     }
 }
 
@@ -289,15 +320,26 @@
     }
     
     .product-image-wrapper {
-        height: 200px;
+        height: 220px; /* Mantido para prevalecer a imagem */
+    }
+    
+    .product-info {
+        padding: 0.6rem; /* Redução */
+        gap: 0.2rem; /* Redução */
     }
     
     .product-name {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
     
     .product-price {
         font-size: 1.1rem;
+    }
+
+    .product-info .btn {
+        /* Diminuição do botão para Mobile Grande */
+        padding: 0.6rem 0.5rem; 
+        font-size: 0.8rem;
     }
 }
 
@@ -331,7 +373,7 @@
     }
     
     .product-info {
-        padding: 1.25rem;
+        padding: 1rem; /* Reduzido de 1.25rem */
     }
     
     .product-name {
@@ -340,6 +382,11 @@
     
     .product-price {
         font-size: 1.2rem;
+    }
+
+    .product-info .btn {
+        padding: 0.7rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -355,7 +402,12 @@
     }
     
     .product-info {
-        padding: 1.5rem;
+        padding: 1rem; /* Reduzido de 1.5rem */
+    }
+
+    .product-info .btn {
+        padding: 0.75rem;
+        font-size: 0.95rem;
     }
 }
 
@@ -383,7 +435,7 @@
     }
 }
 
-/* Desktop Extra Grande (acima de 1920px) */
+/* Desktop Extra Grande (acima de 1921px) */
 @media (min-width: 1921px) {
     .products-grid {
         grid-template-columns: repeat(6, 1fr); /* 6 produtos por linha */
@@ -395,7 +447,7 @@
     }
 }
 
-/* ===== MELHORIAS DE ACESSIBILIDADE E UX ===== */
+/* ===== MELHORIAS DE ACESSIBILIDADE E UX (CÓDIGO OMITIDO) ===== */
 
 /* Estados de foco melhorados */
 .product-card:focus-within {
@@ -544,7 +596,7 @@
 
 @keyframes fadeInScale {
     from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    to { transform: scale(1); }
 }
 
 .size-modal-content .close-button {
