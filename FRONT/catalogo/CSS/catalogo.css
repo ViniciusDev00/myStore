@@ -258,10 +258,13 @@
     justify-content: center;
 }
 
-.products-grid[data-view="list"] .product-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
+/* LINK DO PRODUTO NO MODO LISTA - CORREÇÃO */
+.products-grid[data-view="list"] .product-card-link {
+    display: contents; /* Permite que o link cubra toda a área do card */
+}
+
+.products-grid[data-view="list"] .product-card > *:not(.product-actions):not(.product-footer) {
+    cursor: pointer;
 }
 
 .product-card {
@@ -339,41 +342,9 @@
     transform: scale(1.08);
 }
 
+/* REMOVIDO: Ações do produto (coração) */
 .product-actions {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    opacity: 0;
-    transform: translateX(10px);
-    transition: all 0.3s ease;
-}
-
-.product-card:hover .product-actions {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.action-btn:hover {
-    background: var(--primary);
-    transform: scale(1.1);
+    display: none; /* Remove completamente as ações */
 }
 
 .product-info {
@@ -544,162 +515,7 @@
     width: 80%;
 }
 
-/* ===== MODAL DE SELEÇÃO DE TAMANHO ===== */
-.size-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1050;
-    visibility: hidden;
-    opacity: 0;
-    transition: all 0.3s ease-in-out;
-    backdrop-filter: blur(10px);
-}
-
-.size-modal-overlay.active {
-    visibility: visible;
-    opacity: 1;
-}
-
-.size-modal-content {
-    background: var(--background);
-    padding: var(--space-xl);
-    border-radius: 20px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    border: 1px solid var(--border-color);
-    animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.size-modal-content .close-button {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    transition: color 0.2s;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.size-modal-content .close-button:hover {
-    color: var(--primary);
-    background: rgba(255, 122, 0, 0.1);
-}
-
-.size-modal-content h3 {
-    font-size: 1.3rem;
-    margin-bottom: var(--space-lg);
-    color: var(--text-primary);
-    text-align: center;
-    font-weight: 600;
-}
-
-.size-options-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 0.8rem;
-    margin-bottom: var(--space-lg);
-}
-
-.size-option {
-    background-color: var(--surface);
-    border: 2px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 0.8rem 0.5rem;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    text-align: center;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.size-option:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-}
-
-.size-option.selected {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
-    transform: scale(1.05);
-}
-
-.size-option.disabled {
-    background-color: var(--surface);
-    color: var(--text-secondary);
-    cursor: not-allowed;
-    border-color: var(--border-color);
-    opacity: 0.5;
-    text-decoration: line-through;
-}
-
-.size-option.disabled::after {
-    content: '✕';
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--error-color);
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-error {
-    color: var(--error-color);
-    text-align: center;
-    margin: -0.5rem 0 var(--space-md);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-/* ===== BOTÃO CARREGAR MAIS ===== */
-.load-more-btn {
-    min-width: 200px;
-    padding: 1rem 2rem;
-    position: relative;
-}
-
-.load-more-btn .btn-loading {
-    position: static;
-    transform: none;
-}
-
-/* ===== QUICK VIEW MODAL ===== */
+/* ===== QUICK VIEW MODAL (AGORA É O MODAL PRINCIPAL) ===== */
 .quickview-modal-overlay {
     position: fixed;
     top: 0;
@@ -734,6 +550,17 @@
     border: 1px solid var(--border-color);
     animation: modalSlideIn 0.4s ease;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .quickview-modal-content .close-button {
@@ -943,30 +770,9 @@
     font-weight: 600;
 }
 
+/* REMOVIDO: Wishlist do Quick View */
 .quickview-wishlist {
-    width: 60px;
-    height: 60px;
-    border: 2px solid var(--border-color);
-    background: var(--surface);
-    color: var(--text-secondary);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    font-size: 1.3rem;
-}
-
-.quickview-wishlist:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: scale(1.1);
-}
-
-.quickview-wishlist.active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
+    display: none; /* Remove o botão de favoritos do Quick View */
 }
 
 .quickview-features {
@@ -1067,6 +873,18 @@
     background: var(--skeleton-color);
     border-radius: 12px;
     margin-top: auto;
+}
+
+/* ===== BOTÃO CARREGAR MAIS ===== */
+.load-more-btn {
+    min-width: 200px;
+    padding: 1rem 2rem;
+    position: relative;
+}
+
+.load-more-btn .btn-loading {
+    position: static;
+    transform: none;
 }
 
 /* ===== NOTIFICAÇÕES ===== */
@@ -1174,23 +992,6 @@
         grid-template-columns: 100px 1fr;
     }
     
-    .products-grid[data-view="list"] .product-actions {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        justify-content: center;
-        margin-top: var(--space-sm);
-    }
-    
-    .size-modal-content {
-        margin: var(--space-md);
-        padding: var(--space-lg);
-    }
-    
-    .size-options-container {
-        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-        gap: 0.6rem;
-    }
-    
     .quickview-content {
         grid-template-columns: 1fr;
         max-height: 85vh;
@@ -1215,11 +1016,6 @@
     
     .quickview-actions {
         flex-direction: column;
-    }
-    
-    .quickview-wishlist {
-        width: 100%;
-        height: 50px;
     }
     
     .notification {
@@ -1264,9 +1060,8 @@
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     .product-card,
-    .size-option,
-    .add-to-cart-btn,
-    .action-btn {
+    .quickview-size-option,
+    .add-to-cart-btn {
         transition: none;
     }
     
@@ -1277,7 +1072,7 @@
 
 /* Dark Mode Auto */
 @media (prefers-color-scheme: dark) {
-    .size-modal-content,
+    .quickview-modal-content,
     .product-card {
         background: var(--surface);
     }
@@ -1302,11 +1097,6 @@
 
 /* ===== MELHORIAS DE ACESSIBILIDADE ===== */
 @media (hover: none) {
-    .product-actions {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
     .product-card:hover {
         transform: none;
         border-color: var(--border-color);
@@ -1323,7 +1113,6 @@
     outline-offset: 2px;
 }
 
-.action-btn:focus,
 .view-btn:focus,
 .filter-select:focus {
     outline: 2px solid var(--primary);

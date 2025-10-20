@@ -37,26 +37,15 @@ document.addEventListener('DOMContentLoaded', () => {
             viewButtons: document.querySelectorAll('.view-btn')
         };
 
-        // ===== MODAL DE TAMANHOS =====
-        const modalElements = {
-            overlay: document.getElementById('sizeSelectionModal'),
-            closeBtn: document.getElementById('closeSizeModalBtn'),
-            sizeOptions: document.getElementById('sizeOptions'),
-            addToCartBtn: document.getElementById('addToCartModalBtn'),
-            productName: document.getElementById('modalProductName'),
-            error: document.getElementById('modalError')
-        };
-
-        // ===== QUICK VIEW MODAL =====
+        // ===== QUICK VIEW MODAL (AGORA É O MODAL PRINCIPAL) =====
         const quickViewElements = {
             overlay: document.getElementById('quickViewModal'),
             content: document.getElementById('quickViewContent'),
             closeBtn: document.getElementById('closeQuickViewBtn')
         };
 
-        let selectedProductId = null;
-        let selectedSize = null;
         let quickViewProduct = null;
+        let selectedSize = null;
 
         // ===== SISTEMA DE NOTIFICAÇÕES =====
         const showNotification = (message, type = 'success') => {
@@ -320,18 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${product.isLimited ? '<span class="badge limited">Limited</span>' : ''}
                         </div>
                         
-                        <div class="product-actions">
-                            <button class="action-btn quick-view-btn" 
-                                    data-product-id="${product.id}"
-                                    aria-label="Visualização rápida">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn wishlist-btn" 
-                                    data-product-id="${product.id}"
-                                    aria-label="Adicionar à lista de desejos">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
+                        <!-- REMOVIDO: Ações do produto (coração) -->
                         
                         <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                             <div class="product-image-wrapper">
@@ -374,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             
             addProductEventListeners: () => {
+                // Botões "Adicionar ao Carrinho" - ABRE O QUICK VIEW
                 document.querySelectorAll('.add-to-cart-btn:not([disabled])').forEach(button => {
                     if (button.dataset.listenerAdded) return;
                     
@@ -382,7 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         e.stopPropagation();
                         
                         const productId = button.dataset.productId;
-                        const productName = button.dataset.productName;
                         const product = state.allProducts.find(p => p.id === parseInt(productId));
                         
                         if (!product || product.estoque <= 0) {
@@ -390,29 +368,38 @@ document.addEventListener('DOMContentLoaded', () => {
                             return;
                         }
                         
-                        const availableSizes = modalSystem.generateAvailableSizes(product);
-                        modalSystem.openSizeSelectionModal(productId, productName, availableSizes);
+                        // ABRIR QUICK VIEW COMPLETO
+                        quickViewSystem.openQuickView(productId);
                         
                         button.dataset.listenerAdded = 'true';
                     });
                 });
-                
-                document.querySelectorAll('.quick-view-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const productId = button.dataset.productId;
-                        quickViewSystem.openQuickView(productId);
+
+                // CORREÇÃO: Link do produto funcionando no modo lista
+                document.querySelectorAll('.product-card-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        // Permitir que o link funcione normalmente
+                        // Não precisa fazer nada especial aqui
                     });
                 });
-                
-                document.querySelectorAll('.wishlist-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        showNotification('Produto adicionado à lista de desejos!');
+
+                // CORREÇÃO: No modo lista, toda a área do card (exceto botões) deve ser clicável
+                if (state.currentView === 'list') {
+                    document.querySelectorAll('.product-card').forEach(card => {
+                        const link = card.querySelector('.product-card-link');
+                        if (link) {
+                            // Tornar elementos clicáveis no modo lista
+                            card.querySelectorAll('.product-image-wrapper, .product-info').forEach(element => {
+                                element.style.cursor = 'pointer';
+                                element.addEventListener('click', (e) => {
+                                    if (!e.target.closest('.add-to-cart-btn')) {
+                                        window.location.href = link.href;
+                                    }
+                                });
+                            });
+                        }
                     });
-                });
+                }
             },
             
             loadMoreProducts: () => {
@@ -437,104 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // ===== SISTEMA DO MODAL DE TAMANHOS =====
-        const modalSystem = {
-            openSizeSelectionModal: (productId, productName, availableSizes) => {
-                selectedProductId = productId;
-                selectedSize = null;
-                modalElements.error.style.display = 'none';
-                
-                modalElements.productName.textContent = `Selecione o Tamanho: ${productName}`;
-                modalElements.sizeOptions.innerHTML = '';
-                
-                const sortedSizes = Object.keys(availableSizes).sort((a, b) => parseInt(a) - parseInt(b));
-                
-                if (sortedSizes.length === 0) {
-                    modalElements.sizeOptions.innerHTML = `
-                        <p style="color: var(--text-secondary); text-align: center; grid-column: 1 / -1;">
-                            Nenhum tamanho disponível em estoque
-                        </p>
-                    `;
-                    modalElements.addToCartBtn.disabled = true;
-                } else {
-                    modalElements.addToCartBtn.disabled = false;
-                    sortedSizes.forEach(size => {
-                        const quantity = availableSizes[size];
-                        const sizeBtn = document.createElement('div');
-                        sizeBtn.className = `size-option ${quantity <= 0 ? 'disabled' : ''}`;
-                        sizeBtn.textContent = size;
-                        sizeBtn.dataset.size = size;
-                        
-                        if (quantity <= 0) {
-                            sizeBtn.title = 'Esgotado';
-                        } else {
-                            sizeBtn.addEventListener('click', () => {
-                                modalElements.sizeOptions.querySelectorAll('.size-option').forEach(btn => {
-                                    btn.classList.remove('selected');
-                                });
-                                sizeBtn.classList.add('selected');
-                                selectedSize = size;
-                                modalElements.error.style.display = 'none';
-                            });
-                        }
-                        modalElements.sizeOptions.appendChild(sizeBtn);
-                    });
-                }
-                
-                modalElements.overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            },
-            
-            closeSizeSelectionModal: () => {
-                modalElements.overlay.classList.remove('active');
-                selectedProductId = null;
-                selectedSize = null;
-                document.body.style.overflow = '';
-            },
-            
-            generateAvailableSizes: (product) => {
-                const sizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
-                const availableSizes = {};
-                
-                const totalStock = product.estoque || 0;
-                sizes.forEach(size => {
-                    availableSizes[size] = totalStock > 0 ? Math.floor(Math.random() * 5) + 1 : 0;
-                });
-                
-                return availableSizes;
-            },
-            
-            handleAddToCart: () => {
-                if (!selectedSize) {
-                    modalElements.error.textContent = "Por favor, selecione um tamanho antes de adicionar ao carrinho.";
-                    modalElements.error.style.display = 'block';
-                    return;
-                }
-                
-                if (typeof window.addToCart === 'function') {
-                    const productDetails = state.allProducts.find(p => p.id === parseInt(selectedProductId));
-                    if (productDetails) {
-                        const productToAdd = {
-                            id: productDetails.id.toString(),
-                            name: productDetails.nome,
-                            price: productDetails.preco,
-                            image: utils.getImageUrl(productDetails.imagemUrl),
-                            size: selectedSize,
-                            quantity: 1
-                        };
-                        window.addToCart(productToAdd);
-                        modalSystem.closeSizeSelectionModal();
-                        showNotification(`${productDetails.nome} (Tamanho: ${selectedSize}) adicionado ao carrinho!`);
-                    }
-                } else {
-                    console.error("Função window.addToCart não encontrada");
-                    modalSystem.closeSizeSelectionModal();
-                    showNotification('Produto adicionado ao carrinho (simulado)', 'info');
-                }
-            }
-        };
-
-        // ===== SISTEMA QUICK VIEW =====
+        // ===== SISTEMA QUICK VIEW (AGORA É O MODAL PRINCIPAL) =====
         const quickViewSystem = {
             openQuickView: async (productId) => {
                 const product = state.allProducts.find(p => p.id === parseInt(productId));
@@ -544,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 quickViewProduct = product;
-                quickViewSystem.selectedSize = null;
+                selectedSize = null;
                 
                 quickViewSystem.showSkeleton();
                 quickViewElements.overlay.classList.add('active');
@@ -669,11 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <i class="fas fa-shopping-bag"></i>
                                 Adicionar ao Carrinho
                             </button>
-                            <button class="quickview-wishlist" 
-                                    onclick="quickViewSystem.toggleWishlist()"
-                                    aria-label="Adicionar à lista de desejos">
-                                <i class="far fa-heart"></i>
-                            </button>
+                            <!-- REMOVIDO: Botão de wishlist -->
                         </div>
                         
                         <div class="quickview-features">
@@ -709,13 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 element.classList.add('selected');
-                quickViewSystem.selectedSize = element.dataset.size;
+                selectedSize = element.dataset.size;
                 
                 document.getElementById('quickviewAddToCart').disabled = false;
             },
 
             addToCartFromQuickView: () => {
-                if (!quickViewSystem.selectedSize) {
+                if (!selectedSize) {
                     showNotification('Por favor, selecione um tamanho.', 'error');
                     return;
                 }
@@ -731,13 +617,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         name: quickViewProduct.nome,
                         price: quickViewProduct.preco,
                         image: utils.getImageUrl(quickViewProduct.imagemUrl),
-                        size: quickViewSystem.selectedSize,
+                        size: selectedSize,
                         quantity: 1
                     };
                     
                     window.addToCart(productToAdd);
                     quickViewSystem.closeQuickView();
-                    showNotification(`${quickViewProduct.nome} (Tamanho: ${quickViewSystem.selectedSize}) adicionado ao carrinho!`);
+                    showNotification(`${quickViewProduct.nome} (Tamanho: ${selectedSize}) adicionado ao carrinho!`);
                 } else {
                     console.error("Função window.addToCart não encontrada");
                     quickViewSystem.closeQuickView();
@@ -745,20 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
 
-            toggleWishlist: () => {
-                const wishlistBtn = document.querySelector('.quickview-wishlist');
-                const icon = wishlistBtn.querySelector('i');
-                
-                if (wishlistBtn.classList.contains('active')) {
-                    wishlistBtn.classList.remove('active');
-                    icon.className = 'far fa-heart';
-                    showNotification('Produto removido da lista de desejos');
-                } else {
-                    wishlistBtn.classList.add('active');
-                    icon.className = 'fas fa-heart';
-                    showNotification('Produto adicionado à lista de desejos!');
-                }
-            },
+            // REMOVIDO: Função toggleWishlist
 
             generateAvailableSizes: (product) => {
                 const sizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
@@ -775,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeQuickView: () => {
                 quickViewElements.overlay.classList.remove('active');
                 quickViewProduct = null;
-                quickViewSystem.selectedSize = null;
+                selectedSize = null;
                 document.body.style.overflow = '';
             },
 
@@ -804,6 +677,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 localStorage.setItem('catalogViewPreference', viewType);
+                
+                // Re-renderizar para aplicar correções do modo lista
+                setTimeout(() => {
+                    renderSystem.addProductEventListeners();
+                }, 100);
             },
             
             loadViewPreference: () => {
@@ -873,15 +751,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     elements.clearFiltersBtn.addEventListener('click', filterSystem.clearAllFilters);
                 }
                 
-                // Modal events
-                modalElements.closeBtn.addEventListener('click', modalSystem.closeSizeSelectionModal);
-                modalElements.overlay.addEventListener('click', (e) => {
-                    if (e.target === modalElements.overlay) {
-                        modalSystem.closeSizeSelectionModal();
-                    }
-                });
-                modalElements.addToCartBtn.addEventListener('click', modalSystem.handleAddToCart);
-                
                 // Quick View events
                 quickViewElements.closeBtn.addEventListener('click', quickViewSystem.closeQuickView);
                 quickViewElements.overlay.addEventListener('click', (e) => {
@@ -892,13 +761,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Keyboard events
                 document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        if (modalElements.overlay.classList.contains('active')) {
-                            modalSystem.closeSizeSelectionModal();
-                        }
-                        if (quickViewElements.overlay.classList.contains('active')) {
-                            quickViewSystem.closeQuickView();
-                        }
+                    if (e.key === 'Escape' && quickViewElements.overlay.classList.contains('active')) {
+                        quickViewSystem.closeQuickView();
                     }
                 });
             },
@@ -953,7 +817,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     state,
                     filterSystem,
                     renderSystem,
-                    modalSystem,
                     quickViewSystem,
                     showNotification,
                     removeFilter: filterSystem.removeFilter
