@@ -33,20 +33,23 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // --- CORREÇÃO DEFINITIVA: Permitir acesso a todas as APIs públicas, uploads e estáticos ---
+                        // --- CORREÇÃO DEFINITIVA: Permite acesso a todos os recursos públicos/estáticos/uploads ---
                         .requestMatchers(
+                            // APIs Públicas
                             "/api/auth/**", 
                             "/api/public/**", 
-                            "/api/produtos/**", 
+                            "/api/produtos/**",
+                            // Recursos Estáticos e Uploads (Caminhos mais amplos para garantir tudo)
                             "/uploads/**", 
-                            "/", // Permite acesso à raiz
-                            "/index.html", // Permite o arquivo principal
-                            "/css/**", // Permite todos os arquivos CSS
-                            "/js/**", // Permite todos os arquivos JS
-                            "/images/**", // Permite a pasta images
-                            "/assets/**", // Permite a pasta assets
-                            "/FRONT/**" // Permite todo o conteúdo da pasta FRONT
+                            "/css/**", 
+                            "/js/**", 
+                            "/images/**", 
+                            "/assets/**", 
+                            "/FRONT/**", // Inclui toda a pasta do Front-end
+                            "/", // Raiz do site
+                            "/index.html" // Arquivo principal
                         ).permitAll()
+                        // Permissões Autenticadas (MANTIDAS)
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
