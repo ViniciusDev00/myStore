@@ -1615,3 +1615,87 @@ input[type=number]::-webkit-outer-spin-button {
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
+/* ===== NOTIFICAÇÕES ===== */
+.notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--success-color);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 400px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-error {
+    border-left-color: var(--error-color);
+}
+
+.notification-warning {
+    border-left-color: var(--warning-color);
+}
+
+.notification-info {
+    border-left-color: var(--info-color);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.notification-content i {
+    font-size: 1.2rem;
+}
+
+.notification-success .notification-content i {
+    color: var(--success-color);
+}
+
+.notification-error .notification-content i {
+    color: var(--error-color);
+}
+
+.notification-warning .notification-content i {
+    color: var(--warning-color);
+}
+
+.notification-info .notification-content i {
+    color: var(--info-color);
+}
+
+/* ===== SKELETON CARDS ===== */
+.skeleton-card {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.skeleton-card .product-info {
+    padding: var(--space-md);
+    gap: 0.75rem;
+}
+
+/* ===== RESPONSIVIDADE PARA NOTIFICAÇÕES ===== */
+@media (max-width: 768px) {
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        transform: translateY(-100px);
+    }
+    
+    .notification.show {
+        transform: translateY(0);
+    }
+}
