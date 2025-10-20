@@ -33,8 +33,10 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // --- CORREÇÃO PRINCIPAL PARA O ERRO 403 FORBIDDEN ---
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
+                        // --- CORREÇÃO: Permitir todos os recursos estáticos e front-end ---
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", 
+                                "/FRONT/**", "/index.html", "/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
+                        // ----------------------------------------------------------------
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

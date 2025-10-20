@@ -5,8 +5,10 @@ import com.store.BACK.model.ItemPedido;
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Produto;
 import com.store.BACK.model.Usuario;
+import com.store.BACK.model.Endereco; // NOVO: Importa Endereco
 import com.store.BACK.repository.PedidoRepository;
 import com.store.BACK.repository.ProdutoRepository;
+import com.store.BACK.repository.EnderecoRepository; // NOVO: Importa EnderecoRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,17 +30,29 @@ public class PedidoService {
     @Autowired
     private EmailService emailService;
 
+    // NOVO: Adiciona EnderecoRepository
+    @Autowired
+    private EnderecoRepository enderecoRepository; 
+    // ---------------------------------
+
     // --- NOVA INJEÇÃO DE DEPENDÊNCIA ---
     @Autowired
     private PixPayloadService pixPayloadService;
     // ---------------------------------
 
     @Transactional
-    public Pedido criarPedido(List<ItemPedidoDTO> itensDTO, Usuario usuario) {
+    // MODIFICADO: Recebe itensDTO, usuario E enderecoEntregaId
+    public Pedido criarPedido(List<ItemPedidoDTO> itensDTO, Usuario usuario, Long enderecoEntregaId) { 
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setStatus("PENDENTE"); // Status inicial
+
+        // NOVO: 1. Busca e define o Endereço de Entrega
+        Endereco endereco = enderecoRepository.findById(enderecoEntregaId)
+                .orElseThrow(() -> new RuntimeException("Endereço de entrega não encontrado: " + enderecoEntregaId));
+        pedido.setEnderecoDeEntrega(endereco); 
+        // FIM NOVO
 
         List<ItemPedido> itensPedido = new ArrayList<>();
         BigDecimal valorTotal = BigDecimal.ZERO;

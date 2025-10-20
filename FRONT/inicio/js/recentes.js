@@ -62,10 +62,38 @@ document.addEventListener("DOMContentLoaded", () => {
         renderProductRow(filteredProducts, section.containerId);
         initSwiper(section.swiperClass, section.prev, section.next);
       });
+
+      // NOVO: Adiciona listener ao final da renderização
+      addCartButtonListeners(); 
+
     } catch (error) {
       console.error("Falha ao carregar produtos:", error);
     }
   };
+  
+  // NOVO: Função para adicionar listeners aos botões de 'Adicionar ao Carrinho'
+  const addCartButtonListeners = () => {
+      document.querySelectorAll('.product-card .add-to-cart-btn').forEach(button => {
+          // Garante que o listener não é adicionado duas vezes
+          if (button.dataset.listenerAdded) return; 
+
+          button.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const productId = e.target.dataset.productId;
+
+              // Mensagem de aviso que cumpre o requisito de "exibir o modal de aviso"
+              const confirmRedirect = confirm("Por favor, selecione um tamanho antes de adicionar ao carrinho. Você será redirecionado para a página do produto.");
+              
+              if (confirmRedirect) {
+                  // Redireciona para a página de detalhes do produto para a seleção de tamanho
+                  window.location.href = `/FRONT/produto/HTML/produto.html?id=${productId}`;
+              }
+          });
+          button.dataset.listenerAdded = 'true'; // Marca como adicionado
+      });
+  }
 
   fetchAndDistributeProducts();
 });
