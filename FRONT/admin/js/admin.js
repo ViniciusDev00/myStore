@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const marcaSelect = document.getElementById('product-brand'); // **Correção ID**
     const categoriaSelect = document.getElementById('product-category'); // **Correção ID**
     const imagemInput = document.getElementById('product-image'); // **Correção ID**
-    const formTitle = document.getElementById('modal-title'); // **Correção ID**
+    const modalTitle = document.getElementById('modal-title'); // CORREÇÃO: Usando a variável original (formTitle renomeada para modalTitle)
     const productModal = document.getElementById('product-modal'); // **Correção ID**
     const closeModalBtn = document.getElementById('close-modal-btn'); // **Correção ID**
     const addProductBtn = document.getElementById('add-product-btn'); // **Correção ID**
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resetForm = () => {
         addProdutoForm.reset();
         produtoIdInput.value = '';
-        formTitle.textContent = 'Adicionar Novo Produto';
+        modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO APLICADA AQUI
         imagemInput.required = true;
         imagePreview.classList.add('hidden');
         imagePreview.src = '#';
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         imagemInput.required = !produto; // Imagem obrigatória só ao adicionar
 
         if (produto) {
-            modalTitle.textContent = 'Editar Produto';
+            modalTitle.textContent = 'Editar Produto'; // CORREÇÃO: Usa modalTitle corretamente
             produtoIdInput.value = produto.id;
             nomeInput.value = produto.nome;
             marcaSelect.value = produto.marca?.id || '';
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
         } else {
-            modalTitle.textContent = 'Adicionar Novo Produto';
+            modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO: Usa modalTitle corretamente
         }
         productModal.classList.add('active');
     };
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Adiciona a imagem se foi selecionada
         if (imagemInput.files.length > 0) {
             formData.append('imagem', imagemInput.files[0]);
-        } else if (!isEditing) {
+        } else if (!isEditing && imagemInput.required) {
             alert('Por favor, selecione uma imagem para o novo produto.');
             return; // Impede envio sem imagem ao criar
         }
