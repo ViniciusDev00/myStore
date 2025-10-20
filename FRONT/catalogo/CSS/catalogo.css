@@ -222,7 +222,8 @@
     background-color: var(--primary);
     border-color: var(--primary);
     color: #fff;
-    transform: translateY(-1px);
+    transform: none;
+    box-shadow: none;
 }
 
 .catalog-footer {
@@ -277,6 +278,10 @@
         /* Diminuição máxima do botão para Mobile Pequeno */
         padding: 0.4rem; 
         font-size: 0.65rem;
+
+        /* >>> ADIÇÃO SOLICITADA <<< */
+        width: 90%;             
+        margin: 0.4rem auto;    
     }
 }
 
@@ -304,6 +309,10 @@
         /* Diminuição do botão para Mobile Médio */
         padding: 0.5rem; 
         font-size: 0.75rem;
+
+        /* >>> ADIÇÃO SOLICITADA <<< */
+        width: 90%;             
+        margin: 0.5rem auto;    
     }
     
     .product-price {
@@ -340,6 +349,10 @@
         /* Diminuição do botão para Mobile Grande */
         padding: 0.6rem 0.5rem; 
         font-size: 0.8rem;
+
+        /* >>> ADIÇÃO SOLICITADA <<< */
+        width: 90%;             
+        margin: 0.6rem auto;    
     }
 }
 
