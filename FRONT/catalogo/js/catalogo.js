@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'price-asc':
                         return products.sort((a, b) => a.preco - b.preco);
                     case 'price-desc':
-                        return products.sort((a, b) => b.preco - a.preco);
+                        return products.sort((a, b) => b.preco - b.preco);
                     case 'name-asc':
                         return products.sort((a, b) => a.nome.localeCompare(b.nome));
                     case 'newest':
@@ -309,8 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${product.isLimited ? '<span class="badge limited">Limited</span>' : ''}
                         </div>
                         
-                        <!-- REMOVIDO: Ações do produto (coração) -->
-                        
                         <a href="/FRONT/produto/HTML/produto.html?id=${product.id}" class="product-card-link">
                             <div class="product-image-wrapper">
                                 <img src="${utils.getImageUrl(product.imagemUrl)}" 
@@ -378,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // CORREÇÃO: Link do produto funcionando no modo lista
                 document.querySelectorAll('.product-card-link').forEach(link => {
                     link.addEventListener('click', (e) => {
-                        // Permitir que o link funcione normalmente
+                        // Permitir que o link funcione normally
                         // Não precisa fazer nada especial aqui
                     });
                 });
@@ -541,8 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     const isDisabled = quantity <= 0;
                                     return `
                                         <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
-                                             data-size="${size}"
-                                             ${!isDisabled ? 'onclick="quickViewSystem.selectSize(this)"' : ''}>
+                                             data-size="${size}">
                                             ${size}
                                             ${!isDisabled ? `<small style="display: block; font-size: 0.7em; opacity: 0.7;">${quantity} un</small>` : ''}
                                         </div>
@@ -554,13 +551,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="quickview-actions">
                             <button class="btn btn-primary quickview-add-to-cart" 
                                     id="quickviewAddToCart"
-                                    onclick="quickViewSystem.addToCartFromQuickView()"
                                     disabled>
                                 <i class="fas fa-shopping-bag"></i>
                                 Adicionar ao Carrinho
                             </button>
-                            <!-- REMOVIDO: Botão de wishlist -->
-                        </div>
+                            </div>
                         
                         <div class="quickview-features">
                             ${product.features.map(feature => `
@@ -574,6 +569,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 quickViewSystem.addGalleryEventListeners();
+                // *** CORREÇÃO: Adicionada a chamada para os novos listeners ***
+                quickViewSystem.addModalEventListeners();
             },
 
             addGalleryEventListeners: () => {
@@ -588,6 +585,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
             },
+
+            // *** CORREÇÃO: Nova função para adicionar listeners ao modal ***
+            addModalEventListeners: () => {
+                // Adiciona listener aos tamanhos
+                const sizeOptions = document.querySelectorAll('.quickview-size-option:not(.disabled)');
+                sizeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        quickViewSystem.selectSize(option); // Chama a função passando o elemento
+                    });
+                });
+
+                // Adiciona listener ao botão "Adicionar ao Carrinho"
+                const addToCartBtn = document.getElementById('quickviewAddToCart');
+                if (addToCartBtn) {
+                    addToCartBtn.addEventListener('click', () => {
+                        quickViewSystem.addToCartFromQuickView();
+                    });
+                }
+            },
+            // *** FIM DA NOVA FUNÇÃO ***
 
             selectSize: (element) => {
                 document.querySelectorAll('.quickview-size-option').forEach(opt => {
@@ -658,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>Erro</h3>
                         <p>${message}</p>
-                        <button class="btn btn-outline" onclick="quickViewSystem.closeQuickView()">
+                        <button class="btn btn-outline" onclick="catalogApp.quickViewSystem.closeQuickView()">
                             Fechar
                         </button>
                     </div>
