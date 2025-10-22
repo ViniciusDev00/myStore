@@ -6,11 +6,11 @@
     <title>Painel Admin | Japa Universe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../../FRONT/assets/CSS/base.css">
+    <link rel="stylesheet" href="../../assets/CSS/base.css"> 
     <link rel="stylesheet" href="../CSS/admin.css">
 </head>
 <body>
-    <header class="main-header" data-basepath="../.."></header>
+    <header class="main-header" data-basepath="../.."></header> 
 
     <main class="container admin-container">
         <h1 class="admin-title">Painel Administrativo</h1>
@@ -20,7 +20,7 @@
             <button class="nav-tab" data-tab="pedidos">Pedidos</button>
             <button class="nav-tab" data-tab="produtos">Produtos</button>
             <button class="nav-tab" data-tab="usuarios">Usuários</button>
-        </nav>
+            </nav>
 
         <div class="admin-content">
             <section id="dashboard" class="tab-content active">
@@ -28,18 +28,18 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Total de Pedidos</h3>
-                        <p id="stat-total-pedidos">0</p>
+                        <p id="stat-total-pedidos">Carregando...</p>
                     </div>
                     <div class="stat-card">
                         <h3>Total de Usuários</h3>
-                        <p id="stat-total-usuarios">0</p>
+                        <p id="stat-total-usuarios">Carregando...</p>
                     </div>
                     <div class="stat-card">
                         <h3>Total de Produtos</h3>
-                        <p id="stat-total-produtos">0</p>
+                        <p id="stat-total-produtos">Carregando...</p>
                     </div>
-                </div>
-            </section>
+                    </div>
+                </section>
 
             <section id="pedidos" class="tab-content">
                 <h2>Gerenciar Pedidos</h2>
@@ -52,32 +52,88 @@
                                 <th>Cliente</th>
                                 <th>Valor Total</th>
                                 <th>Status</th>
-                                <th>Ações</th> </tr>
+                                <th>Ações</th>
+                            </tr>
                         </thead>
                         <tbody id="admin-order-list">
-                            </tbody>
+                            <tr><td colspan="6">Carregando pedidos...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
 
             <section id="produtos" class="tab-content">
-                <h2>Gerenciar Produtos</h2>
-                <div class="table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Marca</th>
-                                <th>Estoque</th>
-                                <th>Preço</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-product-list">
-                            </tbody>
-                    </table>
-                </div>
+                 <h2>Gerenciar Produtos</h2>
+                 <button id="add-product-btn" class="btn btn-primary" style="margin-bottom: var(--space-md);">Adicionar Produto</button>
+                 <div class="table-container">
+                     <table class="admin-table">
+                         <thead>
+                             <tr>
+                                 <th>ID</th>
+                                 <th>Nome</th>
+                                 <th>Marca</th>
+                                 <th>Categoria</th> 
+                                 <th>Estoque</th>
+                                 <th>Preço</th>
+                                 <th>Ações</th>
+                             </tr>
+                         </thead>
+                         <tbody id="admin-product-list">
+                             <tr><td colspan="7">Carregando produtos...</td></tr>
+                         </tbody>
+                     </table>
+                 </div>
+
+                 <div id="productModal" class="modal-overlay" style="display: none;">
+                    <div class="modal-content large"> <div class="modal-header">
+                            <h2 class="modal-title" id="productModalTitle">Adicionar Produto</h2>
+                            <button id="closeProductModal" class="close-modal">&times;</button>
+                        </div>
+                        <form id="productForm" class="modal-body">
+                            <input type="hidden" id="productId"> <div class="form-row">
+                                <div class="form-group">
+                                    <label for="productName">Nome do Produto</label>
+                                    <input type="text" id="productName" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productBrand">Marca</label>
+                                    <select id="productBrand" required class="form-control">
+                                        <option value="">Carregando...</option> 
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                 <div class="form-group">
+                                    <label for="productCategory">Categoria</label>
+                                    <select id="productCategory" required class="form-control">
+                                         <option value="">Carregando...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productStock">Estoque</label>
+                                    <input type="number" id="productStock" required class="form-control" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productPrice">Preço (R$)</label>
+                                    <input type="number" id="productPrice" required class="form-control" step="0.01" min="0.01">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="productDescription">Descrição</label>
+                                <textarea id="productDescription" rows="4" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="productImage">Imagem (WEBP, JPG, PNG)</label>
+                                <input type="file" id="productImage" class="form-control" accept="image/webp, image/jpeg, image/png">
+                                <img id="productImagePreview" src="#" alt="Preview da Imagem" style="max-width: 150px; margin-top: 10px; display: none; border-radius: 4px;">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="cancelProductForm" class="btn btn-outline">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                            </div>
+                        </form>
+                    </div>
+                 </div>
             </section>
 
             <section id="usuarios" class="tab-content">
@@ -94,7 +150,8 @@
                             </tr>
                         </thead>
                         <tbody id="admin-user-list">
-                            </tbody>
+                             <tr><td colspan="5">Carregando usuários...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -114,9 +171,8 @@
             </div>
         </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="../../FRONT/assets/js/header.js"></script>
-    <script src="../../FRONT/inicio/js/main.js"></script>
-    <script src="../js/admin.js"></script>
-</body>
+    <script src="../../assets/js/header.js"></script> 
+    <script src="../../inicio/js/main.js"></script> <script src="../js/admin.js"></script> </body>
 </html>
