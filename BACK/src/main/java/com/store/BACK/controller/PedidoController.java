@@ -29,8 +29,11 @@ public class PedidoController {
         if (usuarioLogado == null) {
             return ResponseEntity.status(403).build(); // Retorna "Forbidden" se não houver usuário
         }
-        // MODIFICADO: Passar o DTO e o usuário para o service
-        Pedido novoPedido = pedidoService.criarPedido(checkoutRequest.getItens(), usuarioLogado, checkoutRequest.getEnderecoEntregaId());
+        
+        // --- MODIFICADO: Passa o DTO inteiro ---
+        Pedido novoPedido = pedidoService.criarPedido(checkoutRequest, usuarioLogado);
+        // --- FIM MODIFICAÇÃO ---
+        
         return ResponseEntity.ok(novoPedido);
     }
 
