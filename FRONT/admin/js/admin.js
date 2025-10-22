@@ -1,483 +1,384 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
-    let userRole = '';
-    const apiUrl = 'https://api.japauniverse.com.br'; // **URL da API corrigida**
-
-    // Função para decodificar o token JWT (igual ao código antigo)
-    const parseJwt = (token) => {
-        try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        } catch (e) {
-            console.error("Erro ao decodificar token:", e);
-            return null;
-        }
-    };
-
-    // **MUDANÇA 2: Extrai a role diretamente do token**
-    if (token) {
-        const decodedToken = parseJwt(token);
-        // Verifica se o token foi decodificado e se contém as 'authorities'
-        if (decodedToken && decodedToken.authorities && decodedToken.authorities.length > 0) {
-            // Pega a primeira autoridade (role) da lista
-            userRole = decodedToken.authorities[0].authority;
-        } else {
-            console.warn("Token decodificado não contém 'authorities' ou está malformado.");
-        }
-    }
-
-    // **MUDANÇA 3: Compara com 'ROLE_ADMIN' (como no código antigo)**
-    if (userRole !== 'ROLE_ADMIN') {
-        alert('Acesso negado. Você precisa ser um administrador.');
-        // **MUDANÇA 4: Garante que o caminho para o login está correto**
-        window.location.href = '/FRONT/login/HTML/login.html'; // Usando caminho absoluto
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        window.location.href = '../../login/HTML/login.html';
         return;
     }
 
-    // --- Configuração do Cliente API ---
-    // Cria a instância do Axios com a base URL correta e token
+    // Configuração do Axios
     const apiClient = axios.create({
-        baseURL: `${apiUrl}/api/admin`, // Endpoint específico do admin
+        baseURL: 'https://api.japauniverse.com.br/api',
         headers: {
             'Authorization': `Bearer ${token}`
         }
     });
-     const publicApiClient = axios.create({ baseURL: `${apiUrl}/api` }); // Para endpoints públicos
 
-    // Elementos do DOM (igual ao seu código mais recente)
-    const produtosTableBody = document.getElementById('produtos-table-body');
-    const pedidosTableBody = document.getElementById('pedidos-table-body');
-    const addProdutoForm = document.getElementById('product-form'); // **Correção ID**
-    const produtoIdInput = document.getElementById('product-id');  // **Correção ID**
-    const nomeInput = document.getElementById('product-name'); // **Correção ID**
-    const descricaoInput = document.getElementById('product-description'); // **Correção ID**
-    const precoInput = document.getElementById('product-price'); // **Correção ID**
-    const precoOriginalInput = document.getElementById('product-original-price'); // **Adicionado**
-    const estoqueInput = document.getElementById('product-stock'); // **Adicionado**
-    const marcaSelect = document.getElementById('product-brand'); // **Correção ID**
-    const categoriaSelect = document.getElementById('product-category'); // **Correção ID**
-    const imagemInput = document.getElementById('product-image'); // **Correção ID**
-    const modalTitle = document.getElementById('modal-title'); // CORREÇÃO: Usando a variável original (formTitle renomeada para modalTitle)
-    const productModal = document.getElementById('product-modal'); // **Correção ID**
-    const closeModalBtn = document.getElementById('close-modal-btn'); // **Correção ID**
-    const addProductBtn = document.getElementById('add-product-btn'); // **Correção ID**
-    const imagePreview = document.getElementById('image-preview');
-    const imagePreviewText = document.getElementById('image-preview-text');
+    // Elementos da UI
+    const tabs = document.querySelectorAll('.nav-tab');
+    const contents = document.querySelectorAll('.tab-content');
 
-    const pedidosSection = document.getElementById('pedidos-section');
-    const produtosSection = document.getElementById('produtos-section');
-    const mensagensSection = document.getElementById('mensagens-section');
-    const navPedidos = document.getElementById('nav-pedidos');
-    const navProdutos = document.getElementById('nav-produtos');
-    const navMensagens = document.getElementById('nav-mensagens');
-    const mensagensTableBody = document.getElementById('mensagens-table-body');
-    const messageModal = document.getElementById('message-modal');
-    const closeMessageModalBtn = document.getElementById('close-message-modal-btn');
-    const messageModalBody = document.getElementById('message-modal-body');
-    const messageModalTitle = document.getElementById('message-modal-title');
-    let adminMessages = [];
+    // Elementos das Listas
+    const orderList = document.getElementById('admin-order-list');
+    const productList = document.getElementById('admin-product-list');
+    const userList = document.getElementById('admin-user-list');
 
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    const toggleBtn = document.querySelector('.mobile-admin-toggle');
+    // Elementos das Estatísticas
+    const statTotalPedidos = document.getElementById('stat-total-pedidos');
+    const statTotalUsuarios = document.getElementById('stat-total-usuarios');
+    const statTotalProdutos = document.getElementById('stat-total-produtos');
 
-    // --- Funções Auxiliares ---
+    // --- NOVO: Elementos do Modal ---
+    const orderDetailModal = document.getElementById('orderDetailModal');
+    const closeModalBtn = document.getElementById('closeOrderDetailModal');
+    const modalContent = document.getElementById('modalOrderDetailContent');
+    const modalPedidoId = document.getElementById('modal-pedido-id');
+    // --- FIM Elementos do Modal ---
 
-    // Função auxiliar para obter URL da imagem (se necessário ajustar base URL)
-    const getImageUrl = (path) => {
-        if (!path) return 'placeholder.png'; // Imagem padrão se não houver
-        if (path.startsWith('http')) {
-            return path;
-        }
-         // Assumindo que o backend serve as imagens diretamente na raiz + path
-        return `${apiUrl}/${path}`;
-    };
+    // Navegação por Abas
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
 
-    const resetForm = () => {
-        addProdutoForm.reset();
-        produtoIdInput.value = '';
-        modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO APLICADA AQUI
-        imagemInput.required = true;
-        imagePreview.classList.add('hidden');
-        imagePreview.src = '#';
-        imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
-        productModal.classList.remove('active'); // Garante que o modal fecha
-    };
-
-    // Popula selects de marca e categoria
-    const populateSelect = (selectElement, items, placeholder) => {
-        selectElement.innerHTML = `<option value="">${placeholder}</option>`;
-        items.forEach(item => {
-            selectElement.innerHTML += `<option value="${item.id}">${item.nome}</option>`;
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
         });
-    };
+    });
 
-    const fetchBrandsAndCategories = async () => {
-        try {
-            const [brandsRes, categoriesRes] = await Promise.all([
-                publicApiClient.get('/produtos/marcas'), // Usa apiClient público
-                publicApiClient.get('/produtos/categorias') // Usa apiClient público
-            ]);
-            populateSelect(marcaSelect, brandsRes.data, 'Selecione uma marca');
-            populateSelect(categoriaSelect, categoriesRes.data, 'Selecione uma categoria');
-        } catch (error) {
-            console.error("Erro ao buscar marcas e categorias:", error);
-            alert("Erro ao carregar opções do formulário.");
-        }
-    };
+    // --- FUNÇÕES DE RENDERIZAÇÃO ---
 
-
-    // --- Renderização de Tabelas (Função de Pedidos Corrigida) ---
-
+    // Renderiza Pedidos
     const renderPedidos = (pedidos) => {
-        pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
-        pedidosTableBody.innerHTML = pedidos.map(pedido => {
-            const nomeCliente = pedido.usuario ? pedido.usuario.nome : 'Usuário Desconhecido';
-            const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
-            const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
-
-            return `
-            <tr>
-                <td>#${String(pedido.id).padStart(6, '0')}</td>
-                <td>${nomeCliente}</td>
-                <td>${dataFormatada}</td>
-                <td>${valorFormatado}</td>
-                <td>
-                    <select class="status-select" data-pedido-id="${pedido.id}">
-                        <option value="PENDENTE" ${pedido.status === 'PENDENTE' ? 'selected' : ''}>Pendente</option>
-                        <option value="PAGO" ${pedido.status === 'PAGO' ? 'selected' : ''}>Pago</option>
-                        <option value="ENVIADO" ${pedido.status === 'ENVIADO' ? 'selected' : ''}>Enviado</option>
-                        <option value="ENTREGUE" ${pedido.status === 'ENTREGUE' ? 'selected' : ''}>Entregue</option>
-                        <option value="CANCELADO" ${pedido.status === 'CANCELADO' ? 'selected' : ''}>Cancelado</option>
-                    </select>
-                </td>
-                <td><button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button></td>
-            </tr>
-        `}).join('');
-    };
-
-     const renderProdutos = (produtos) => {
-        produtosTableBody.innerHTML = produtos.map(produto => `
-            <tr>
-                <td>${produto.id}</td>
-                <td><img src="${getImageUrl(produto.imagemUrl)}" alt="${produto.nome}" width="50" style="border-radius: 4px; object-fit: cover;"></td>
-                <td>${produto.nome}</td>
-                <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
-                 <td>${produto.marca?.nome || 'N/A'}</td> {/* Usando optional chaining */}
-                 <td>${produto.categoria?.nome || 'N/A'}</td> {/* Usando optional chaining */}
-                 <td>${produto.estoque || 0}</td> {/* Estoque */}
-                <td>
-                    <button class="btn btn-warning btn-sm edit-produto-btn" data-product-id="${produto.id}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-danger btn-sm delete-produto-btn" data-product-id="${produto.id}"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-    };
-
-    const renderMensagens = (mensagens) => {
-        adminMessages = mensagens; // Guarda as mensagens para o modal
-        mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
-        mensagensTableBody.innerHTML = mensagens.map(msg => `
-            <tr>
-                <td>${msg.id}</td>
-                <td>${msg.nome}</td>
-                <td>${msg.email}</td>
-                <td>${msg.assunto}</td>
-                <td>${new Date(msg.dataEnvio).toLocaleString('pt-BR')}</td>
-                <td><button class="btn btn-primary btn-sm view-message-btn" data-message-id="${msg.id}">Visualizar</button></td>
-            </tr>
-        `).join('');
-    };
-
-    // --- Carregamento de Dados ---
-
-    const fetchPedidos = async () => {
-        try {
-            const response = await apiClient.get('/pedidos'); // Usa apiClient autenticado
-            renderPedidos(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar pedidos:", error);
-            pedidosTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar os pedidos.</td></tr>';
-             if (error.response && error.response.status === 403) {
-                alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
-                localStorage.removeItem('jwtToken');
-                window.location.href = '/FRONT/login/HTML/login.html';
-             }
-        }
-    };
-
-    const fetchProdutos = async () => {
-        try {
-            const response = await apiClient.get('/produtos'); // Usa apiClient autenticado
-            renderProdutos(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar produtos:", error);
-            produtosTableBody.innerHTML = '<tr><td colspan="8">Não foi possível carregar os produtos.</td></tr>'; // Atualizado colspan
-             if (error.response && error.response.status === 403) {
-                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
-                 localStorage.removeItem('jwtToken');
-                window.location.href = '/FRONT/login/HTML/login.html';
-             }
-        }
-    };
-
-    const fetchMensagens = async () => {
-        try {
-            const response = await apiClient.get('/contatos'); // Usa apiClient autenticado
-            renderMensagens(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar mensagens:", error);
-            mensagensTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar as mensagens.</td></tr>';
-             if (error.response && error.response.status === 403) {
-                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
-                 localStorage.removeItem('jwtToken');
-                 window.location.href = '/FRONT/login/HTML/login.html';
-             }
-        }
-    };
-
-    // --- Navegação e Modais ---
-
-    const switchView = (view) => {
-        [pedidosSection, produtosSection, mensagensSection].forEach(s => s.classList.remove('active'));
-        [navPedidos, navProdutos, navMensagens].forEach(n => n.classList.remove('active'));
-
-        if (view === 'pedidos') {
-            pedidosSection.classList.add('active');
-            navPedidos.classList.add('active');
-            fetchPedidos();
-        } else if (view === 'produtos') {
-            produtosSection.classList.add('active');
-            navProdutos.classList.add('active');
-            fetchProdutos();
-        } else if (view === 'mensagens') {
-            mensagensSection.classList.add('active');
-            navMensagens.classList.add('active');
-            fetchMensagens();
-        }
-         // Fecha o sidebar mobile ao trocar de aba
-         if (sidebar && overlay && sidebar.classList.contains('active')) {
-             sidebar.classList.remove('active');
-             overlay.classList.remove('active');
-         }
-    };
-
-    navPedidos.addEventListener('click', (e) => { e.preventDefault(); switchView('pedidos'); });
-    navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
-    navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
-
-    // Abre o modal de produto (para adicionar ou editar)
-     const openProductModal = (produto = null) => {
-        resetForm(); // Limpa o formulário antes de preencher
-        imagemInput.required = !produto; // Imagem obrigatória só ao adicionar
-
-        if (produto) {
-            modalTitle.textContent = 'Editar Produto'; // CORREÇÃO: Usa modalTitle corretamente
-            produtoIdInput.value = produto.id;
-            nomeInput.value = produto.nome;
-            marcaSelect.value = produto.marca?.id || '';
-            categoriaSelect.value = produto.categoria?.id || '';
-            precoInput.value = produto.preco.toFixed(2);
-            precoOriginalInput.value = produto.precoOriginal ? produto.precoOriginal.toFixed(2) : '';
-            estoqueInput.value = produto.estoque || 0;
-            descricaoInput.value = produto.descricao || '';
-
-            if (produto.imagemUrl) {
-                imagePreview.src = getImageUrl(produto.imagemUrl);
-                imagePreview.classList.remove('hidden');
-                imagePreviewText.textContent = 'Imagem atual. Selecione outra para substituir.';
-            }
-
-        } else {
-            modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO: Usa modalTitle corretamente
-        }
-        productModal.classList.add('active');
-    };
-
-    const closeProductModal = () => productModal.classList.remove('active');
-
-    const openMessageModal = (message) => {
-        messageModalTitle.textContent = `Mensagem de: ${message.nome}`;
-        messageModalBody.innerHTML = `
-            <p class="message-info"><strong>De:</strong> ${message.nome} (${message.email})</p>
-            <p class="message-info"><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p>
-            <h4>Assunto: ${message.assunto}</h4>
-            <p>${message.mensagem}</p>`;
-        messageModal.classList.add('active');
-    };
-    const closeMessageModal = () => messageModal.classList.remove('active');
-
-    // Event Listeners para Modais
-    addProductBtn.addEventListener('click', () => openProductModal());
-    closeModalBtn.addEventListener('click', closeProductModal);
-    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeProductModal(); });
-    closeMessageModalBtn.addEventListener('click', closeMessageModal);
-    messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
-
-
-    // Preview da Imagem
-    imagemInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imagePreview.src = e.target.result;
-                imagePreview.classList.remove('hidden');
-                imagePreviewText.textContent = `Nova imagem: ${file.name}`;
-            };
-            reader.readAsDataURL(file);
-        } else if (!produtoIdInput.value) { // Só limpa se estiver adicionando
-            imagePreview.classList.add('hidden');
-            imagePreview.src = '#';
-            imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
-        }
-    });
-
-    // --- Manipulação de Eventos das Tabelas ---
-
-    // Event Delegation para botões na tabela de PEDIDOS
-    pedidosTableBody.addEventListener('click', async (event) => {
-        const target = event.target;
-        const pedidoId = target.dataset.pedidoId;
-
-        // Atualizar Status do Pedido
-        if (target.classList.contains('update-status-btn')) {
-            const selectElement = target.closest('tr').querySelector(`select.status-select`);
-            const novoStatus = selectElement.value;
-
-            if (!novoStatus) return;
-
-            if (confirm(`Tem certeza que deseja atualizar o status do pedido #${pedidoId} para ${novoStatus}?`)) {
-                try {
-                     // **MUDANÇA: Usar PATCH e enviar JSON**
-                    await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: novoStatus });
-                    alert('Status do pedido atualizado com sucesso!');
-                    fetchPedidos(); // Atualiza a tabela
-                } catch (error) {
-                    alert('Erro ao atualizar o status do pedido.');
-                    console.error('Erro ao atualizar status:', error);
-                }
-            }
-        }
-    });
-
-    // Event Delegation para botões na tabela de PRODUTOS
-    produtosTableBody.addEventListener('click', async (event) => {
-        const target = event.target.closest('button'); // Pega o botão clicado
-        if (!target) return; // Sai se não clicou num botão
-
-        const productId = target.dataset.productId;
-
-        // Editar Produto
-        if (target.classList.contains('edit-produto-btn')) {
-            try {
-                 // **MUDANÇA: Usar publicApiClient para pegar detalhes do produto**
-                const response = await publicApiClient.get(`/produtos/${productId}`);
-                openProductModal(response.data); // Abre o modal com os dados
-            } catch (error) {
-                alert('Erro ao carregar dados do produto para edição.');
-                console.error("Erro ao buscar produto para editar:", error);
-            }
-        }
-
-        // Excluir Produto
-        if (target.classList.contains('delete-produto-btn')) {
-            if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}?`)) {
-                try {
-                    await apiClient.delete(`/produtos/${productId}`);
-                    alert('Produto excluído com sucesso!');
-                    fetchProdutos(); // Atualiza a tabela
-                } catch (error) {
-                    alert('Erro ao excluir produto.');
-                    console.error("Erro ao excluir produto:", error);
-                }
-            }
-        }
-    });
-
-     // Event Delegation para botões na tabela de MENSAGENS
-     mensagensTableBody.addEventListener('click', (e) => {
-        const target = e.target.closest('.view-message-btn');
-        if (target) {
-            const messageId = parseInt(target.dataset.messageId, 10);
-            const message = adminMessages.find(m => m.id === messageId);
-            if (message) openMessageModal(message);
-        }
-    });
-
-    // --- Submissão do Formulário de Produto ---
-    addProdutoForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = produtoIdInput.value;
-        const isEditing = !!id;
-        const url = isEditing ? `/produtos/${id}` : '/produtos';
-        const method = isEditing ? 'put' : 'post'; // PUT para editar, POST para criar
-
-        // Validar se marca e categoria foram selecionados
-        const brandId = marcaSelect.value;
-        const categoryId = categoriaSelect.value;
-        if (!brandId || !categoryId) {
-            alert('Por favor, selecione a marca e a categoria.');
+        if (!orderList) return;
+        orderList.innerHTML = ''; // Limpa a lista
+        if (!pedidos || pedidos.length === 0) {
+            orderList.innerHTML = '<tr><td colspan="6">Nenhum pedido encontrado.</td></tr>';
             return;
         }
 
-        const formData = new FormData();
+        pedidos.sort((a, b) => b.id - a.id); // Ordena por ID mais recente
 
-        // Monta o objeto JSON do produto
-        const produtoData = {
-            nome: nomeInput.value,
-            marca: { id: parseInt(brandId) }, // Envia objeto com ID
-            categoria: { id: parseInt(categoryId) }, // Envia objeto com ID
-            preco: parseFloat(precoInput.value),
-            precoOriginal: precoOriginalInput.value ? parseFloat(precoOriginalInput.value) : null,
-            estoque: parseInt(estoqueInput.value),
-            descricao: descricaoInput.value,
-        };
-        // Adiciona o JSON como uma parte 'produto'
-        formData.append('produto', JSON.stringify(produtoData));
+        pedidos.forEach(pedido => {
+            const row = document.createElement('tr');
+            // Formata data e valor
+            const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : 'N/A';
+            const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
 
-        // Adiciona a imagem se foi selecionada
-        if (imagemInput.files.length > 0) {
-            formData.append('imagem', imagemInput.files[0]);
-        } else if (!isEditing && imagemInput.required) {
-            alert('Por favor, selecione uma imagem para o novo produto.');
-            return; // Impede envio sem imagem ao criar
+            row.innerHTML = `
+                <td>#${pedido.id}</td>
+                <td>${dataFormatada}</td>
+                <td>${pedido.usuario?.nome || 'Usuário Deletado'}</td>
+                <td>${valorFormatado}</td>
+                <td><span class="status-badge status-${pedido.status}">${pedido.status}</span></td>
+                <td>
+                    <button class="btn-secondary btn-sm view-details-btn" data-id="${pedido.id}">
+                        <i class="fas fa-eye"></i> Detalhes
+                    </button>
+                </td>
+            `;
+            orderList.appendChild(row);
+        });
+
+        // *** NOVO: Adiciona listener aos botões de detalhes após renderizar ***
+        addDetailButtonListeners();
+    };
+
+    // Renderiza Produtos (sem alteração)
+    const renderProdutos = (produtos) => {
+        if (!productList) return;
+        productList.innerHTML = '';
+        if (!produtos || produtos.length === 0) {
+            productList.innerHTML = '<tr><td colspan="6">Nenhum produto encontrado.</td></tr>';
+            return;
         }
+        produtos.forEach(produto => {
+            const row = document.createElement('tr');
+             const precoFormatado = produto.preco ? `R$ ${produto.preco.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+            row.innerHTML = `
+                <td>${produto.id}</td>
+                <td>${produto.nome || 'Sem nome'}</td>
+                <td>${produto.marca?.nome || 'Sem marca'}</td>
+                <td>${produto.estoque || 0}</td>
+                <td>${precoFormatado}</td>
+                <td><button class="btn btn-secondary btn-sm">Editar</button></td>
+            `;
+            productList.appendChild(row);
+        });
+    };
+
+    // Renderiza Usuários (sem alteração)
+    const renderUsuarios = (usuarios) => {
+        if (!userList) return;
+        userList.innerHTML = '';
+        if (!usuarios || usuarios.length === 0) {
+            userList.innerHTML = '<tr><td colspan="5">Nenhum usuário encontrado.</td></tr>';
+            return;
+        }
+        usuarios.forEach(usuario => {
+            const row = document.createElement('tr');
+            const isAdmin = usuario.role === 'ADMIN';
+            row.innerHTML = `
+                <td>${usuario.id}</td>
+                <td>${usuario.nome || 'Sem nome'}</td>
+                <td>${usuario.email}</td>
+                <td>${usuario.role}</td>
+                <td>
+                    <select class="action-select" data-user-id="${usuario.id}" ${isAdmin ? 'disabled' : ''}>
+                        <option value="USER" ${!isAdmin ? 'selected' : ''}>USER</option>
+                        <option value="ADMIN" ${isAdmin ? 'selected' : ''}>ADMIN</option>
+                    </select>
+                </td>
+            `;
+            userList.appendChild(row);
+        });
+
+        // Adiciona listeners aos selects de role
+        userList.querySelectorAll('.action-select').forEach(select => {
+             // Remove listener antigo se houver (para evitar duplicação em recargas)
+            select.replaceWith(select.cloneNode(true));
+        });
+         userList.querySelectorAll('.action-select').forEach(select => { // Seleciona os novos nós
+            if (!select.disabled) { // Só adiciona se não estiver desabilitado
+                select.addEventListener('change', (e) => {
+                    const userId = e.target.dataset.userId;
+                    const newRole = e.target.value;
+                    updateUserRole(userId, newRole);
+                });
+            }
+        });
+    };
+
+    // --- FUNÇÕES DE API ---
+
+    // Carrega todos os dados do dashboard
+    const loadDashboardData = async () => {
+        try {
+            // Faz as chamadas em paralelo
+            const [pedidosRes, usuariosRes, produtosRes] = await Promise.all([
+                apiClient.get('/admin/pedidos'),
+                apiClient.get('/admin/users'),
+                apiClient.get('/admin/produtos')
+            ]);
+
+            // Renderiza as tabelas com os dados recebidos
+            renderPedidos(pedidosRes.data);
+            renderProdutos(produtosRes.data);
+            renderUsuarios(usuariosRes.data);
+
+            // Atualiza as estatísticas
+            if (statTotalPedidos) statTotalPedidos.textContent = pedidosRes.data.length;
+            if (statTotalUsuarios) statTotalUsuarios.textContent = usuariosRes.data.length;
+            if (statTotalProdutos) statTotalProdutos.textContent = produtosRes.data.length;
+
+        } catch (error) {
+            console.error('Erro ao carregar dados do admin:', error);
+            // Trata erro de autenticação ou autorização
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                alert('Sessão expirada ou acesso negado. Faça login como administrador.');
+                localStorage.removeItem('jwtToken'); // Limpa token inválido
+                window.location.href = '../../login/HTML/login.html'; // Redireciona para login
+            } else {
+                // Outro erro de rede ou servidor
+                alert('Erro ao carregar dados do painel. Verifique a conexão ou tente mais tarde.');
+            }
+        }
+    };
+
+    // Atualiza Role do Usuário (sem alteração)
+    const updateUserRole = async (userId, newRole) => {
+        if (!userId || !newRole) return; // Segurança básica
+        try {
+            await apiClient.put(`/admin/users/${userId}/role`, { role: newRole });
+            alert('Permissão do usuário atualizada com sucesso!');
+            loadDashboardData(); // Recarrega os dados para refletir a mudança
+        } catch (error) {
+            console.error('Erro ao atualizar permissão:', error);
+            alert('Falha ao atualizar permissão. Verifique o console para mais detalhes.');
+        }
+    };
+
+    // --- NOVO: FUNÇÕES DO MODAL DE DETALHES ---
+
+    // Adiciona listeners aos botões "Ver Detalhes" (chamado após renderPedidos)
+    const addDetailButtonListeners = () => {
+        // Garante que só adicionamos listeners uma vez ou que eles funcionem após recarga
+        orderList.addEventListener('click', (e) => {
+            const button = e.target.closest('.view-details-btn');
+            if (button) {
+                const pedidoId = button.dataset.id;
+                openOrderDetailModal(pedidoId);
+            }
+        });
+    };
+
+    // Abre o modal e busca os dados do pedido
+    const openOrderDetailModal = async (pedidoId) => {
+        if (!orderDetailModal || !modalPedidoId || !modalContent) return; // Verifica se elementos existem
+
+        // Mostra o modal e o overlay
+        orderDetailModal.style.display = 'flex'; // Torna o overlay visível
+        setTimeout(() => orderDetailModal.classList.add('show'), 10); // Adiciona classe para animar entrada
+
+        modalPedidoId.textContent = pedidoId; // Atualiza o ID no título
+        // Mostra o estado de carregamento
+        modalContent.innerHTML = `<div class="modal-loading"><i class="fas fa-spinner fa-spin"></i> Carregando detalhes do pedido...</div>`;
 
         try {
-            await apiClient({
-                method: method,
-                url: url,
-                data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' } // Necessário para FormData
-            });
-
-            alert(`Produto ${isEditing ? 'atualizado' : 'adicionado'} com sucesso!`);
-            closeProductModal(); // Fecha o modal
-            fetchProdutos(); // Atualiza a tabela
+            // Chama o NOVO endpoint do AdminController para buscar detalhes
+            const response = await apiClient.get(`/admin/pedidos/${pedidoId}`);
+            renderPedidoDetails(response.data); // Renderiza os detalhes recebidos
         } catch (error) {
-            alert(`Falha ao ${isEditing ? 'atualizar' : 'adicionar'} o produto.`);
-            console.error(`Erro ao salvar produto:`, error.response?.data || error.message);
+            console.error(`Erro ao buscar detalhes do pedido #${pedidoId}:`, error);
+            // Mostra mensagem de erro no modal
+            modalContent.innerHTML = `<div class="modal-loading" style="color: var(--error-color);">Erro ao carregar detalhes. Tente novamente.</div>`;
         }
-    });
+    };
 
+    // Fecha o modal
+    const closeOrderDetailModal = () => {
+        if (!orderDetailModal) return;
+        orderDetailModal.classList.remove('show'); // Remove classe para animar saída
+        // Esconde o overlay após a animação
+        setTimeout(() => {
+            orderDetailModal.style.display = 'none'; 
+            modalContent.innerHTML = ''; // Limpa o conteúdo
+        }, 300); // Deve ser igual à duração da transição CSS
+    };
 
-    // --- Inicialização ---
-    if (toggleBtn && sidebar && overlay) {
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
+    // Renderiza o conteúdo HTML do modal com os detalhes do pedido
+    const renderPedidoDetails = (pedido) => {
+        if (!modalContent || !pedido) return; // Segurança
+
+        // Formata o endereço completo
+        const endereco = pedido.enderecoDeEntrega;
+        const enderecoCompleto = endereco 
+            ? `${endereco.rua}, ${endereco.numero} ${endereco.complemento || ''} - ${endereco.cidade}/${endereco.estado} - CEP: ${endereco.cep}`
+            : 'Endereço não disponível';
+
+        // Formata os valores monetários
+        const formatCurrency = (value) => value ? `R$ ${value.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+
+        // Monta o HTML do corpo do modal
+        modalContent.innerHTML = `
+            <div class="detail-section">
+                <h3>Destinatário & Entrega</h3>
+                <div class="detail-grid">
+                    <div class="detail-group">
+                        <div class="detail-item">
+                            <label>Nome Destinatário</label>
+                            <span>${pedido.nomeDestinatario || 'Não informado'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>CPF Destinatário</label>
+                            <span>${pedido.cpfDestinatario || 'Não informado'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Telefone Destinatário</label>
+                            <span>${pedido.telefoneDestinatario || 'Não informado'}</span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-item">
+                            <label>Cliente (Comprador)</label>
+                            <span>${pedido.usuario?.nome || 'Usuário não encontrado'} (${pedido.usuario?.email || 'N/A'})</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Endereço de Entrega</label>
+                            <span>${enderecoCompleto}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Observações</label>
+                            <span>${pedido.observacoes || 'Nenhuma'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Itens do Pedido (${pedido.itens?.length || 0})</h3>
+                ${(pedido.itens && pedido.itens.length > 0) ? `
+                <table class="modal-items-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Tamanho</th>
+                            <th>Qtd.</th>
+                            <th>Preço Unit.</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pedido.itens.map(item => {
+                            const produto = item.produto;
+                            const imgUrl = produto?.imagemUrl 
+                                ? (produto.imagemUrl.startsWith('http') ? produto.imagemUrl : `https://api.japauniverse.com.br/${produto.imagemUrl}`) 
+                                : '../../FRONT/assets/images/placeholder-product.jpg'; // Placeholder
+                            return `
+                            <tr>
+                                <td class="item-name-cell">
+                                    <img src="${imgUrl}" alt="${produto?.nome || 'Produto'}">
+                                    <span>${produto?.nome || 'Produto não encontrado'}</span>
+                                </td>
+                                <td>${item.tamanho || 'N/A'}</td>
+                                <td>${item.quantidade}</td>
+                                <td>${formatCurrency(item.precoUnitario)}</td>
+                                <td>${formatCurrency(item.precoUnitario * item.quantidade)}</td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+                ` : '<p>Nenhum item encontrado neste pedido.</p>'}
+            </div>
+
+            <div class="detail-section">
+                <h3>Financeiro</h3>
+                <div class="detail-grid">
+                    <div class="detail-group">
+                        <div class="detail-item">
+                            <label>Status</label>
+                            <span><span class="status-badge status-${pedido.status}">${pedido.status}</span></span>
+                        </div>
+                         <div class="detail-item">
+                            <label>Data do Pedido</label>
+                            <span>${pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleString('pt-BR') : 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Valor Total</label>
+                            <span style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${formatCurrency(pedido.valorTotal)}</span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-item">
+                            <label>Código PIX (Copia e Cola)</label>
+                            <span style="font-size: 0.9rem; word-break: break-all;">${pedido.pixCopiaECola || 'Não gerado ou não aplicável'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    // --- FIM FUNÇÕES DO MODAL ---
+
+    // Inicialização dos listeners do modal
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeOrderDetailModal);
+    }
+    if (orderDetailModal) {
+        // Fecha se clicar fora (no overlay)
+        orderDetailModal.addEventListener('click', (e) => {
+            if (e.target === orderDetailModal) {
+                closeOrderDetailModal();
+            }
         });
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
+         // Fecha com a tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && orderDetailModal.classList.contains('show')) {
+                closeOrderDetailModal();
+            }
         });
     }
 
-    await fetchBrandsAndCategories(); // Carrega marcas/categorias primeiro
-    switchView('pedidos'); // Inicia na aba de pedidos
+    // Carrega os dados iniciais do dashboard ao entrar na página
+    loadDashboardData();
 });

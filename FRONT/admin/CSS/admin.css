@@ -1,195 +1,193 @@
-/* Importa variáveis globais da loja principal para consistência */
-@import url('../../assets/CSS/base.css');
+/* Admin Container */
+.admin-container {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+}
 
-body {
-    background-color: var(--background);
+.admin-title {
+    font-size: 2.5rem;
+    font-family: var(--font-display);
     color: var(--text-primary);
-    font-family: var(--font-body);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+/* Navegação por Abas */
+.admin-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+}
+
+.nav-tab {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-tab:hover {
+    color: var(--text-primary);
+}
+
+.nav-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Conteúdo das Abas */
+.admin-content {
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: var(--space-xl);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content {
+    display: none; /* Esconde por padrão */
+}
+
+.tab-content.active {
+    display: block; /* Mostra a aba ativa */
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Dashboard Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+}
+
+.stat-card {
+    background-color: var(--background);
+    padding: var(--space-lg);
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+}
+
+.stat-card p {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
     margin: 0;
 }
 
-.admin-layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    min-height: 100vh;
-}
-
-/* --- Sidebar --- */
-.sidebar {
-    background-color: var(--surface);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: var(--space-md);
-}
-
-.logo {
-    font-family: var(--font-display);
-    font-size: 2.2rem;
-    color: var(--primary);
-    text-align: center;
-    margin-bottom: var(--space-xl);
-}
-
-.logo span {
-    color: var(--text-primary);
-}
-
-.sidebar-nav {
-    flex-grow: 1;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1rem;
-    border-radius: 6px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-bottom: var(--space-sm);
-    transition: all var(--transition-fast);
-    text-decoration: none;
-}
-
-.nav-item i {
-    font-size: 1.2rem;
-}
-
-.nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
-}
-
-.nav-item.active {
-    background-color: var(--primary);
-    color: #fff;
-}
-
-.sidebar-footer {
-    border-top: 1px solid var(--border-color);
-    padding-top: var(--space-md);
-}
-
-/* --- Conteúdo Principal --- */
-.main-content {
-    padding: var(--space-xl);
-    overflow-y: auto;
-    position: relative;
-}
-
-.content-section {
-    display: none;
-}
-.content-section.active {
-    display: block;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-lg);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--space-md);
-}
-
-.section-header h2 {
-    font-size: 2.5rem;
-    font-family: var(--font-display);
-}
-
-/* --- Tabelas --- */
+/* Estilos da Tabela */
 .table-container {
-    background-color: var(--surface);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow-x: auto;
+    overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
 }
 
-.data-table {
+.admin-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
+    margin-top: var(--space-md);
+    font-size: 0.9rem;
 }
 
-.data-table th, .data-table td {
-    padding: 1rem;
-    text-align: left;
+.admin-table th,
+.admin-table td {
+    padding: var(--space-sm) var(--space-md);
     border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
+    text-align: left;
+    white-space: nowrap; /* Impede quebra de linha nas células */
 }
 
-.data-table thead {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.data-table th {
-    font-family: var(--font-body);
+.admin-table th {
+    background-color: var(--surface-light);
     font-weight: 600;
+    color: var(--text-secondary);
     text-transform: uppercase;
     font-size: 0.8rem;
-    color: var(--text-secondary);
 }
 
-.data-table tbody tr:last-child td {
-    border-bottom: none;
+.admin-table tbody tr:hover {
+    background-color: var(--surface-light);
 }
 
-.data-table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* Ações na Tabela */
-.status-select {
-    background-color: var(--background);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 0.5rem;
-    border-radius: 4px;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
-    border: none;
-}
-
-.btn-primary {
-    background-color: var(--primary);
-    color: #fff;
-}
-.btn-primary:hover {
-    background-color: var(--primary-light);
-}
-
-.btn-sm {
-    padding: 0.4rem 0.8rem;
+.status-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
     font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
 }
-.btn-edit {
-    color: #ffc107;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.btn-edit:hover {
-    color: #e0a800;
-}
-.btn-delete {
-    color: #f44336;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-.btn-delete:hover {
-    color: #d32f2f;
+/* Cores dos Status (ajuste conforme necessário) */
+.status-PENDENTE { background-color: #ffc107; color: #000; }
+.status-PAGO { background-color: #28a745; color: #fff; }
+.status-CANCELADO { background-color: #dc3545; color: #fff; }
+/* Adicione outros status se houver */
+
+.action-select {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--border-light);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    border-radius: 4px;
+    font-size: 0.9rem;
 }
 
-/* --- ESTILOS GENÉRICOS DE MODAL (ATUALIZADO) --- */
+.action-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- NOVOS ESTILOS PARA O MODAL E BOTÃO --- */
+
+/* Botão de Detalhes na Tabela */
+.btn-sm {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    transition: background-color 0.2s, border-color 0.2s;
+    display: inline-flex; /* Para alinhar ícone e texto */
+    align-items: center;
+    gap: 0.3rem; /* Espaço entre ícone e texto */
+}
+
+.btn-secondary.btn-sm {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-secondary.btn-sm:hover {
+    background-color: rgba(255, 122, 0, 0.1);
+}
+
+/* Estilos do Modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -197,287 +195,166 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
+    display: flex; /* Alterado de 'none' para flex */
     align-items: center;
-    z-index: 2000;
-    padding: 1rem;
+    justify-content: center;
+    z-index: 1050;
+    backdrop-filter: blur(5px);
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
+    transition: opacity 0.3s ease;
+    padding: var(--space-md);
+    visibility: hidden; /* Esconde inicialmente */
 }
 
 .modal-content {
-    background-color: var(--surface);
-    padding: var(--space-lg);
-    border-radius: 8px;
-    width: 100%;
-    max-width: 800px;
+    background-color: var(--background);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    z-index: 2001;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 800px; /* Largura máxima do modal */
     max-height: 90vh;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     transform: scale(0.95);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Adicionado opacity */
+    opacity: 0; /* Começa invisível */
 }
 
-.modal-overlay.active .modal-content {
+/* Animação de entrada */
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible; /* Torna visível */
+}
+.modal-overlay.show .modal-content {
     transform: scale(1);
+    opacity: 1; /* Torna visível */
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: var(--space-md);
-    margin-bottom: var(--space-lg);
-    border-bottom: 1px solid var(--border-color);
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--border-light);
 }
-.modal-header h3 {
-    font-size: 1.8rem;
-    font-family: var(--font-display);
-    color: var(--text-primary);
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
 }
+
 .close-modal {
     background: none;
     border: none;
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: color var(--transition-fast);
-}
-.close-modal:hover {
-    color: var(--text-primary);
+    padding: 0;
+    line-height: 1;
 }
 
-.modal-footer {
-    padding-top: var(--space-lg);
-    margin-top: var(--space-lg);
-    border-top: 1px solid var(--border-color);
-    text-align: right;
+.modal-body {
+    padding: var(--space-lg);
+    overflow-y: auto; /* Permite scroll se o conteúdo for grande */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
 }
 
-#product-form .form-grid {
+.modal-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    font-size: 1.2rem;
+    gap: var(--space-sm);
+    color: var(--text-secondary);
+}
+
+/* Estilos do Conteúdo do Modal (Detalhes) */
+.detail-section {
+    width: 100%;
+}
+
+.detail-section h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.detail-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md) var(--space-lg);
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
 }
-#product-form .form-group {
+
+@media (min-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr 1fr; /* 2 colunas */
+    }
+}
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.detail-item {
     display: flex;
     flex-direction: column;
 }
-#product-form .form-group.full-width {
-    grid-column: 1 / -1;
-}
-#product-form .form-group label {
-    margin-bottom: 0.5rem;
+
+.detail-item label {
+    font-size: 0.8rem;
     font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-#product-form .form-group input, 
-#product-form .form-group textarea,
-#product-form .form-group select {
-    background-color: var(--background);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 0.8rem 1rem;
-    border-radius: 4px;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-#product-form .form-group input:focus,
-#product-form .form-group textarea:focus,
-#product-form .form-group select:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
-}
-#product-form .form-group input[type="file"] {
-    padding: 0;
-    border: none;
-}
-#product-form .form-group input[type="file"]::file-selector-button {
-    background-color: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 0.8rem 1.2rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
-    margin-right: 1rem;
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-}
-#product-form .form-group input[type="file"]::file-selector-button:hover {
-    background-color: var(--primary-light);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
 }
 
-.image-preview-container {
+.detail-item span {
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    word-break: break-word; /* Quebra palavras longas (como PIX) */
+}
+
+/* Tabela de Itens no Modal */
+.modal-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.modal-items-table th,
+.modal-items-table td {
+    padding: var(--space-sm);
+    border-bottom: 1px solid var(--border-light);
+    text-align: left;
+    vertical-align: middle; /* Alinha verticalmente */
+}
+.modal-items-table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.modal-items-table .item-name-cell {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed var(--border-color);
+    gap: var(--space-sm);
 }
-#image-preview {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    border: 1px solid var(--border-color);
+.modal-items-table .item-name-cell img {
+    width: 40px;
+    height: 40px;
     border-radius: 4px;
-    background-color: var(--background);
-    padding: 5px;
+    object-fit: cover;
+    background-color: var(--surface-light); /* Fundo para imagens transparentes */
 }
-#image-preview.hidden {
-    display: none;
-}
-.image-preview-text {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-#message-modal-title {
-    font-size: 1.8rem;
-    font-family: var(--font-display);
-    color: var(--text-primary);
-    margin: 0;
-}
-.modal-body-view {
-    padding: var(--space-md) 0;
-    line-height: 1.7;
-    max-height: 60vh;
-    overflow-y: auto;
-    font-size: 1rem;
-    color: var(--text-primary);
-}
-.modal-body-view .message-info {
-    display: block;
-    margin-bottom: var(--space-sm);
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    background: none;
-    border: none;
-    padding: 0;
-}
-.modal-body-view .message-info strong {
-    color: var(--text-primary);
+.modal-items-table .item-name-cell span {
     font-weight: 600;
 }
-.modal-body-view h4 {
-    font-size: 1.4rem;
-    margin-top: var(--space-lg);
-    margin-bottom: var(--space-md);
-    font-family: var(--font-display);
-    color: var(--primary);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--space-sm);
-}
-.modal-body-view p:not(.message-info) {
-    background-color: var(--background);
-    padding: var(--space-md);
-    border-radius: 6px;
-    border: 1px solid var(--border-color-light);
-    white-space: pre-wrap;
-    margin-bottom: 0;
-    font-size: 1rem;
-    color: var(--text-primary);
-    line-height: 1.8;
-}
-
-/* --- ESTILOS RESPONSIVOS --- */
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    z-index: 1001;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.mobile-admin-toggle {
-    display: none;
-}
-
-@media (max-width: 900px) {
-    .admin-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 80%;
-        max-width: 300px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
-        z-index: 1002;
-        border-right: 1px solid var(--border-color);
-    }
-    
-    .sidebar.active {
-        transform: translateX(0);
-    }
-    
-    .mobile-admin-toggle {
-        display: block;
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        z-index: 1000;
-        background: var(--surface);
-        border: 1px solid var(--border-color);
-        color: var(--text-primary);
-        width: 45px;
-        height: 45px;
-        border-radius: 6px;
-        font-size: 1.2rem;
-        cursor: pointer;
-    }
-
-    .main-content {
-        padding: var(--space-md);
-        padding-top: 80px;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-sm);
-    }
-    
-    .section-header h2 {
-        font-size: 2rem;
-    }
-
-    .data-table {
-        font-size: 0.9rem;
-    }
-    
-    .data-table th, .data-table td {
-        padding: 0.8rem;
-    }
-
-    #product-form .form-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* --- FIM DOS NOVOS ESTILOS --- */
