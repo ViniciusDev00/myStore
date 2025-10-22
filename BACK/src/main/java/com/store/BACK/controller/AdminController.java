@@ -4,7 +4,7 @@ import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Produto;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.AdminService;
-import com.store.BACK.service.PedidoService; // NOVO: Importa PedidoService
+import com.store.BACK.service.PedidoService; // Importa PedidoService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,33 +20,34 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // --- NOVA INJEÇÃO DE DEPENDÊNCIA ---
     @Autowired
-    private PedidoService pedidoService;
-    // --- FIM NOVA INJEÇÃO ---
+    private PedidoService pedidoService; // Injeção do PedidoService (mantida)
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Usuario>> getAllUsers() {
-        return ResponseEntity.ok(adminService.getAllUsers());
+        // *** CORRIGIDO: Usa findAllUsers() ***
+        return ResponseEntity.ok(adminService.findAllUsers());
     }
 
     @GetMapping("/pedidos")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Pedido>> getAllPedidos() {
-        return ResponseEntity.ok(adminService.getAllPedidos());
+        // *** CORRIGIDO: Usa findAllPedidos() ***
+        return ResponseEntity.ok(adminService.findAllPedidos());
     }
 
     @GetMapping("/produtos")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Produto>> getAllProdutos() {
-        return ResponseEntity.ok(adminService.getAllProdutos());
+        // *** CORRIGIDO: Usa findAllProdutos() ***
+        return ResponseEntity.ok(adminService.findAllProdutos());
     }
 
-    // --- NOVO ENDPOINT ADICIONADO ---
     /**
      * Busca os detalhes completos de um pedido específico.
      * Protegido para acesso exclusivo do ADMIN.
+     * (Este método estava correto e foi mantido)
      */
     @GetMapping("/pedidos/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -57,17 +58,19 @@ public class AdminController {
         }
         return ResponseEntity.ok(pedido);
     }
-    // --- FIM NOVO ENDPOINT ---
 
     @PutMapping("/users/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Usuario> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> roleMap) {
         try {
             String role = roleMap.get("role");
-            Usuario updatedUser = adminService.updateUserRole(id, role);
+            // *** CORRIGIDO: Usa updateUserRoleById() ***
+            Usuario updatedUser = adminService.updateUserRoleById(id, role);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Log do erro pode ser útil aqui
+            System.err.println("Erro ao atualizar role do usuário ID " + id + ": " + e.getMessage());
+            return ResponseEntity.badRequest().build(); // Retorna badRequest em caso de erro
         }
     }
 }
