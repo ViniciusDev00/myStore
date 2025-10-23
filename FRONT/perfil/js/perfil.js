@@ -1,26 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENTOS DO DOM ---
     const addressesContainer = document.getElementById('addresses-container');
     const ordersContainer = document.getElementById('orders-container');
-    const token = localStorage.getItem('jwtToken');
-
     const addressModal = document.getElementById('address-modal');
     const modalOverlay = document.getElementById('address-modal-overlay');
-    const openModalBtn = document.querySelector('.btn.btn-primary');
+    const openModalBtn = document.querySelector('.btn.btn-primary[data-action="add-address"]'); // Seletor mais específico
     const closeModalBtn = document.getElementById('close-address-modal');
     const addressForm = document.getElementById('address-form');
+
+    // --- ESTADO ---
+    let isSessionExpired = false;
+    const token = localStorage.getItem('jwtToken');
 
     if (!token) {
         window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
-    // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
-    // Cria a instância do Axios
+    // --- CLIENTE API (AXIOS) ---
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
     });
 
-    // Usa um "interceptor" que adiciona o token mais recente a CADA requisição
+    // Interceptor de REQUISIÇÃO (Adiciona o token)
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -30,9 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }, error => {
         return Promise.reject(error);
     });
-    // --- FIM DA CORREÇÃO ---
+
+    // --- [MELHORIA] INTERCEPTOR DE RESPOSTA (Trata erros 401/403) ---
+    apiClient.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                if (!isSessionExpired) {
+                    isSessionExpired = true;
+                    localStorage.removeItem('jwtToken');
+                    alert('Sua sessão expirou ou você não tem permissão. Por favor, faça login novamente.');
+                    window.location.href = '/FRONT/login/HTML/login.html';
+                }
+            }
+            return Promise.reject(error);
+        }
+    );
+    // --- FIM DA MELHORIA ---
+
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO ---
 
     const renderAddresses = (addresses) => {
+        if (!addressesContainer) return;
         if (!addresses || addresses.length === 0) {
             addressesContainer.innerHTML = `<p>Nenhum endereço cadastrado.</p>`;
             return;
@@ -43,11 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>${addr.rua}, ${addr.numero} ${addr.complemento || ''}</strong></p>
                     <p>${addr.cidade}, ${addr.estado} - CEP: ${addr.cep}</p>
                 </div>
-            </div>
+                </div>
         `).join('');
     };
 
     const renderOrders = (orders) => {
+        if (!ordersContainer) return;
         if (!orders || orders.length === 0) {
             ordersContainer.innerHTML = `
                 <div class="empty-state">
@@ -66,12 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div><strong>DATA:</strong> ${new Date(order.dataPedido).toLocaleDateString()}</div>
                     <div><strong>TOTAL:</strong> R$ ${order.valorTotal.toFixed(2).replace('.', ',')}</div>
                 </div>
-            </div>
+                </div>
         `}).join('');
     };
 
+    // --- CARREGAMENTO INICIAL ---
     const loadProfileData = async () => {
         try {
+            // O interceptor de resposta tratará o 401/403 se falhar
             const response = await apiClient.get('/usuario/meus-dados');
             const userData = response.data;
             
@@ -79,14 +104,17 @@ document.addEventListener('DOMContentLoaded', () => {
             renderOrders(userData.pedidos);
 
         } catch (error) {
-            console.error('Erro ao carregar dados do perfil:', error);
-            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                localStorage.removeItem('jwtToken');
-                window.location.href = '/FRONT/login/HTML/login.html';
+            // Se o erro NÃO for 401/403, o interceptor o repassará para cá
+            if (!isSessionExpired) {
+                console.error('Erro ao carregar dados do perfil:', error);
+                // Exibe uma mensagem de erro genérica na página
+                if (addressesContainer) addressesContainer.innerHTML = '<p class="error-message">Erro ao carregar endereços. Tente recarregar a página.</p>';
+                if (ordersContainer) ordersContainer.innerHTML = '<p class="error-message">Erro ao carregar pedidos. Tente recarregar a página.</p>';
             }
         }
     };
     
+    // --- MODAL DE ENDEREÇO ---
     const toggleModal = (show) => {
         if (addressModal && modalOverlay) {
             if (show) {
@@ -103,9 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(closeModalBtn) closeModalBtn.addEventListener('click', () => toggleModal(false));
     if(modalOverlay) modalOverlay.addEventListener('click', () => toggleModal(false));
 
+    // --- FORMULÁRIO DE ENDEREÇO ---
     if(addressForm) {
         addressForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const submitButton = addressForm.querySelector('button[type="submit"]');
             
             const newAddress = {
                 cep: document.getElementById('cep').value,
@@ -117,18 +148,29 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
+                if (submitButton) submitButton.disabled = true;
+
+                // O interceptor tratará o 403 (que será corrigido no backend)
+                // ou o 401 se o token expirar
                 await apiClient.post('/enderecos', newAddress);
                 
                 toggleModal(false); 
-                loadProfileData(); 
+                loadProfileData(); // Recarrega os dados para mostrar o novo endereço
                 addressForm.reset(); 
     
             } catch (error) {
-                console.error('Erro ao adicionar endereço:', error);
-                alert('Não foi possível salvar o endereço. Tente novamente.');
+                // Se o erro não for 401/403 (tratado pelo interceptor),
+                // exibe um alerta de erro genérico.
+                if (!isSessionExpired) {
+                    console.error('Erro ao adicionar endereço:', error);
+                    alert('Não foi possível salvar o endereço. Verifique os dados e tente novamente.');
+                }
+            } finally {
+                 if (submitButton) submitButton.disabled = false;
             }
         });
     }
 
+    // --- INICIALIZAÇÃO ---
     loadProfileData();
 });

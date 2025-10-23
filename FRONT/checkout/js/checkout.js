@@ -1,28 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- MANTENHA AS VARIÁVEIS EXISTENTES ---
+    // --- ELEMENTOS DO DOM ---
     const cartItemsContainer = document.getElementById('cart-items-container');
     const summarySubtotal = document.getElementById('summary-subtotal');
     const summaryTotal = document.getElementById('summary-total');
     const checkoutButton = document.getElementById('checkout-button');
-    const token = localStorage.getItem('jwtToken');
-
-    // --- VARIÁVEL E ELEMENTO DE ENDEREÇO ---
-    const addressSelectionContainer = document.getElementById('address-selection'); 
-    let selectedAddressId = null; // Para guardar o ID do endereço selecionado
-    
-    // --- NOVOS ELEMENTOS DO FORMULÁRIO DE DESTINATÁRIO ---
+    const addressSelectionContainer = document.getElementById('address-selection');
     const nomeDestinatarioEl = document.getElementById('nomeDestinatario');
     const cpfDestinatarioEl = document.getElementById('cpfDestinatario');
     const telefoneDestinatarioEl = document.getElementById('telefoneDestinatario');
     const observacoesEl = document.getElementById('observacoes');
-    // --- FIM NOVOS ELEMENTOS ---
+    
+    // --- ESTADO ---
+    let selectedAddressId = null; 
+    let isSessionExpired = false; // Trava para evitar múltiplos alertas
+    const token = localStorage.getItem('jwtToken');
 
+    // --- VERIFICAÇÃO INICIAL DO TOKEN ---
     if (!token) {
         window.location.href = '../../login/HTML/login.html';
         return;
     }
 
-    // --- MANTENHA A CONFIGURAÇÃO DO apiClient ---
+    // --- CONFIGURAÇÃO DO CLIENTE API (AXIOS) ---
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
         headers: {
@@ -30,7 +29,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- MANTENHA getCart, saveCart ---
+    // --- [MELHORIA] INTERCEPTOR GLOBAL DE AUTENTICAÇÃO ---
+    // Isso captura erros 401/403 de QUALQUER requisição feita pelo apiClient
+    apiClient.interceptors.response.use(
+        (response) => response, // Se for sucesso, apenas continue
+        (error) => {
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                // Evita múltiplos alertas se várias requisições falharem ao mesmo tempo
+                if (!isSessionExpired) { 
+                    isSessionExpired = true; // Marca que já estamos tratando
+                    localStorage.removeItem('jwtToken');
+                    alert('Sua sessão expirou ou você não tem permissão. Por favor, faça login novamente.');
+                    window.location.href = '../../login/HTML/login.html';
+                }
+            }
+            // Rejeita a promessa para que o .catch() local da função (ex: handleCheckout)
+            // ainda possa tratar outros erros (ex: "produto sem estoque")
+            return Promise.reject(error);
+        }
+    );
+    // --- FIM DA MELHORIA ---
+
+
+    // --- FUNÇÕES DO CARRINHO (LocalStorage) ---
     const getCart = () => {
         return JSON.parse(localStorage.getItem('japaUniverseCart')) || [];
     };
@@ -42,38 +63,65 @@ document.addEventListener('DOMContentLoaded', () => {
             window.updateCartCounter();
         }
     };
-    // --- FIM getCart, saveCart ---
+    
+    const clearCart = () => {
+         localStorage.removeItem('japaUniverseCart');
+         if (window.updateCartCounter) {
+            window.updateCartCounter();
+        }
+    }
+    // --- FIM FUNÇÕES DO CARRINHO ---
 
-    // --- MANTENHA A FUNÇÃO: Buscar Endereços ---
+
+    // --- FUNÇÕES DA PÁGINA ---
+
+    /**
+     * [MELHORIA] Busca os endereços. Agora retorna 'null' em caso de erro,
+     * para que 'renderAddressSelection' possa diferenciar "erro" de "lista vazia".
+     */
     const fetchUserAddresses = async () => {
         try {
             const response = await apiClient.get('/usuario/meus-dados');
-            return response.data.enderecos || [];
+            return response.data.enderecos || []; // Retorna a lista (pode ser vazia)
         } catch (error) {
+            // O interceptor já tratou o 401/403 e vai redirecionar.
+            // Apenas logamos outros erros e retornamos 'null' para sinalizar falha.
             console.error('Erro ao buscar endereços:', error);
-            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                 alert('Sua sessão expirou. Faça login novamente.');
-                 localStorage.removeItem('jwtToken');
-                 window.location.href = '../../login/HTML/login.html'; 
-            }
-            return []; 
+            return null; // Sinaliza que a busca FALHOU
         }
     };
-    // --- FIM Buscar Endereços ---
 
-    // --- MANTENHA A FUNÇÃO: Renderizar Seleção de Endereço ---
+    /**
+     * [MELHORIA] Renderiza os endereços. Agora trata 3 casos:
+     * 1. addresses === null (A API falhou)
+     * 2. addresses.length === 0 (A API funcionou, mas não há endereços)
+     * 3. addresses.length > 0 (A API funcionou e há endereços)
+     */
     const renderAddressSelection = (addresses) => {
         if (!addressSelectionContainer) {
             console.error("Elemento 'address-selection' não encontrado no HTML.");
             return; 
         }
 
-        if (!addresses || addresses.length === 0) {
-            alert('Nenhum endereço cadastrado. Por favor, adicione um endereço para continuar.');
-            window.location.href = '../../perfil/HTML/perfil.html#add-address';
+        // Caso 1: A busca de endereços falhou (ex: erro de rede, 500, etc.)
+        if (addresses === null) {
+            addressSelectionContainer.innerHTML = '<p class="checkout-error">Não foi possível carregar seus endereços. Tente recarregar a página.</p>';
+            checkoutButton.disabled = true; // Desabilita a finalização
             return; 
         }
 
+        // Caso 2: A busca funcionou, mas o usuário não tem endereços cadastrados
+        if (addresses.length === 0) {
+            // Não exibe mais o alerta aqui, pois o interceptor pode estar
+            // redirecionando por 401. Se não for 401, o usuário verá a mensagem.
+            if (!isSessionExpired) {
+                 alert('Nenhum endereço cadastrado. Por favor, adicione um endereço para continuar.');
+                 window.location.href = '../../perfil/HTML/perfil.html#add-address';
+            }
+            return; 
+        }
+
+        // Caso 3: Sucesso! Renderiza os endereços
         addressSelectionContainer.innerHTML = `
             <div class="address-list">
                 ${addresses.map((addr, index) => `
@@ -99,9 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     };
-    // --- FIM Renderizar Seleção ---
 
-    // --- MANTENHA renderCart, updateSummary, removeItemFromCart, updateQuantity, attachEventListeners ---
      const renderCart = () => {
         const cart = getCart();
         if (!cartItemsContainer || !checkoutButton) return;
@@ -162,14 +208,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const attachEventListeners = () => {
-        // Remove listeners antigos para evitar duplicação
-        const oldListeners = cartItemsContainer.querySelectorAll('.quantity-btn, .remove-item');
-        oldListeners.forEach(el => {
-            const newEl = el.cloneNode(true);
-            el.parentNode.replaceChild(newEl, el);
-        });
+        // Remove listeners antigos para evitar duplicação (boa prática)
+        const oldContainer = cartItemsContainer;
+        const newContainer = oldContainer.cloneNode(true);
+        oldContainer.parentNode.replaceChild(newContainer, oldContainer);
+        // Atualiza a referência da variável
+        window.cartItemsContainer = newContainer; 
 
-        cartItemsContainer.addEventListener('click', (e) => {
+        newContainer.addEventListener('click', (e) => {
             const target = e.target;
             const button = target.closest('button'); 
 
@@ -189,33 +235,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     };
-    // --- FIM MANTER ---
 
-    // --- NOVA FUNÇÃO: Pré-preencher dados do destinatário ---
+    /**
+     * Tenta pré-preencher os dados do destinatário com os dados do usuário.
+     * Não há problema se falhar, o interceptor cuidará do 401.
+     */
     const preencherDadosDestinatario = async () => {
         try {
-            // Busca os dados do usuário logado
             const response = await apiClient.get('/usuario/meus-dados');
             const usuario = response.data;
             if (usuario) {
-                // Preenche os campos do novo formulário com os dados do usuário
-                if (usuario.nome && nomeDestinatarioEl) {
-                    nomeDestinatarioEl.value = usuario.nome;
-                }
-                if (usuario.cpf && cpfDestinatarioEl) {
-                    cpfDestinatarioEl.value = usuario.cpf;
-                }
-                if (usuario.telefone && telefoneDestinatarioEl) {
-                    telefoneDestinatarioEl.value = usuario.telefone;
-                }
+                if (usuario.nome && nomeDestinatarioEl) nomeDestinatarioEl.value = usuario.nome;
+                if (usuario.cpf && cpfDestinatarioEl) cpfDestinatarioEl.value = usuario.cpf;
+                if (usuario.telefone && telefoneDestinatarioEl) telefoneDestinatarioEl.value = usuario.telefone;
             }
         } catch (error) {
+            // O interceptor já trata o 401. Outros erros são apenas logados.
             console.warn("Não foi possível pré-preencher os dados do destinatário.", error);
         }
     };
-    // --- FIM NOVA FUNÇÃO ---
 
-    // --- ATUALIZAÇÃO DA FUNÇÃO handleCheckout ---
+    // --- FUNÇÃO PRINCIPAL: FINALIZAR COMPRA ---
     const handleCheckout = async () => {
         const cart = getCart();
         if (cart.length === 0) {
@@ -230,29 +270,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return; 
         }
 
-        // --- 2. NOVO: Validação dos Dados do Destinatário ---
+        // 2. Validação dos Dados do Destinatário
         const nomeDestinatario = nomeDestinatarioEl.value.trim();
         const cpfDestinatario = cpfDestinatarioEl.value.trim();
         const telefoneDestinatario = telefoneDestinatarioEl.value.trim();
-        const observacoes = observacoesEl.value.trim();
 
-        if (!nomeDestinatario) {
-            alert('Por favor, preencha o Nome Completo do destinatário.');
-            nomeDestinatarioEl.focus();
+        if (!nomeDestinatario || !cpfDestinatario || !telefoneDestinatario) {
+            alert('Por favor, preencha todos os dados do destinatário (Nome, CPF e Telefone).');
+            if (!nomeDestinatario) nomeDestinatarioEl.focus();
+            else if (!cpfDestinatario) cpfDestinatarioEl.focus();
+            else telefoneDestinatarioEl.focus();
             return;
         }
-        if (!cpfDestinatario) { 
-            alert('Por favor, preencha o CPF do destinatário.');
-            cpfDestinatarioEl.focus();
-            return;
-        }
-        if (!telefoneDestinatario) { 
-            alert('Por favor, preencha o Telefone do destinatário.');
-            telefoneDestinatarioEl.focus();
-            return;
-        }
-        // --- FIM DA NOVA VALIDAÇÃO ---
-
+        
         // 3. Preparação dos Itens
         const pedidoItens = cart.map(item => ({
             produtoId: parseInt(item.id),
@@ -260,67 +290,64 @@ document.addEventListener('DOMContentLoaded', () => {
             tamanho: item.size
         }));
 
-        // --- 4. NOVO: Objeto de Checkout completo ---
+        // 4. Objeto de Checkout completo
         const checkoutData = {
             itens: pedidoItens,
             enderecoEntregaId: parseInt(selectedAddressId),
-            // Adiciona os novos campos
             nomeDestinatario: nomeDestinatario,
             cpfDestinatario: cpfDestinatario,
             telefoneDestinatario: telefoneDestinatario,
-            observacoes: observacoes
+            observacoes: observacoesEl.value.trim()
         };
-        // --- FIM NOVO OBJETO ---
 
         // 5. Envio para a API
         try {
             checkoutButton.disabled = true;
             checkoutButton.textContent = 'Processando...';
 
-            // Envia o 'checkoutData' completo
             const response = await apiClient.post('/pedidos', checkoutData);
-
             const novoPedido = response.data;
 
-            // Limpa o carrinho e atualiza o contador do header
-            localStorage.removeItem('japaUniverseCart');
-            if (window.updateCartCounter) {
-                window.updateCartCounter();
-            }
+            clearCart();
 
             // Salva dados na sessão para a página de pagamento
             sessionStorage.setItem('ultimoPedidoId', novoPedido.id);
             sessionStorage.setItem('ultimoPedidoValor', novoPedido.valorTotal);
             sessionStorage.setItem('ultimoPedidoPixCode', novoPedido.pixCopiaECola);
 
-            // Redireciona para o pagamento
             window.location.href = `../../pagamento/HTML/pagamento.html`;
 
         } catch (error) {
+            // [MELHORIA] Bloco CATCH simplificado.
+            // O interceptor já tratou o 401/403 (sessão expirada).
+            // Só precisamos tratar outros erros (ex: "produto sem estoque").
+            
             console.error('Erro ao finalizar a compra:', error);
             let errorMsg = 'Não foi possível processar seu pedido. Por favor, tente novamente.';
+            
             if (error.response && error.response.data && error.response.data.message) {
                  errorMsg = error.response.data.message; 
-            } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                errorMsg = 'Sua sessão expirou ou você não tem permissão. Faça login novamente.';
-                localStorage.removeItem('jwtToken');
-                window.location.href = '../../login/HTML/login.html'; 
             }
-            alert(errorMsg);
+            
+            // Só exibe o alerta se NÃO for um erro de sessão (que o interceptor já tratou)
+            if (!isSessionExpired) {
+                 alert(errorMsg);
+            }
+            
             checkoutButton.disabled = false;
             checkoutButton.textContent = 'Finalizar Compra';
         }
     };
     // --- FIM handleCheckout ---
 
-     // --- ATUALIZAÇÃO DA LÓGICA DE INICIALIZAÇÃO ---
+
+     // --- INICIALIZAÇÃO DA PÁGINA ---
      const initializeCheckoutPage = async () => {
         renderCart(); // Renderiza o carrinho
         
         // Se o carrinho estiver vazio, não faz mais nada
         if (getCart().length === 0) {
             if(addressSelectionContainer) addressSelectionContainer.innerHTML = '<p>Adicione itens ao carrinho para continuar.</p>';
-            // Esconde o formulário de destinatário se o carrinho estiver vazio
             const recipientCard = document.getElementById('recipient-info')?.closest('.checkout-card');
             if (recipientCard) recipientCard.style.display = 'none';
             return; 
@@ -328,8 +355,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Se o carrinho não está vazio, busca dados
         const userAddresses = await fetchUserAddresses(); // Busca endereços
-        renderAddressSelection(userAddresses); // Renderiza endereços (ou redireciona)
-        preencherDadosDestinatario(); // Pré-preenche o novo formulário
+        
+        // [MELHORIA] Se a busca de endereços falhou (userAddresses === null),
+        // a função 'renderAddressSelection' já mostrou o erro e desabilitou o botão.
+        // Só continuamos se a busca tiver sido bem-sucedida (mesmo que vazia).
+        if (userAddresses !== null) {
+            renderAddressSelection(userAddresses); 
+            
+            // Só preenchemos os dados se a API retornou endereços,
+            // senão o 'renderAddressSelection' já redirecionou para o perfil.
+            if (userAddresses.length > 0) {
+                 preencherDadosDestinatario(); 
+            }
+        }
     };
     // --- FIM INICIALIZAÇÃO ---
 
