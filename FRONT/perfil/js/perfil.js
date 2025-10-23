@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const userInfoContainer = document.getElementById('user-info-container'); // Container "Meus Dados"
     const addressesContainer = document.getElementById('addresses-container');
     const ordersContainer = document.getElementById('orders-container');
     const token = localStorage.getItem('jwtToken');
@@ -14,13 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
-    // Cria a instância do Axios
+    // Configuração do Axios (do seu arquivo)
     const apiClient = axios.create({
         baseURL: 'https://api.japauniverse.com.br/api',
     });
 
-    // Usa um "interceptor" que adiciona o token mais recente a CADA requisição
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -30,7 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }, error => {
         return Promise.reject(error);
     });
-    // --- FIM DA CORREÇÃO ---
+
+    // --- CÓDIGO ADICIONADO ---
+    // Função para renderizar os dados básicos do usuário
+    const renderUserInfo = (user) => {
+        if (!user) {
+            userInfoContainer.innerHTML = '<p>Não foi possível carregar os dados do usuário.</p>';
+            return;
+        }
+
+        // Preenche o container com os dados do DTO (nome, email, role)
+        userInfoContainer.innerHTML = `
+            <div class="user-info-item">
+                <strong>Nome:</strong>
+                <span>${user.nome || 'Não informado'}</span>
+            </div>
+            <div class="user-info-item">
+                <strong>Email:</strong>
+                <span>${user.email || 'Não informado'}</span>
+            </div>
+            <div class="user-info-item">
+                <strong>Tipo de Conta:</strong>
+                <span>${user.role === 'ADMIN' ? 'Administrador' : 'Cliente'}</span>
+            </div>
+        `;
+    };
+    // --- FIM DO CÓDIGO ADICIONADO ---
+
 
     const renderAddresses = (addresses) => {
         if (!addresses || addresses.length === 0) {
@@ -72,8 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadProfileData = async () => {
         try {
+            // Busca todos os dados de uma vez (como no seu código)
             const response = await apiClient.get('/usuario/meus-dados');
             const userData = response.data;
+            
+            // --- CORREÇÃO APLICADA AQUI ---
+            // Agora chamamos a função para renderizar os dados do usuário
+            renderUserInfo(userData); 
+            // --- FIM DA CORREÇÃO ---
             
             renderAddresses(userData.enderecos);
             renderOrders(userData.pedidos);
@@ -130,5 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Carrega todos os dados ao iniciar a página
     loadProfileData();
 });

@@ -26,13 +26,13 @@ public class UsuarioController {
 
     @GetMapping("/meus-dados")
     public ResponseEntity<UsuarioDTO> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
-        UsuarioDTO usuarioDTO = usuarioService.getDadosUsuario(usuarioLogado);
+        // O UsuarioService é responsável por buscar os dados e montar o DTO
+        UsuarioDTO usuarioDTO = usuarioService.getDadosUsuario(usuarioLogado); 
         return ResponseEntity.ok(usuarioDTO);
     }
 
     @GetMapping("/meus-pedidos")
     public ResponseEntity<List<Pedido>> getMeusPedidos(@AuthenticationPrincipal Usuario usuarioLogado) {
-        // --- CORREÇÃO APLICADA AQUI ---
         List<Pedido> pedidos = pedidoService.getPedidosByUsuarioId(usuarioLogado.getId());
         return ResponseEntity.ok(pedidos);
     }

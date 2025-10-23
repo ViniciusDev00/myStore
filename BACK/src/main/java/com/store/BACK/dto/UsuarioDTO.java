@@ -15,8 +15,7 @@ public class UsuarioDTO {
     private String email;
     private String role;
 
-    // --- CORREÇÃO APLICADA AQUI ---
-    // Adicionamos os campos que faltavam para endereços e pedidos.
+    // Inclui as listas de endereços e pedidos
     private List<Endereco> enderecos;
     private List<Pedido> pedidos;
 }

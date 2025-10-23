@@ -161,6 +161,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    margin-bottom: var(--space-md); /* Adicionado espaço entre os cards */
 }
 .address-details p {
     margin: 0;
@@ -175,6 +176,39 @@ body {
 .address-actions a:hover {
     color: var(--primary);
 }
+
+/* ===================================
+    ESTILOS "MEUS DADOS" (Adicionado)
+   =================================== */
+#user-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background-color: var(--background); /* Fundo sutil, como o de um input */
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Usando o mesmo radius dos outros cards */
+}
+
+.user-info-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    font-size: 1rem;
+    align-items: center;
+}
+
+.user-info-item strong {
+    color: var(--text-primary);
+    min-width: 120px; /* Alinha os valores */
+    font-weight: 600;
+}
+
+.user-info-item span {
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
 
 /* ===== MODAL DE ENDEREÇO ===== */
 .modal-overlay {
@@ -279,5 +313,10 @@ body {
     .content-header .btn {
         width: auto;
         margin-top: 0;
+    }
+
+    /* Ajuste para desktop */
+    .user-info-item {
+        font-size: 1.1rem; /* Um pouco maior no desktop */
     }
 }
