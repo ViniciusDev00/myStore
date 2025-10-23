@@ -17,67 +17,61 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-// import static org.springframework.security.config.Customizer.withDefaults; // Removido withDefaults se não usar
+// Removido import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Mantido para @PreAuthorize
+@EnableMethodSecurity // Mantido
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-    // Removida a injeção automática de CorsConfigurationSource se definirmos o Bean abaixo
+    // Removida injeção de CorsConfigurationSource, pois definimos o Bean abaixo
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usa o Bean definido abaixo
-                .csrf(csrf -> csrf.disable()) // Desabilita CSRF
+                // *** CORRIGIDO: Referencia o Bean corsConfigurationSource() ***
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Permite acesso público a rotas de autenticação, produtos (GET), e uploads estáticos
+                        // Permissões originais mantidas
                         .requestMatchers("/api/auth/**", "/uploads/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll() // Permite GET em produtos para todos
-                        // Rotas que exigem autenticação (USER ou ADMIN)
-                        .requestMatchers("/api/usuario/**", "/api/pedidos/**", "/api/enderecos/**").authenticated() // Usuário logado
-                        // Rotas exclusivas do ADMIN
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // Garante que SÓ ADMIN acessa /api/admin/*
-                        // Qualquer outra requisição precisa estar autenticada
+                        .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
+                        .requestMatchers("/api/usuario/**", "/api/pedidos/**").authenticated() // USER ou ADMIN
+                        // Corrigido para hasAnyAuthority se necessário, ou mantido hasAuthority("ROLE_ADMIN") se preferir
+                        .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // Equivalente a hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sessão stateless
-                .authenticationProvider(authenticationProvider) // Define o provedor de autenticação
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // *** BEAN CORS RESTAURADO ***
+    // *** Bean CORS Mantido/Restaurado ***
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Define as origens permitidas explicitamente
         configuration.setAllowedOrigins(List.of(
-                "http://127.0.0.1:5500", // Origem comum para Live Server VSCode
+                "http://127.0.0.1:5500",
                 "http://localhost:5500",
-                "http://127.0.0.1:5501", // Outra porta possível
+                "http://127.0.0.1:5501",
                 "http://localhost:5501",
-                "https://japa-front-production.up.railway.app", // Seu frontend em produção
-                "https://www.japauniverse.com.br", // Domínio principal
-                "https://japauniverse.com.br" // Domínio sem www
+                "https://japa-front-production.up.railway.app",
+                "https://www.japauniverse.com.br",
+                "https://japauniverse.com.br"
                 // Adicione outras origens se necessário
         ));
-        // Métodos HTTP permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        // Cabeçalhos permitidos (usar "*" permite todos, incluindo Authorization)
-        configuration.setAllowedHeaders(List.of("*"));
-        // Permite credenciais (cookies, tokens de autorização)
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("*")); // Permite todos os cabeçalhos
+        configuration.setAllowCredentials(true); // Permite credenciais
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica a configuração a todas as rotas ("/**")
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Aplica a todas as rotas
         return source;
     }
-    // *** FIM DO BEAN CORS ***
 }
