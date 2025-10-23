@@ -3,144 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin | Japa Universe</title>
+    <title>Admin Dashboard | Japa Universe</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/CSS/base.css"> 
     <link rel="stylesheet" href="../CSS/admin.css">
 </head>
 <body>
-    <header class="main-header" data-basepath="../.."></header>
+    <div class="sidebar-overlay"></div>
+    <button class="mobile-admin-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <main class="container admin-container">
-        <h1 class="admin-title">Painel Administrativo</h1>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <h1 class="logo">Japa<span> Universe</span></h1>
+            <nav class="sidebar-nav">
+                <a href="#" id="nav-pedidos" class="nav-item active"><i class="fas fa-box"></i> Pedidos</a>
+                <a href="#" id="nav-produtos" class="nav-item"><i class="fas fa-tag"></i> Produtos</a>
+                <a href="#" id="nav-mensagens" class="nav-item"><i class="fas fa-envelope"></i> Mensagens</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../../../index.html" class="nav-item"><i class="fas fa-store"></i> Voltar para Loja</a>
+            </div>
+        </aside>
 
-        <nav class="admin-nav">
-            <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
-            <button class="nav-tab" data-tab="pedidos">Pedidos</button>
-            <button class="nav-tab" data-tab="produtos">Produtos</button>
-            <button class="nav-tab" data-tab="usuarios">Usuários</button>
-        </nav>
-
-        <div class="admin-content">
-            <section id="dashboard" class="tab-content active">
-                <h2>Dashboard</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total de Pedidos</h3>
-                        <p id="stat-total-pedidos">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total de Usuários</h3>
-                        <p id="stat-total-usuarios">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total de Produtos</h3>
-                        <p id="stat-total-produtos">0</p>
-                    </div>
+        <main class="main-content">
+            <section id="pedidos-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Gerenciar Pedidos</h2>
                 </div>
-            </section>
-
-            <section id="pedidos" class="tab-content">
-                <h2>Gerenciar Pedidos</h2>
                 <div class="table-container">
-                    <table class="admin-table">
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Data</th>
+                                <th>ID Pedido</th>
                                 <th>Cliente</th>
+                                <th>Data</th>
                                 <th>Valor Total</th>
                                 <th>Status</th>
-                                <th>Ações</th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-order-list">
+                        <tbody id="pedidos-table-body">
                             </tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="produtos" class="tab-content">
-                 <h2>Gerenciar Produtos</h2>
-                 <button id="add-product-btn" class="btn btn-primary" style="margin-bottom: var(--space-md);">Adicionar Produto</button>
-                 <div class="table-container">
-                     <table class="admin-table">
-                         <thead>
-                             <tr>
-                                 <th>ID</th>
-                                 <th>Nome</th>
-                                 <th>Marca</th>
-                                 <th>Categoria</th> 
-                                 <th>Estoque</th>
-                                 <th>Preço</th>
-                                 <th>Ações</th>
-                             </tr>
-                         </thead>
-                         <tbody id="admin-product-list">
-                             </tbody>
-                     </table>
-                 </div>
-
-                 <div id="productModal" class="modal-overlay" style="display: none;">
-                    <div class="modal-content large">
-                        <div class="modal-header">
-                            <h2 class="modal-title" id="productModalTitle">Adicionar Produto</h2>
-                            <button id="closeProductModal" class="close-modal">&times;</button>
-                        </div>
-                        <form id="productForm" class="modal-body">
-                            <input type="hidden" id="productId">
-                            <div class="form-row">
-                                <div class="form-group"> <label for="productName">Nome</label> <input type="text" id="productName" required class="form-control"></div>
-                                <div class="form-group"> <label for="productBrand">Marca</label> <select id="productBrand" required class="form-control"></select> </div>
-                            </div>
-                            <div class="form-row">
-                                 <div class="form-group"> <label for="productCategory">Categoria</label> <select id="productCategory" required class="form-control"></select></div>
-                                <div class="form-group"> <label for="productStock">Estoque</label> <input type="number" id="productStock" required class="form-control" min="0"> </div>
-                                <div class="form-group"> <label for="productPrice">Preço (R$)</label> <input type="number" id="productPrice" required class="form-control" step="0.01" min="0"> </div>
-                            </div>
-                             <div class="form-group"> <label for="productDescription">Descrição</label> <textarea id="productDescription" rows="3" class="form-control"></textarea> </div>
-                            <div class="form-group"> <label for="productImage">Imagem</label> <input type="file" id="productImage" class="form-control" accept="image/webp, image/jpeg, image/png"> <img id="productImagePreview" src="#" alt="Preview" style="max-width: 100px; margin-top: 10px; display: none;"> </div>
-                            <div class="modal-footer"> <button type="button" id="cancelProductForm" class="btn btn-outline">Cancelar</button> <button type="submit" class="btn btn-primary">Salvar</button> </div>
-                        </form>
-                    </div>
-                 </div>
-            </section>
-
-            <section id="usuarios" class="tab-content">
-                <h2>Gerenciar Usuários</h2>
+            <section id="produtos-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gerenciar Produtos</h2>
+                    <button id="add-product-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Adicionar Produto</button>
+                </div>
                 <div class="table-container">
-                    <table class="admin-table">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Marca</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="produtos-table-body">
+                           </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="mensagens-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gerenciar Mensagens de Contato</h2>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
                                 <th>Email</th>
-                                <th>Role</th>
-                                <th>Ações</th>
+                                <th>Assunto</th>
+                                <th>Data</th>
+                                <th>Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-user-list">
+                        <tbody id="mensagens-table-body">
                            </tbody>
                     </table>
                 </div>
             </section>
-        </div>
-    </main>
+        </main>
+    </div>
 
-    <div id="orderDetailModal" class="modal-overlay" style="display: none;">
+    <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Detalhes do Pedido #<span id="modal-pedido-id"></span></h2>
-                <button id="closeOrderDetailModal" class="close-modal" aria-label="Fechar">&times;</button>
+                <h3 id="modal-title">Adicionar Novo Produto</h3>
+                <button id="close-modal-btn" class="close-modal">&times;</button>
             </div>
-            <div id="modalOrderDetailContent" class="modal-body">
-                <div class="modal-loading"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>
-            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="product-name">Nome</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-brand">Marca</label>
+                        <select id="product-brand" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Categoria</label>
+                        <select id="product-category" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Preço (ex: 999.99)</label>
+                        <input type="text" id="product-price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-original-price">Preço Original (opcional)</label>
+                        <input type="text" id="product-original-price">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-stock">Estoque</label>
+                        <input type="number" id="product-stock" required>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="product-image">Imagem do Produto (deixe em branco para manter a atual)</label>
+                        <input type="file" id="product-image" accept="image/*">
+                        <div class="image-preview-container">
+                            <img id="image-preview" src="#" alt="Pré-visualização da Imagem" class="hidden">
+                            <span id="image-preview-text" class="image-preview-text">Nenhuma imagem selecionada.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="product-description">Descrição</label>
+                        <textarea id="product-description" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                </div>
+            </form>
         </div>
     </div>
     
+    <div id="message-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="message-modal-title">Detalhes da Mensagem</h3>
+                <button id="close-message-modal-btn" class="close-modal">&times;</button>
+            </div>
+            <div id="message-modal-body" class="modal-body-view"></div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="../../assets/js/header.js"></script> 
-    <script src="../../inicio/js/main.js"></script> <script src="../js/admin.js"></script> </body>
+    <script src="../js/admin.js"></script>
+</body>
 </html>

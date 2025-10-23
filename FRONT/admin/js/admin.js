@@ -1,607 +1,483 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const token = localStorage.getItem('jwtToken');
-    // Se não houver token, redireciona imediatamente para o login
-    if (!token) {
-        console.error("Token JWT não encontrado. Redirecionando para login.");
-        window.location.href = '../../login/HTML/login.html'; 
-        return; // Interrompe a execução do script
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
+    let userRole = '';
+    const apiUrl = 'https://api.japauniverse.com.br'; // **URL da API corrigida**
+
+    // Função para decodificar o token JWT (igual ao código antigo)
+    const parseJwt = (token) => {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("Erro ao decodificar token:", e);
+            return null;
+        }
+    };
+
+    // **MUDANÇA 2: Extrai a role diretamente do token**
+    if (token) {
+        const decodedToken = parseJwt(token);
+        // Verifica se o token foi decodificado e se contém as 'authorities'
+        if (decodedToken && decodedToken.authorities && decodedToken.authorities.length > 0) {
+            // Pega a primeira autoridade (role) da lista
+            userRole = decodedToken.authorities[0].authority;
+        } else {
+            console.warn("Token decodificado não contém 'authorities' ou está malformado.");
+        }
     }
 
-    // Configuração do Axios com o token Bearer
+    // **MUDANÇA 3: Compara com 'ROLE_ADMIN' (como no código antigo)**
+    if (userRole !== 'ROLE_ADMIN') {
+        alert('Acesso negado. Você precisa ser um administrador.');
+        // **MUDANÇA 4: Garante que o caminho para o login está correto**
+        window.location.href = '/FRONT/login/HTML/login.html'; // Usando caminho absoluto
+        return;
+    }
+
+    // --- Configuração do Cliente API ---
+    // Cria a instância do Axios com a base URL correta e token
     const apiClient = axios.create({
-        baseURL: 'https://api.japauniverse.com.br/api', 
+        baseURL: `${apiUrl}/api/admin`, // Endpoint específico do admin
         headers: {
             'Authorization': `Bearer ${token}`
         }
     });
+     const publicApiClient = axios.create({ baseURL: `${apiUrl}/api` }); // Para endpoints públicos
 
-    // --- Seletores de Elementos da UI ---
-    const tabs = document.querySelectorAll('.nav-tab');
-    const contents = document.querySelectorAll('.tab-content');
-    
-    // Seletores das tabelas (tbody)
-    const orderList = document.getElementById('admin-order-list');
-    const productList = document.getElementById('admin-product-list');
-    const userList = document.getElementById('admin-user-list'); 
+    // Elementos do DOM (igual ao seu código mais recente)
+    const produtosTableBody = document.getElementById('produtos-table-body');
+    const pedidosTableBody = document.getElementById('pedidos-table-body');
+    const addProdutoForm = document.getElementById('product-form'); // **Correção ID**
+    const produtoIdInput = document.getElementById('product-id');  // **Correção ID**
+    const nomeInput = document.getElementById('product-name'); // **Correção ID**
+    const descricaoInput = document.getElementById('product-description'); // **Correção ID**
+    const precoInput = document.getElementById('product-price'); // **Correção ID**
+    const precoOriginalInput = document.getElementById('product-original-price'); // **Adicionado**
+    const estoqueInput = document.getElementById('product-stock'); // **Adicionado**
+    const marcaSelect = document.getElementById('product-brand'); // **Correção ID**
+    const categoriaSelect = document.getElementById('product-category'); // **Correção ID**
+    const imagemInput = document.getElementById('product-image'); // **Correção ID**
+    const modalTitle = document.getElementById('modal-title'); // CORREÇÃO: Usando a variável original (formTitle renomeada para modalTitle)
+    const productModal = document.getElementById('product-modal'); // **Correção ID**
+    const closeModalBtn = document.getElementById('close-modal-btn'); // **Correção ID**
+    const addProductBtn = document.getElementById('add-product-btn'); // **Correção ID**
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewText = document.getElementById('image-preview-text');
 
-    // Seletores das Estatísticas do Dashboard
-    const statTotalPedidos = document.getElementById('stat-total-pedidos');
-    const statTotalUsuarios = document.getElementById('stat-total-usuarios');
-    const statTotalProdutos = document.getElementById('stat-total-produtos');
+    const pedidosSection = document.getElementById('pedidos-section');
+    const produtosSection = document.getElementById('produtos-section');
+    const mensagensSection = document.getElementById('mensagens-section');
+    const navPedidos = document.getElementById('nav-pedidos');
+    const navProdutos = document.getElementById('nav-produtos');
+    const navMensagens = document.getElementById('nav-mensagens');
+    const mensagensTableBody = document.getElementById('mensagens-table-body');
+    const messageModal = document.getElementById('message-modal');
+    const closeMessageModalBtn = document.getElementById('close-message-modal-btn');
+    const messageModalBody = document.getElementById('message-modal-body');
+    const messageModalTitle = document.getElementById('message-modal-title');
+    let adminMessages = [];
 
-    // Seletores do Modal de Detalhes do Pedido
-    const orderDetailModal = document.getElementById('orderDetailModal');
-    const closeModalBtn = document.getElementById('closeOrderDetailModal');
-    const modalContent = document.getElementById('modalOrderDetailContent');
-    const modalPedidoId = document.getElementById('modal-pedido-id');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    const toggleBtn = document.querySelector('.mobile-admin-toggle');
 
-    // --- Navegação por Abas ---
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
+    // --- Funções Auxiliares ---
 
-            tab.classList.add('active');
-            const activeContent = document.getElementById(tab.dataset.tab);
-            if (activeContent) {
-                activeContent.classList.add('active');
-            } else {
-                console.warn(`Conteúdo da aba '${tab.dataset.tab}' não encontrado.`);
-            }
+    // Função auxiliar para obter URL da imagem (se necessário ajustar base URL)
+    const getImageUrl = (path) => {
+        if (!path) return 'placeholder.png'; // Imagem padrão se não houver
+        if (path.startsWith('http')) {
+            return path;
+        }
+         // Assumindo que o backend serve as imagens diretamente na raiz + path
+        return `${apiUrl}/${path}`;
+    };
+
+    const resetForm = () => {
+        addProdutoForm.reset();
+        produtoIdInput.value = '';
+        modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO APLICADA AQUI
+        imagemInput.required = true;
+        imagePreview.classList.add('hidden');
+        imagePreview.src = '#';
+        imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
+        productModal.classList.remove('active'); // Garante que o modal fecha
+    };
+
+    // Popula selects de marca e categoria
+    const populateSelect = (selectElement, items, placeholder) => {
+        selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+        items.forEach(item => {
+            selectElement.innerHTML += `<option value="${item.id}">${item.nome}</option>`;
         });
-    });
+    };
 
-    // --- Funções de Formatação ---
-    const formatCurrency = (value) => value != null ? `R$ ${Number(value).toFixed(2).replace('.', ',')}` : 'R$ --,--';
-    const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
-    const formatDateTime = (dateString) => dateString ? new Date(dateString).toLocaleString('pt-BR') : 'N/A';
+    const fetchBrandsAndCategories = async () => {
+        try {
+            const [brandsRes, categoriesRes] = await Promise.all([
+                publicApiClient.get('/produtos/marcas'), // Usa apiClient público
+                publicApiClient.get('/produtos/categorias') // Usa apiClient público
+            ]);
+            populateSelect(marcaSelect, brandsRes.data, 'Selecione uma marca');
+            populateSelect(categoriaSelect, categoriesRes.data, 'Selecione uma categoria');
+        } catch (error) {
+            console.error("Erro ao buscar marcas e categorias:", error);
+            alert("Erro ao carregar opções do formulário.");
+        }
+    };
 
-    // --- Funções de Renderização das Tabelas ---
 
-    // Renderiza a tabela de Pedidos
+    // --- Renderização de Tabelas (Função de Pedidos Corrigida) ---
+
     const renderPedidos = (pedidos) => {
-        if (!orderList) return;
-        orderList.innerHTML = ''; 
-        if (!pedidos || pedidos.length === 0) {
-            orderList.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">Nenhum pedido encontrado.</td></tr>';
-            return;
-        }
+        pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
+        pedidosTableBody.innerHTML = pedidos.map(pedido => {
+            const nomeCliente = pedido.usuario ? pedido.usuario.nome : 'Usuário Desconhecido';
+            const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
+            const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
 
-        pedidos.sort((a, b) => b.id - a.id); // Ordena mais recentes primeiro
-
-        pedidos.forEach(pedido => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>#${pedido.id}</td>
-                <td>${formatDate(pedido.dataPedido)}</td>
-                <td>${pedido.usuario?.nome || 'Usuário Indisponível'}</td> 
-                <td>${formatCurrency(pedido.valorTotal)}</td>
-                <td><span class="status-badge status-${pedido.status || 'DESCONHECIDO'}">${pedido.status || 'N/A'}</span></td>
+            return `
+            <tr>
+                <td>#${String(pedido.id).padStart(6, '0')}</td>
+                <td>${nomeCliente}</td>
+                <td>${dataFormatada}</td>
+                <td>${valorFormatado}</td>
                 <td>
-                    <button class="btn-secondary btn-sm view-details-btn" data-id="${pedido.id}">
-                        <i class="fas fa-eye"></i> Detalhes
-                    </button>
-                    </td>
-            `;
-            orderList.appendChild(row);
-        });
-    };
-
-    // Renderiza a tabela de Produtos
-    const renderProdutos = (produtos) => {
-        if (!productList) return;
-        productList.innerHTML = '';
-        if (!produtos || produtos.length === 0) {
-            productList.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Nenhum produto encontrado.</td></tr>';
-            return;
-        }
-        produtos.forEach(produto => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${produto.id}</td>
-                <td>${produto.nome || 'Sem nome'}</td>
-                <td>${produto.marca?.nome || 'Sem marca'}</td>
-                <td>${produto.categoria?.nome || 'Sem categoria'}</td> 
-                <td>${produto.estoque || 0}</td>
-                <td>${formatCurrency(produto.preco)}</td>
-                <td>
-                    <button class="btn btn-secondary btn-sm edit-product-btn" data-id="${produto.id}">Editar</button>
-                    <button class="btn btn-danger btn-sm delete-product-btn" data-id="${produto.id}">Excluir</button>
-                </td>
-            `;
-            productList.appendChild(row);
-        });
-    };
-
-    // Renderiza a tabela de Usuários
-    const renderUsuarios = (usuarios) => {
-        if (!userList) return; 
-        userList.innerHTML = ''; 
-        if (!usuarios || usuarios.length === 0) {
-            userList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum usuário encontrado.</td></tr>';
-            return;
-        }
-        usuarios.forEach(usuario => {
-            const row = document.createElement('tr');
-            const isAdmin = usuario.role === 'ADMIN';
-            row.innerHTML = `
-                <td>${usuario.id}</td>
-                <td>${usuario.nome || 'Sem nome'}</td>
-                <td>${usuario.email || 'Sem email'}</td>
-                <td>${usuario.role || 'Sem role'}</td>
-                <td>
-                    <select class="action-select user-role-select" data-user-id="${usuario.id}" ${isAdmin ? 'disabled title="Não é possível alterar a role do próprio admin."' : ''}>
-                        <option value="USER" ${!isAdmin ? 'selected' : ''}>USER</option>
-                        <option value="ADMIN" ${isAdmin ? 'selected' : ''}>ADMIN</option>
+                    <select class="status-select" data-pedido-id="${pedido.id}">
+                        <option value="PENDENTE" ${pedido.status === 'PENDENTE' ? 'selected' : ''}>Pendente</option>
+                        <option value="PAGO" ${pedido.status === 'PAGO' ? 'selected' : ''}>Pago</option>
+                        <option value="ENVIADO" ${pedido.status === 'ENVIADO' ? 'selected' : ''}>Enviado</option>
+                        <option value="ENTREGUE" ${pedido.status === 'ENTREGUE' ? 'selected' : ''}>Entregue</option>
+                        <option value="CANCELADO" ${pedido.status === 'CANCELADO' ? 'selected' : ''}>Cancelado</option>
                     </select>
                 </td>
-            `;
-            userList.appendChild(row);
-        });
+                <td><button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button></td>
+            </tr>
+        `}).join('');
     };
 
-    // --- Funções de API ---
-
-    // Carrega TODOS os dados iniciais (Dashboard e Tabelas)
-    const loadDashboardData = async () => {
-        // Mostra estado inicial de carregamento
-        if (statTotalPedidos) statTotalPedidos.textContent = '...';
-        if (statTotalUsuarios) statTotalUsuarios.textContent = '...';
-        if (statTotalProdutos) statTotalProdutos.textContent = '...';
-        if (orderList) orderList.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">Carregando pedidos...</td></tr>';
-        if (productList) productList.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Carregando produtos...</td></tr>';
-        if (userList) userList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">Carregando usuários...</td></tr>';
-
-
-        try {
-            // Faz as chamadas em paralelo
-            const [pedidosRes, usuariosRes, produtosRes] = await Promise.all([
-                apiClient.get('/admin/pedidos'),
-                apiClient.get('/admin/users'), // Busca usuários
-                apiClient.get('/admin/produtos')
-            ]);
-
-            // Renderiza as tabelas com os dados recebidos
-            renderPedidos(pedidosRes.data);
-            renderProdutos(produtosRes.data);
-            renderUsuarios(usuariosRes.data); // Renderiza usuários
-
-            // Atualiza as estatísticas do dashboard
-            if (statTotalPedidos) statTotalPedidos.textContent = pedidosRes.data.length;
-            if (statTotalUsuarios) statTotalUsuarios.textContent = usuariosRes.data.length; // Atualiza contagem de usuários
-            if (statTotalProdutos) statTotalProdutos.textContent = produtosRes.data.length;
-
-        } catch (error) {
-            console.error('Erro fatal ao carregar dados do admin:', error);
-            // Trata erro de permissão (401 ou 403) de forma mais robusta
-            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                alert('Acesso negado. Sua sessão pode ter expirado ou você não tem permissão de administrador. Redirecionando para login.');
-                localStorage.removeItem('jwtToken'); // Limpa token potencialmente inválido
-                window.location.href = '../../login/HTML/login.html'; // Redireciona
-            } else {
-                // Outro tipo de erro (rede, servidor fora do ar, etc.)
-                alert('Falha ao carregar dados do painel. Verifique sua conexão e tente recarregar a página.');
-                // Pode exibir uma mensagem mais detalhada no painel se preferir
-                 if (orderList) orderList.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--error-color);">Erro ao carregar pedidos.</td></tr>';
-                 if (productList) productList.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: var(--error-color);">Erro ao carregar produtos.</td></tr>';
-                 if (userList) userList.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--error-color);">Erro ao carregar usuários.</td></tr>';
-            }
-        }
+     const renderProdutos = (produtos) => {
+        produtosTableBody.innerHTML = produtos.map(produto => `
+            <tr>
+                <td>${produto.id}</td>
+                <td><img src="${getImageUrl(produto.imagemUrl)}" alt="${produto.nome}" width="50" style="border-radius: 4px; object-fit: cover;"></td>
+                <td>${produto.nome}</td>
+                <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
+                 <td>${produto.marca?.nome || 'N/A'}</td> {/* Usando optional chaining */}
+                 <td>${produto.categoria?.nome || 'N/A'}</td> {/* Usando optional chaining */}
+                 <td>${produto.estoque || 0}</td> {/* Estoque */}
+                <td>
+                    <button class="btn btn-warning btn-sm edit-produto-btn" data-product-id="${produto.id}"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm delete-produto-btn" data-product-id="${produto.id}"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
     };
 
-    // Atualiza a Role de um Usuário via API
-    const updateUserRole = async (userId, newRole) => {
-        if (!userId || !newRole) {
-             console.error("ID do usuário ou nova role ausente para atualização.");
-             alert("Erro interno ao tentar atualizar permissão.");
-             return; 
-        }
-        
-        // Confirmação (opcional, mas recomendado)
-        // if (!confirm(`Tem certeza que deseja alterar a permissão do usuário ${userId} para ${newRole}?`)) {
-        //     // Restaura o valor visualmente se cancelado
-        //     const selectEl = userList.querySelector(`select[data-user-id="${userId}"]`);
-        //      if (selectEl) {
-        //          const originalRole = newRole === 'ADMIN' ? 'USER' : 'ADMIN'; 
-        //          selectEl.value = originalRole; 
-        //      }
-        //     return;
-        // }
+    const renderMensagens = (mensagens) => {
+        adminMessages = mensagens; // Guarda as mensagens para o modal
+        mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
+        mensagensTableBody.innerHTML = mensagens.map(msg => `
+            <tr>
+                <td>${msg.id}</td>
+                <td>${msg.nome}</td>
+                <td>${msg.email}</td>
+                <td>${msg.assunto}</td>
+                <td>${new Date(msg.dataEnvio).toLocaleString('pt-BR')}</td>
+                <td><button class="btn btn-primary btn-sm view-message-btn" data-message-id="${msg.id}">Visualizar</button></td>
+            </tr>
+        `).join('');
+    };
 
-        console.log(`Tentando atualizar usuário ${userId} para role ${newRole}`); // Log para debug
+    // --- Carregamento de Dados ---
+
+    const fetchPedidos = async () => {
         try {
-            await apiClient.put(`/admin/users/${userId}/role`, { role: newRole });
-            alert(`Permissão do usuário ${userId} atualizada para ${newRole} com sucesso!`);
-            // Recarrega apenas a lista de usuários para performance, se desejado
-            // Ou recarrega tudo:
-            // loadDashboardData(); 
+            const response = await apiClient.get('/pedidos'); // Usa apiClient autenticado
+            renderPedidos(response.data);
         } catch (error) {
-            console.error(`Erro ao atualizar permissão para usuário ${userId}:`, error);
-            alert(`Falha ao atualizar permissão para ${newRole}. Verifique o console.`);
-            // Desfaz a mudança visual no select em caso de erro
-             const selectEl = userList.querySelector(`select[data-user-id="${userId}"]`);
-             if (selectEl) {
-                 const originalRole = newRole === 'ADMIN' ? 'USER' : 'ADMIN'; 
-                 selectEl.value = originalRole; 
+            console.error("Erro ao buscar pedidos:", error);
+            pedidosTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar os pedidos.</td></tr>';
+             if (error.response && error.response.status === 403) {
+                alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                localStorage.removeItem('jwtToken');
+                window.location.href = '/FRONT/login/HTML/login.html';
              }
         }
     };
 
-    // --- Funções do Modal de Detalhes do Pedido ---
+    const fetchProdutos = async () => {
+        try {
+            const response = await apiClient.get('/produtos'); // Usa apiClient autenticado
+            renderProdutos(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar produtos:", error);
+            produtosTableBody.innerHTML = '<tr><td colspan="8">Não foi possível carregar os produtos.</td></tr>'; // Atualizado colspan
+             if (error.response && error.response.status === 403) {
+                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                 localStorage.removeItem('jwtToken');
+                window.location.href = '/FRONT/login/HTML/login.html';
+             }
+        }
+    };
 
-    // Adiciona listener DELEGADO ao tbody da tabela de pedidos
-    const addDetailButtonListeners = () => {
-        if (!orderList) return;
-        // Escuta cliques no tbody inteiro
-        orderList.addEventListener('click', (e) => {
-            // Verifica se o elemento clicado (ou um pai próximo) é o botão de detalhes
-            const button = e.target.closest('.view-details-btn'); 
-            if (button) {
-                const pedidoId = button.dataset.id; 
-                if (pedidoId) {
-                    openOrderDetailModal(pedidoId); // Abre o modal se achou o ID
-                } else {
-                     console.error("Botão de detalhes clicado, mas sem data-id.");
+    const fetchMensagens = async () => {
+        try {
+            const response = await apiClient.get('/contatos'); // Usa apiClient autenticado
+            renderMensagens(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar mensagens:", error);
+            mensagensTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar as mensagens.</td></tr>';
+             if (error.response && error.response.status === 403) {
+                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                 localStorage.removeItem('jwtToken');
+                 window.location.href = '/FRONT/login/HTML/login.html';
+             }
+        }
+    };
+
+    // --- Navegação e Modais ---
+
+    const switchView = (view) => {
+        [pedidosSection, produtosSection, mensagensSection].forEach(s => s.classList.remove('active'));
+        [navPedidos, navProdutos, navMensagens].forEach(n => n.classList.remove('active'));
+
+        if (view === 'pedidos') {
+            pedidosSection.classList.add('active');
+            navPedidos.classList.add('active');
+            fetchPedidos();
+        } else if (view === 'produtos') {
+            produtosSection.classList.add('active');
+            navProdutos.classList.add('active');
+            fetchProdutos();
+        } else if (view === 'mensagens') {
+            mensagensSection.classList.add('active');
+            navMensagens.classList.add('active');
+            fetchMensagens();
+        }
+         // Fecha o sidebar mobile ao trocar de aba
+         if (sidebar && overlay && sidebar.classList.contains('active')) {
+             sidebar.classList.remove('active');
+             overlay.classList.remove('active');
+         }
+    };
+
+    navPedidos.addEventListener('click', (e) => { e.preventDefault(); switchView('pedidos'); });
+    navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
+    navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
+
+    // Abre o modal de produto (para adicionar ou editar)
+     const openProductModal = (produto = null) => {
+        resetForm(); // Limpa o formulário antes de preencher
+        imagemInput.required = !produto; // Imagem obrigatória só ao adicionar
+
+        if (produto) {
+            modalTitle.textContent = 'Editar Produto'; // CORREÇÃO: Usa modalTitle corretamente
+            produtoIdInput.value = produto.id;
+            nomeInput.value = produto.nome;
+            marcaSelect.value = produto.marca?.id || '';
+            categoriaSelect.value = produto.categoria?.id || '';
+            precoInput.value = produto.preco.toFixed(2);
+            precoOriginalInput.value = produto.precoOriginal ? produto.precoOriginal.toFixed(2) : '';
+            estoqueInput.value = produto.estoque || 0;
+            descricaoInput.value = produto.descricao || '';
+
+            if (produto.imagemUrl) {
+                imagePreview.src = getImageUrl(produto.imagemUrl);
+                imagePreview.classList.remove('hidden');
+                imagePreviewText.textContent = 'Imagem atual. Selecione outra para substituir.';
+            }
+
+        } else {
+            modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO: Usa modalTitle corretamente
+        }
+        productModal.classList.add('active');
+    };
+
+    const closeProductModal = () => productModal.classList.remove('active');
+
+    const openMessageModal = (message) => {
+        messageModalTitle.textContent = `Mensagem de: ${message.nome}`;
+        messageModalBody.innerHTML = `
+            <p class="message-info"><strong>De:</strong> ${message.nome} (${message.email})</p>
+            <p class="message-info"><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p>
+            <h4>Assunto: ${message.assunto}</h4>
+            <p>${message.mensagem}</p>`;
+        messageModal.classList.add('active');
+    };
+    const closeMessageModal = () => messageModal.classList.remove('active');
+
+    // Event Listeners para Modais
+    addProductBtn.addEventListener('click', () => openProductModal());
+    closeModalBtn.addEventListener('click', closeProductModal);
+    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeProductModal(); });
+    closeMessageModalBtn.addEventListener('click', closeMessageModal);
+    messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
+
+
+    // Preview da Imagem
+    imagemInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                imagePreviewText.textContent = `Nova imagem: ${file.name}`;
+            };
+            reader.readAsDataURL(file);
+        } else if (!produtoIdInput.value) { // Só limpa se estiver adicionando
+            imagePreview.classList.add('hidden');
+            imagePreview.src = '#';
+            imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
+        }
+    });
+
+    // --- Manipulação de Eventos das Tabelas ---
+
+    // Event Delegation para botões na tabela de PEDIDOS
+    pedidosTableBody.addEventListener('click', async (event) => {
+        const target = event.target;
+        const pedidoId = target.dataset.pedidoId;
+
+        // Atualizar Status do Pedido
+        if (target.classList.contains('update-status-btn')) {
+            const selectElement = target.closest('tr').querySelector(`select.status-select`);
+            const novoStatus = selectElement.value;
+
+            if (!novoStatus) return;
+
+            if (confirm(`Tem certeza que deseja atualizar o status do pedido #${pedidoId} para ${novoStatus}?`)) {
+                try {
+                     // **MUDANÇA: Usar PATCH e enviar JSON**
+                    await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: novoStatus });
+                    alert('Status do pedido atualizado com sucesso!');
+                    fetchPedidos(); // Atualiza a tabela
+                } catch (error) {
+                    alert('Erro ao atualizar o status do pedido.');
+                    console.error('Erro ao atualizar status:', error);
                 }
             }
-        });
-    };
-
-    // Abre o modal e busca os dados do pedido via API
-    const openOrderDetailModal = async (pedidoId) => {
-        if (!orderDetailModal || !modalPedidoId || !modalContent) {
-             console.error("Elementos do modal de detalhes não encontrados.");
-             return;
         }
-        
-        // Mostra o modal e overlay
-        orderDetailModal.style.display = 'flex'; 
-        setTimeout(() => orderDetailModal.classList.add('show'), 10); 
-        
-        modalPedidoId.textContent = pedidoId; // Atualiza o título do modal
-        // Define estado de carregamento
-        modalContent.innerHTML = `<div class="modal-loading"><i class="fas fa-spinner fa-spin"></i> Carregando detalhes...</div>`;
+    });
 
-        try {
-            // Chama o endpoint GET /api/admin/pedidos/{id}
-            const response = await apiClient.get(`/admin/pedidos/${pedidoId}`);
-            // Renderiza os detalhes se a chamada for bem-sucedida
-            renderPedidoDetails(response.data); 
-        } catch (error) {
-            console.error(`Erro ao buscar detalhes do pedido #${pedidoId}:`, error);
-            let errorMsg = 'Erro ao carregar os detalhes do pedido.';
-             if (error.response && error.response.status === 404) {
-                 errorMsg = `Pedido #${pedidoId} não encontrado.`;
-             } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                 errorMsg = 'Sessão expirada ou permissão negada.';
-                 // Poderia redirecionar para login aqui também
-             }
-            modalContent.innerHTML = `<div class="modal-loading" style="color: var(--error-color);">${errorMsg}</div>`;
+    // Event Delegation para botões na tabela de PRODUTOS
+    produtosTableBody.addEventListener('click', async (event) => {
+        const target = event.target.closest('button'); // Pega o botão clicado
+        if (!target) return; // Sai se não clicou num botão
+
+        const productId = target.dataset.productId;
+
+        // Editar Produto
+        if (target.classList.contains('edit-produto-btn')) {
+            try {
+                 // **MUDANÇA: Usar publicApiClient para pegar detalhes do produto**
+                const response = await publicApiClient.get(`/produtos/${productId}`);
+                openProductModal(response.data); // Abre o modal com os dados
+            } catch (error) {
+                alert('Erro ao carregar dados do produto para edição.');
+                console.error("Erro ao buscar produto para editar:", error);
+            }
         }
-    };
 
-    // Fecha o modal de detalhes
-    const closeOrderDetailModal = () => {
-        if (!orderDetailModal) return;
-        orderDetailModal.classList.remove('show'); 
-        // Esconde o elemento após a animação de saída
-        setTimeout(() => {
-            orderDetailModal.style.display = 'none'; 
-            modalContent.innerHTML = ''; // Limpa o conteúdo anterior
-        }, 300); // Tempo da animação (deve bater com o CSS)
-    };
+        // Excluir Produto
+        if (target.classList.contains('delete-produto-btn')) {
+            if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}?`)) {
+                try {
+                    await apiClient.delete(`/produtos/${productId}`);
+                    alert('Produto excluído com sucesso!');
+                    fetchProdutos(); // Atualiza a tabela
+                } catch (error) {
+                    alert('Erro ao excluir produto.');
+                    console.error("Erro ao excluir produto:", error);
+                }
+            }
+        }
+    });
 
-    // Renderiza o HTML interno do modal com os detalhes do pedido
-    const renderPedidoDetails = (pedido) => {
-        if (!modalContent || !pedido) {
-            modalContent.innerHTML = `<div class="modal-loading" style="color: var(--error-color);">Falha ao processar detalhes do pedido.</div>`;
+     // Event Delegation para botões na tabela de MENSAGENS
+     mensagensTableBody.addEventListener('click', (e) => {
+        const target = e.target.closest('.view-message-btn');
+        if (target) {
+            const messageId = parseInt(target.dataset.messageId, 10);
+            const message = adminMessages.find(m => m.id === messageId);
+            if (message) openMessageModal(message);
+        }
+    });
+
+    // --- Submissão do Formulário de Produto ---
+    addProdutoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = produtoIdInput.value;
+        const isEditing = !!id;
+        const url = isEditing ? `/produtos/${id}` : '/produtos';
+        const method = isEditing ? 'put' : 'post'; // PUT para editar, POST para criar
+
+        // Validar se marca e categoria foram selecionados
+        const brandId = marcaSelect.value;
+        const categoryId = categoriaSelect.value;
+        if (!brandId || !categoryId) {
+            alert('Por favor, selecione a marca e a categoria.');
             return;
         }
 
-        // Formata o endereço (com verificação se existe)
-        const endereco = pedido.enderecoDeEntrega;
-        const enderecoCompleto = endereco 
-            ? `${endereco.rua || ''}, ${endereco.numero || ''} ${endereco.complemento || ''} - ${endereco.cidade || ''}/${endereco.estado || ''} - CEP: ${endereco.cep || ''}`
-            : 'Endereço não informado';
-        
-        // Gera o HTML do corpo do modal
-        modalContent.innerHTML = `
-            <div class="detail-section">
-                <h3>Destinatário & Entrega</h3>
-                <div class="detail-grid">
-                    <div class="detail-group">
-                        <div class="detail-item"><label>Nome Destinatário</label><span>${pedido.nomeDestinatario || 'Não informado'}</span></div>
-                        <div class="detail-item"><label>CPF Destinatário</label><span>${pedido.cpfDestinatario || 'Não informado'}</span></div>
-                        <div class="detail-item"><label>Telefone Destinatário</label><span>${pedido.telefoneDestinatario || 'Não informado'}</span></div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-item"><label>Cliente (Comprador)</label><span>${pedido.usuario?.nome || 'N/A'} (${pedido.usuario?.email || 'N/A'})</span></div>
-                        <div class="detail-item"><label>Endereço de Entrega</label><span>${enderecoCompleto}</span></div>
-                        <div class="detail-item"><label>Observações</label><span>${pedido.observacoes || 'Nenhuma'}</span></div>
-                    </div>
-                </div>
-            </div>
+        const formData = new FormData();
 
-            <div class="detail-section">
-                <h3>Itens do Pedido (${pedido.itens?.length || 0})</h3>
-                ${(pedido.itens && pedido.itens.length > 0) ? `
-                <div class="table-container">
-                    <table class="modal-items-table">
-                        <thead>
-                            <tr><th>Produto</th><th>Tamanho</th><th>Qtd.</th><th>Preço Unit.</th><th>Subtotal</th></tr>
-                        </thead>
-                        <tbody>
-                            ${pedido.itens.map(item => {
-                                const produto = item.produto;
-                                // Constrói URL da imagem com fallback
-                                const imgUrl = produto?.imagemUrl 
-                                    ? (produto.imagemUrl.startsWith('http') ? produto.imagemUrl : `https://api.japauniverse.com.br/${produto.imagemUrl}`) 
-                                    : '../../assets/images/placeholder-product.jpg'; // Caminho relativo ao admin.html
-                                return `
-                                <tr>
-                                    <td class="item-name-cell">
-                                        <img src="${imgUrl}" alt="${produto?.nome || 'Produto'}">
-                                        <span>${produto?.nome || 'Produto Removido'}</span>
-                                    </td>
-                                    <td>${item.tamanho || 'N/A'}</td>
-                                    <td>${item.quantidade || 0}</td>
-                                    <td>${formatCurrency(item.precoUnitario)}</td>
-                                    <td>${formatCurrency((item.precoUnitario || 0) * (item.quantidade || 0))}</td>
-                                </tr>
-                            `}).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                ` : '<p style="color: var(--text-secondary); text-align: center;">Nenhum item encontrado neste pedido.</p>'}
-            </div>
+        // Monta o objeto JSON do produto
+        const produtoData = {
+            nome: nomeInput.value,
+            marca: { id: parseInt(brandId) }, // Envia objeto com ID
+            categoria: { id: parseInt(categoryId) }, // Envia objeto com ID
+            preco: parseFloat(precoInput.value),
+            precoOriginal: precoOriginalInput.value ? parseFloat(precoOriginalInput.value) : null,
+            estoque: parseInt(estoqueInput.value),
+            descricao: descricaoInput.value,
+        };
+        // Adiciona o JSON como uma parte 'produto'
+        formData.append('produto', JSON.stringify(produtoData));
 
-            <div class="detail-section">
-                <h3>Financeiro & Status</h3>
-                <div class="detail-grid">
-                    <div class="detail-group">
-                        <div class="detail-item"><label>Status</label><span><span class="status-badge status-${pedido.status || 'DESCONHECIDO'}">${pedido.status || 'N/A'}</span></span></div>
-                        <div class="detail-item"><label>Data do Pedido</label><span>${formatDateTime(pedido.dataPedido)}</span></div>
-                         <div class="detail-item"><label>Valor Total</label><span style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${formatCurrency(pedido.valorTotal)}</span></div>
-                    </div>
-                    <div class="detail-group">
-                        <div class="detail-item"><label>Código PIX (Copia e Cola)</label><span style="font-size: 0.9rem; word-break: break-all; max-height: 100px; overflow-y: auto;">${pedido.pixCopiaECola || 'Não gerado ou não aplicável'}</span></div>
-                        </div>
-                </div>
-            </div>
-        `;
-    };
+        // Adiciona a imagem se foi selecionada
+        if (imagemInput.files.length > 0) {
+            formData.append('imagem', imagemInput.files[0]);
+        } else if (!isEditing && imagemInput.required) {
+            alert('Por favor, selecione uma imagem para o novo produto.');
+            return; // Impede envio sem imagem ao criar
+        }
+
+        try {
+            await apiClient({
+                method: method,
+                url: url,
+                data: formData,
+                headers: { 'Content-Type': 'multipart/form-data' } // Necessário para FormData
+            });
+
+            alert(`Produto ${isEditing ? 'atualizado' : 'adicionado'} com sucesso!`);
+            closeProductModal(); // Fecha o modal
+            fetchProdutos(); // Atualiza a tabela
+        } catch (error) {
+            alert(`Falha ao ${isEditing ? 'atualizar' : 'adicionar'} o produto.`);
+            console.error(`Erro ao salvar produto:`, error.response?.data || error.message);
+        }
+    });
+
 
     // --- Inicialização ---
-
-    // Adiciona listeners para fechar o modal (Botão X, clique fora, ESC)
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeOrderDetailModal);
-    }
-    if (orderDetailModal) {
-        orderDetailModal.addEventListener('click', (e) => {
-            if (e.target === orderDetailModal) { // Fecha só se clicar no overlay
-                closeOrderDetailModal();
-            }
+    if (toggleBtn && sidebar && overlay) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
         });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && orderDetailModal.classList.contains('show')) {
-                closeOrderDetailModal();
-            }
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
         });
     }
 
-    // Adiciona listener DELEGADO para os selects de role na tabela de usuários
-    if (userList) {
-        userList.addEventListener('change', (e) => {
-            if (e.target.classList.contains('user-role-select') && !e.target.disabled) {
-                const userId = e.target.dataset.userId;
-                const newRole = e.target.value;
-                updateUserRole(userId, newRole); 
-            }
-        });
-    }
-    
-    // Adiciona listener DELEGADO para os botões de detalhes na tabela de pedidos
-    addDetailButtonListeners(); 
-
-    // Carrega os dados do dashboard assim que o DOM estiver pronto
-    loadDashboardData();
-    
-    // --- Lógica Adicional (Ex: Modal de Produto - Mantida do seu código) ---
-    const productModal = document.getElementById('productModal');
-    const closeProductModalBtn = document.getElementById('closeProductModal');
-    const cancelProductFormBtn = document.getElementById('cancelProductForm');
-    const addProductBtn = document.getElementById('add-product-btn');
-    const productForm = document.getElementById('productForm');
-    const productModalTitle = document.getElementById('productModalTitle');
-    const productImagePreview = document.getElementById('productImagePreview');
-    const productImageInput = document.getElementById('productImage');
-
-     const marcaSelect = document.getElementById('productBrand');
-     const categoriaSelect = document.getElementById('productCategory');
-     
-     // Função para popular selects (Marcas/Categorias)
-     const populateSelect = async (selectElement, apiUrl, nameField) => {
-         try {
-             const response = await apiClient.get(apiUrl);
-             selectElement.innerHTML = '<option value="">Selecione...</option>'; // Limpa e adiciona placeholder
-             response.data.forEach(item => {
-                 const option = document.createElement('option');
-                 option.value = item.id;
-                 option.textContent = item[nameField];
-                 selectElement.appendChild(option);
-             });
-         } catch (error) {
-             console.error(`Erro ao carregar ${nameField}s:`, error);
-             selectElement.innerHTML = '<option value="">Erro ao carregar</option>';
-         }
-     };
-
-     // Carrega Marcas e Categorias ao inicializar
-     populateSelect(marcaSelect, '/produtos/marcas', 'nome');
-     populateSelect(categoriaSelect, '/produtos/categorias', 'nome');
-
-
-     // Abre o modal de produto (Adicionar)
-     if (addProductBtn) {
-         addProductBtn.addEventListener('click', () => {
-             productForm.reset(); // Limpa o formulário
-             document.getElementById('productId').value = ''; // Garante que ID está vazio
-             productModalTitle.textContent = 'Adicionar Novo Produto';
-             productImagePreview.style.display = 'none'; // Esconde preview
-             productImagePreview.src = '#';
-             if (productModal) {
-                 productModal.style.display = 'flex';
-                 setTimeout(() => productModal.classList.add('show'), 10);
-             }
-         });
-     }
-
-     // Fecha o modal de produto
-     const closeProductModal = () => {
-         if (productModal) {
-             productModal.classList.remove('show');
-             setTimeout(() => productModal.style.display = 'none', 300);
-         }
-     };
-     if (closeProductModalBtn) closeProductModalBtn.addEventListener('click', closeProductModal);
-     if (cancelProductFormBtn) cancelProductFormBtn.addEventListener('click', closeProductModal);
-     if (productModal) {
-         productModal.addEventListener('click', (e) => {
-             if (e.target === productModal) closeProductModal();
-         });
-     }
-     
-     // Preview da imagem
-     if (productImageInput && productImagePreview) {
-         productImageInput.addEventListener('change', (event) => {
-             const file = event.target.files[0];
-             if (file) {
-                 const reader = new FileReader();
-                 reader.onload = (e) => {
-                     productImagePreview.src = e.target.result;
-                     productImagePreview.style.display = 'block';
-                 }
-                 reader.readAsDataURL(file);
-             } else {
-                 productImagePreview.style.display = 'none';
-                 productImagePreview.src = '#';
-             }
-         });
-     }
-
-     // Submissão do formulário de produto (Adicionar/Editar)
-     if (productForm) {
-         productForm.addEventListener('submit', async (e) => {
-             e.preventDefault();
-             const productId = document.getElementById('productId').value;
-             const isEditing = !!productId;
-
-             // Monta o objeto 'produto' com dados do formulário
-             const produto = {
-                 nome: document.getElementById('productName').value,
-                 marca: { id: parseInt(document.getElementById('productBrand').value) }, // Envia objeto com ID
-                 categoria: { id: parseInt(document.getElementById('productCategory').value) }, // Envia objeto com ID
-                 estoque: parseInt(document.getElementById('productStock').value),
-                 preco: parseFloat(document.getElementById('productPrice').value),
-                 descricao: document.getElementById('productDescription').value
-             };
-             
-             // Cria FormData para enviar produto (JSON) e imagem (arquivo)
-             const formData = new FormData();
-             formData.append('produto', JSON.stringify(produto)); 
-             
-             const imagemFile = document.getElementById('productImage').files[0];
-             if (imagemFile) {
-                 formData.append('imagem', imagemFile);
-             }
-
-             try {
-                 let response;
-                 if (isEditing) {
-                     // Requisição PUT para editar
-                     response = await apiClient.put(`/admin/produtos/${productId}`, formData, {
-                         headers: { 'Content-Type': 'multipart/form-data' }
-                     });
-                     alert('Produto atualizado com sucesso!');
-                 } else {
-                     // Requisição POST para adicionar
-                     response = await apiClient.post('/admin/produtos', formData, {
-                         headers: { 'Content-Type': 'multipart/form-data' }
-                     });
-                     alert('Produto adicionado com sucesso!');
-                 }
-                 closeProductModal(); // Fecha o modal
-                 loadDashboardData(); // Recarrega os dados para mostrar a mudança
-             } catch (error) {
-                 console.error('Erro ao salvar produto:', error);
-                 alert('Erro ao salvar produto. Verifique os dados e tente novamente.');
-             }
-         });
-     }
-     
-     // Lógica para Editar Produto (abre modal com dados preenchidos)
-     if (productList) {
-         productList.addEventListener('click', async (e) => {
-             const editButton = e.target.closest('.edit-product-btn');
-             if (editButton) {
-                 const productId = editButton.dataset.id;
-                 try {
-                     // Busca os dados completos do produto específico
-                     // Usaremos o endpoint público GET /api/produtos/{id}
-                     const response = await apiClient.get(`/produtos/${productId}`); 
-                     const produto = response.data;
-
-                     // Preenche o formulário no modal
-                     document.getElementById('productId').value = produto.id;
-                     document.getElementById('productName').value = produto.nome || '';
-                     document.getElementById('productBrand').value = produto.marca?.id || '';
-                     document.getElementById('productCategory').value = produto.categoria?.id || '';
-                     document.getElementById('productStock').value = produto.estoque || 0;
-                     document.getElementById('productPrice').value = produto.preco || '';
-                     document.getElementById('productDescription').value = produto.descricao || '';
-                     
-                     // Mostra preview da imagem existente
-                     if (produto.imagemUrl) {
-                        const imgUrl = produto.imagemUrl.startsWith('http') ? produto.imagemUrl : `https://api.japauniverse.com.br/${produto.imagemUrl}`;
-                         productImagePreview.src = imgUrl;
-                         productImagePreview.style.display = 'block';
-                     } else {
-                         productImagePreview.style.display = 'none';
-                         productImagePreview.src = '#';
-                     }
-                     
-                     productImageInput.value = ''; // Limpa seleção de arquivo anterior
-
-                     // Abre o modal para edição
-                     productModalTitle.textContent = 'Editar Produto';
-                     if (productModal) {
-                         productModal.style.display = 'flex';
-                         setTimeout(() => productModal.classList.add('show'), 10);
-                     }
-
-                 } catch (error) {
-                     console.error(`Erro ao carregar produto ${productId} para edição:`, error);
-                     alert('Erro ao carregar dados do produto para edição.');
-                 }
-             }
-             
-             // Lógica para Excluir Produto
-             const deleteButton = e.target.closest('.delete-product-btn');
-             if (deleteButton) {
-                 const productId = deleteButton.dataset.id;
-                 if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}? Esta ação não pode ser desfeita.`)) {
-                     try {
-                         await apiClient.delete(`/admin/produtos/${productId}`);
-                         alert(`Produto ID ${productId} excluído com sucesso.`);
-                         loadDashboardData(); // Recarrega a lista
-                     } catch (error) {
-                         console.error(`Erro ao excluir produto ${productId}:`, error);
-                         alert('Erro ao excluir produto.');
-                     }
-                 }
-             }
-         });
-     }
-
-}); // Fim do DOMContentLoaded
+    await fetchBrandsAndCategories(); // Carrega marcas/categorias primeiro
+    switchView('pedidos'); // Inicia na aba de pedidos
+});
