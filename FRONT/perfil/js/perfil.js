@@ -4,7 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const ordersContainer = document.getElementById('orders-container');
     const addressModal = document.getElementById('address-modal');
     const modalOverlay = document.getElementById('address-modal-overlay');
-    const openModalBtn = document.querySelector('.btn.btn-primary[data-action="add-address"]'); // Seletor mais específico
+    
+    // --- [CORREÇÃO APLICADA AQUI] ---
+    // O seletor agora usa o ID único do botão
+    const openModalBtn = document.getElementById('openAddressModalBtn');
+    // --- [FIM DA CORREÇÃO] ---
+
     const closeModalBtn = document.getElementById('close-address-modal');
     const addressForm = document.getElementById('address-form');
 
@@ -127,7 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    if(openModalBtn) openModalBtn.addEventListener('click', () => toggleModal(true));
+    if(openModalBtn) {
+        openModalBtn.addEventListener('click', () => toggleModal(true));
+    } else {
+        console.error("Botão 'Adicionar novo endereço' (ID: openAddressModalBtn) não foi encontrado.");
+    }
+    
     if(closeModalBtn) closeModalBtn.addEventListener('click', () => toggleModal(false));
     if(modalOverlay) modalOverlay.addEventListener('click', () => toggleModal(false));
 

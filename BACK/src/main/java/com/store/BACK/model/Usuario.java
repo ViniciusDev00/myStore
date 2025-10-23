@@ -1,9 +1,11 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,12 +13,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "usuarios")
-@Getter
-@Setter
+@Table(name = "tb_usuario")
 public class Usuario implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,37 +30,43 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String cpf;
+
+    @Column(nullable = false)
+    private String telefone;
+
     @Column(nullable = false)
     private String senha;
 
     @Column(nullable = false)
-    private String role = "ROLE_USER";
+    private String authority;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference("usuario-enderecos")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Endereco> enderecos;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference("usuario-pedidos")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Pedido> pedidos;
 
-    public String getNome() {
-        return this.nome;
-    }
 
+    // --- MÉTODOS UserDetails ---
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role));
+    public String getUsername() {
+        return email;
     }
 
     @Override
     public String getPassword() {
-        return this.senha;
+        return senha;
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // --- ESTA É A CORREÇÃO ---
+        // Deve ser 'authority' (que contém "ROLE_USER") e não 'nome'
+        return List.of(new SimpleGrantedAuthority(authority));
     }
 
     @Override
