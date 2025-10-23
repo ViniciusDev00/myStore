@@ -28,43 +28,55 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
     }
 
+    @Transactional // Adicione Transactional para garantir a persistência
     public UsuarioDTO registrarUsuario(Usuario usuario) {
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new RuntimeException("Email já registrado.");
         }
 
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        // --- CORREÇÃO: Usando setRole ---
         usuario.setRole("ROLE_USER");
 
+        // Adicione CPF e Telefone se vierem do registro
+        // usuario.setCpf(registroRequestDTO.cpf()); // Exemplo
+        // usuario.setTelefone(registroRequestDTO.telefone()); // Exemplo
+
         Usuario novoUsuario = usuarioRepository.save(usuario);
-        return convertToDTO(novoUsuario);
+        return convertToDTO(novoUsuario); // Converte para DTO após salvar
     }
 
-    // --- MÉTODO CORRIGIDO E AGORA FUNCIONAL ---
     @Transactional(readOnly = true)
     public UsuarioDTO getDadosUsuario(Usuario usuarioLogado) {
+        // Busca o usuário completo do banco para garantir que EAGER loading funcione se necessário
         Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com ID: " + usuarioLogado.getId()));
 
-        UsuarioDTO dto = new UsuarioDTO();
-        dto.setId(usuario.getId());
-        dto.setNome(usuario.getNome());
-        dto.setEmail(usuario.getEmail());
-        dto.setRole(usuario.getRole());
-        
-        // Agora isso funciona, pois o DTO tem os campos corretos.
-        dto.setEnderecos(usuario.getEnderecos().stream().collect(Collectors.toList()));
-        dto.setPedidos(usuario.getPedidos().stream().collect(Collectors.toList()));
-
-        return dto;
+        return convertToDTO(usuario); // Usa o método de conversão
     }
 
+    // Método para converter Entidade para DTO
     private UsuarioDTO convertToDTO(Usuario usuario) {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(usuario.getId());
         dto.setNome(usuario.getNome());
         dto.setEmail(usuario.getEmail());
+        // --- CORREÇÃO: Usando getRole ---
         dto.setRole(usuario.getRole());
+
+        // Carrega explicitamente se LAZY (embora getDadosUsuario agora busque EAGER se configurado)
+        // Garante que a lista seja copiada para evitar problemas de sessão fechada
+        if (usuario.getEnderecos() != null) {
+            dto.setEnderecos(usuario.getEnderecos().stream().collect(Collectors.toList()));
+        }
+        if (usuario.getPedidos() != null) {
+            dto.setPedidos(usuario.getPedidos().stream().collect(Collectors.toList()));
+        }
+
+        // Adicione CPF e Telefone ao DTO se precisar deles no frontend
+        // dto.setCpf(usuario.getCpf());
+        // dto.setTelefone(usuario.getTelefone());
+
         return dto;
     }
 }
