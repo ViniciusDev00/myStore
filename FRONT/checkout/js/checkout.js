@@ -6,10 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutButton = document.getElementById('checkout-button');
     const token = localStorage.getItem('jwtToken');
 
-    // --- NOVA VARIÁVEL E ELEMENTO ---
-    const addressSelectionContainer = document.getElementById('address-selection'); // Adicione esta linha
+    // --- VARIÁVEL E ELEMENTO DE ENDEREÇO ---
+    const addressSelectionContainer = document.getElementById('address-selection'); 
     let selectedAddressId = null; // Para guardar o ID do endereço selecionado
-    // --- FIM NOVAS VARIÁVEIS ---
+    
+    // --- NOVOS ELEMENTOS DO FORMULÁRIO DE DESTINATÁRIO ---
+    const nomeDestinatarioEl = document.getElementById('nomeDestinatario');
+    const cpfDestinatarioEl = document.getElementById('cpfDestinatario');
+    const telefoneDestinatarioEl = document.getElementById('telefoneDestinatario');
+    const observacoesEl = document.getElementById('observacoes');
+    // --- FIM NOVOS ELEMENTOS ---
 
     if (!token) {
         window.location.href = '../../login/HTML/login.html';
@@ -38,46 +44,37 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     // --- FIM getCart, saveCart ---
 
-    // --- NOVA FUNÇÃO: Buscar Endereços ---
+    // --- MANTENHA A FUNÇÃO: Buscar Endereços ---
     const fetchUserAddresses = async () => {
         try {
-            // Usa o endpoint que já existe no seu UsuarioController
             const response = await apiClient.get('/usuario/meus-dados');
-            // Retorna a lista de endereços do DTO (ou um array vazio se não houver)
             return response.data.enderecos || [];
         } catch (error) {
             console.error('Erro ao buscar endereços:', error);
-            // Lida com erro de autenticação (sessão expirada)
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                  alert('Sua sessão expirou. Faça login novamente.');
                  localStorage.removeItem('jwtToken');
-                 window.location.href = '../../login/HTML/login.html'; // Corrigido para caminho absoluto
+                 window.location.href = '../../login/HTML/login.html'; 
             }
-            return []; // Retorna array vazio em caso de outros erros
+            return []; 
         }
     };
     // --- FIM Buscar Endereços ---
 
-    // --- NOVA FUNÇÃO: Renderizar Seleção de Endereço ou Redirecionar ---
+    // --- MANTENHA A FUNÇÃO: Renderizar Seleção de Endereço ---
     const renderAddressSelection = (addresses) => {
         if (!addressSelectionContainer) {
             console.error("Elemento 'address-selection' não encontrado no HTML.");
-            return; // Sai se o container não existir no HTML
+            return; 
         }
 
-        // Verifica se a lista de endereços está vazia ou não existe
         if (!addresses || addresses.length === 0) {
-            // Alerta o usuário e redireciona para a página de perfil
             alert('Nenhum endereço cadastrado. Por favor, adicione um endereço para continuar.');
-            // Redireciona para a página de perfil, idealmente para uma seção específica de adicionar endereço
-            // Ajuste '#add-address' se o ID da seção for diferente no seu perfil.html
             window.location.href = '../../perfil/HTML/perfil.html#add-address';
-            return; // Interrompe a execução aqui
+            return; 
         }
 
-        // Se houver endereços, monta o HTML para exibição
         addressSelectionContainer.innerHTML = `
-            <h2 class="address-title">Selecione o Endereço de Entrega</h2>
             <div class="address-list">
                 ${addresses.map((addr, index) => `
                     <label class="address-option">
@@ -92,22 +89,19 @@ document.addEventListener('DOMContentLoaded', () => {
             <a href="../../perfil/HTML/perfil.html" class="add-address-link">Gerenciar Endereços</a>
         `;
 
-        // Define o primeiro endereço como selecionado por padrão
-        selectedAddressId = addresses[0].id;
+        selectedAddressId = addresses[0].id; // Define o primeiro como padrão
         console.log("Endereço inicial selecionado:", selectedAddressId);
 
-
-        // Adiciona listeners para atualizar 'selectedAddressId' quando o usuário mudar a seleção
         addressSelectionContainer.querySelectorAll('input[name="selectedAddress"]').forEach(radio => {
             radio.addEventListener('change', (event) => {
-                selectedAddressId = event.target.value; // Pega o ID do endereço do 'value' do radio
+                selectedAddressId = event.target.value; 
                 console.log("Novo endereço selecionado:", selectedAddressId);
             });
         });
     };
     // --- FIM Renderizar Seleção ---
 
-    // --- MANTENHA renderCart, updateSummary, attachEventListeners, removeItemFromCart, updateQuantity ---
+    // --- MANTENHA renderCart, updateSummary, removeItemFromCart, updateQuantity, attachEventListeners ---
      const renderCart = () => {
         const cart = getCart();
         if (!cartItemsContainer || !checkoutButton) return;
@@ -116,8 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cartItemsContainer.innerHTML = `<div class="empty-cart"><h3>Seu carrinho está vazio.</h3><p>Adicione produtos do nosso catálogo.</p><a href="../../catalogo/HTML/catalogo.html" class="btn btn-primary">Ver produtos</a></div>`;
             checkoutButton.disabled = true;
             updateSummary(0);
-            // Se o carrinho esvaziar, talvez esconder ou limpar a seção de endereço? (Opcional)
-            // if(addressSelectionContainer) addressSelectionContainer.innerHTML = '';
             return;
         }
 
@@ -143,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         updateSummary(subtotal);
-        attachEventListeners(); // Reanexa listeners após renderizar
+        attachEventListeners(); 
     };
 
     const updateSummary = (subtotal) => {
@@ -155,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeItemFromCart = (index) => {
         let cart = getCart();
         cart.splice(index, 1);
-        saveCart(cart); // Salvar e re-renderizar
+        saveCart(cart); 
     };
 
     const updateQuantity = (index, change) => {
@@ -163,29 +155,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cart[index]) {
             cart[index].quantity += change;
             if (cart[index].quantity <= 0) {
-                cart[index].quantity = 1; // Não permite quantidade 0 ou negativa
+                cart[index].quantity = 1; 
             }
-            saveCart(cart); // Salvar e re-renderizar
+            saveCart(cart); 
         }
     };
 
     const attachEventListeners = () => {
-        // Remove listeners antigos para evitar duplicação (se houver)
-        const currentListeners = cartItemsContainer.querySelectorAll('.quantity-btn, .remove-item');
-        currentListeners.forEach(el => {
+        // Remove listeners antigos para evitar duplicação
+        const oldListeners = cartItemsContainer.querySelectorAll('.quantity-btn, .remove-item');
+        oldListeners.forEach(el => {
             const newEl = el.cloneNode(true);
             el.parentNode.replaceChild(newEl, el);
         });
 
-        // Adiciona novos listeners
         cartItemsContainer.addEventListener('click', (e) => {
             const target = e.target;
-            const button = target.closest('button'); // Pega o botão mais próximo
+            const button = target.closest('button'); 
 
-            if (!button) return; // Sai se não clicou em um botão
+            if (!button) return; 
 
             const index = button.dataset.index;
-            if (index === undefined) return; // Sai se o botão não tem data-index
+            if (index === undefined) return; 
 
             const itemIndex = parseInt(index);
 
@@ -200,7 +191,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     // --- FIM MANTER ---
 
-    // --- AJUSTE NA FUNÇÃO handleCheckout ---
+    // --- NOVA FUNÇÃO: Pré-preencher dados do destinatário ---
+    const preencherDadosDestinatario = async () => {
+        try {
+            // Busca os dados do usuário logado
+            const response = await apiClient.get('/usuario/meus-dados');
+            const usuario = response.data;
+            if (usuario) {
+                // Preenche os campos do novo formulário com os dados do usuário
+                if (usuario.nome && nomeDestinatarioEl) {
+                    nomeDestinatarioEl.value = usuario.nome;
+                }
+                if (usuario.cpf && cpfDestinatarioEl) {
+                    cpfDestinatarioEl.value = usuario.cpf;
+                }
+                if (usuario.telefone && telefoneDestinatarioEl) {
+                    telefoneDestinatarioEl.value = usuario.telefone;
+                }
+            }
+        } catch (error) {
+            console.warn("Não foi possível pré-preencher os dados do destinatário.", error);
+        }
+    };
+    // --- FIM NOVA FUNÇÃO ---
+
+    // --- ATUALIZAÇÃO DA FUNÇÃO handleCheckout ---
     const handleCheckout = async () => {
         const cart = getCart();
         if (cart.length === 0) {
@@ -208,78 +223,113 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // <<< ADICIONADO: Verificação se um endereço foi selecionado >>>
+        // 1. Validação do Endereço
         if (!selectedAddressId) {
             alert('Por favor, selecione um endereço de entrega.');
-            // Opcional: Rolar a página para a seção de endereços
             addressSelectionContainer?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return; // Impede o prosseguimento
+            return; 
         }
-        // <<< FIM ADIÇÃO >>>
 
+        // --- 2. NOVO: Validação dos Dados do Destinatário ---
+        const nomeDestinatario = nomeDestinatarioEl.value.trim();
+        const cpfDestinatario = cpfDestinatarioEl.value.trim();
+        const telefoneDestinatario = telefoneDestinatarioEl.value.trim();
+        const observacoes = observacoesEl.value.trim();
+
+        if (!nomeDestinatario) {
+            alert('Por favor, preencha o Nome Completo do destinatário.');
+            nomeDestinatarioEl.focus();
+            return;
+        }
+        if (!cpfDestinatario) { 
+            alert('Por favor, preencha o CPF do destinatário.');
+            cpfDestinatarioEl.focus();
+            return;
+        }
+        if (!telefoneDestinatario) { 
+            alert('Por favor, preencha o Telefone do destinatário.');
+            telefoneDestinatarioEl.focus();
+            return;
+        }
+        // --- FIM DA NOVA VALIDAÇÃO ---
+
+        // 3. Preparação dos Itens
         const pedidoItens = cart.map(item => ({
             produtoId: parseInt(item.id),
             quantidade: item.quantity,
             tamanho: item.size
         }));
 
-        // <<< ADICIONADO: Novo objeto para enviar ao backend >>>
+        // --- 4. NOVO: Objeto de Checkout completo ---
         const checkoutData = {
             itens: pedidoItens,
-            enderecoEntregaId: parseInt(selectedAddressId) // Inclui o ID do endereço selecionado
+            enderecoEntregaId: parseInt(selectedAddressId),
+            // Adiciona os novos campos
+            nomeDestinatario: nomeDestinatario,
+            cpfDestinatario: cpfDestinatario,
+            telefoneDestinatario: telefoneDestinatario,
+            observacoes: observacoes
         };
-        // <<< FIM ADIÇÃO >>>
+        // --- FIM NOVO OBJETO ---
 
+        // 5. Envio para a API
         try {
             checkoutButton.disabled = true;
             checkoutButton.textContent = 'Processando...';
 
-            // <<< MODIFICADO: Envia 'checkoutData' em vez de apenas 'pedidoItens' >>>
+            // Envia o 'checkoutData' completo
             const response = await apiClient.post('/pedidos', checkoutData);
-            // <<< FIM MODIFICAÇÃO >>>
 
             const novoPedido = response.data;
 
+            // Limpa o carrinho e atualiza o contador do header
             localStorage.removeItem('japaUniverseCart');
             if (window.updateCartCounter) {
                 window.updateCartCounter();
             }
 
-            // --- MANTENHA O ARMAZENAMENTO NA SESSÃO ---
+            // Salva dados na sessão para a página de pagamento
             sessionStorage.setItem('ultimoPedidoId', novoPedido.id);
             sessionStorage.setItem('ultimoPedidoValor', novoPedido.valorTotal);
             sessionStorage.setItem('ultimoPedidoPixCode', novoPedido.pixCopiaECola);
-            // --- FIM MANTER ---
 
+            // Redireciona para o pagamento
             window.location.href = `../../pagamento/HTML/pagamento.html`;
 
         } catch (error) {
-            // --- MANTENHA O TRATAMENTO DE ERROS ---
             console.error('Erro ao finalizar a compra:', error);
             let errorMsg = 'Não foi possível processar seu pedido. Por favor, tente novamente.';
             if (error.response && error.response.data && error.response.data.message) {
-                 errorMsg = error.response.data.message; // Ex: Endereço inválido
+                 errorMsg = error.response.data.message; 
             } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                 errorMsg = 'Sua sessão expirou ou você não tem permissão. Faça login novamente.';
                 localStorage.removeItem('jwtToken');
-                window.location.href = '../../login/HTML/login.html'; // Corrigido para caminho absoluto
+                window.location.href = '../../login/HTML/login.html'; 
             }
             alert(errorMsg);
             checkoutButton.disabled = false;
             checkoutButton.textContent = 'Finalizar Compra';
-            // --- FIM MANTER ---
         }
     };
     // --- FIM handleCheckout ---
 
-     // --- NOVA LÓGICA DE INICIALIZAÇÃO ---
+     // --- ATUALIZAÇÃO DA LÓGICA DE INICIALIZAÇÃO ---
      const initializeCheckoutPage = async () => {
-        renderCart(); // Renderiza o carrinho primeiro
-        const userAddresses = await fetchUserAddresses(); // Depois busca os endereços
-        // Só tenta renderizar os endereços se o carrinho não estiver vazio E houver endereços
-        if (getCart().length > 0) {
-             renderAddressSelection(userAddresses); // Renderiza a seleção ou redireciona
+        renderCart(); // Renderiza o carrinho
+        
+        // Se o carrinho estiver vazio, não faz mais nada
+        if (getCart().length === 0) {
+            if(addressSelectionContainer) addressSelectionContainer.innerHTML = '<p>Adicione itens ao carrinho para continuar.</p>';
+            // Esconde o formulário de destinatário se o carrinho estiver vazio
+            const recipientCard = document.getElementById('recipient-info')?.closest('.checkout-card');
+            if (recipientCard) recipientCard.style.display = 'none';
+            return; 
         }
+
+        // Se o carrinho não está vazio, busca dados
+        const userAddresses = await fetchUserAddresses(); // Busca endereços
+        renderAddressSelection(userAddresses); // Renderiza endereços (ou redireciona)
+        preencherDadosDestinatario(); // Pré-preenche o novo formulário
     };
     // --- FIM INICIALIZAÇÃO ---
 

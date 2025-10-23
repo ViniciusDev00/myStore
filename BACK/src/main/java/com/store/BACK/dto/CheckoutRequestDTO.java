@@ -10,4 +10,11 @@ import java.util.List;
 public class CheckoutRequestDTO {
     private List<ItemPedidoDTO> itens;
     private Long enderecoEntregaId; // Campo para receber o ID do endereço
+    
+    // --- NOVOS CAMPOS ADICIONADOS ---
+    private String nomeDestinatario;
+    private String telefoneDestinatario;
+    private String cpfDestinatario;
+    private String observacoes;
+    // --- FIM NOVOS CAMPOS ---
 }

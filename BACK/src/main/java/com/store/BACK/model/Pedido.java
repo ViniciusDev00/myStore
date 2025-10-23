@@ -1,13 +1,11 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,25 +18,9 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonBackReference("usuario-pedidos")
     private Usuario usuario;
-
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("pedido-itens")
-    private List<ItemPedido> itens = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(name = "endereco_entrega_id")
-    private Endereco enderecoDeEntrega;
-
-    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
-    @JsonManagedReference("pedido-pagamento")
-    private Pagamento pagamento;
-
-    @Column(nullable = false)
-    private BigDecimal valorTotal;
 
     @Column(nullable = false)
     private LocalDateTime dataPedido;
@@ -46,7 +28,31 @@ public class Pedido {
     @Column(nullable = false)
     private String status;
 
-    // NOVO CAMPO ADICIONADO
-    @Column(length = 1000) // Coluna para armazenar o código Pix
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal valorTotal;
+
+    @Column(columnDefinition = "TEXT")
     private String pixCopiaECola;
+
+    @ManyToOne(fetch = FetchType.EAGER) // EAGER para que venha com o pedido
+    @JoinColumn(name = "endereco_id", nullable = false)
+    private Endereco enderecoDeEntrega;
+
+    // --- NOVOS CAMPOS ADICIONADOS ---
+    @Column(name = "nome_destinatario")
+    private String nomeDestinatario;
+
+    @Column(name = "telefone_destinatario")
+    private String telefoneDestinatario;
+
+    @Column(name = "cpf_destinatario")
+    private String cpfDestinatario;
+
+    @Column(name = "observacoes", columnDefinition = "TEXT")
+    private String observacoes;
+    // --- FIM NOVOS CAMPOS ---
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("pedido-itens")
+    private List<ItemPedido> itens;
 }
