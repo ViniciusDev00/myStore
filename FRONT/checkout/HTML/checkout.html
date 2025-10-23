@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Pedido | Japa Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="../../assets/CSS/base.css">
+    <link rel="stylesheet" href="../CSS/checkout.css"> </head>
+<body>
+    
+    <header class="main-header" data-basepath="../.."></header>
+
+    <main class="container checkout-container">
+
+        <div class="checkout-flow">
+            <h1 class="checkout-title">Finalizar Pedido</h1>
+
+            <section class="checkout-card">
+                <h2 class="card-title">
+                    <span class="step-number">1</span>
+                    Endereço de Entrega
+                </h2>
+                <div id="address-selection" class="card-content">
+                    <p>Carregando endereços...</p>
+                </div>
+            </section>
+
+            <section class="checkout-card">
+                <h2 class="card-title">
+                    <span class="step-number">2</span>
+                    Revisar Itens
+                </h2>
+                <div id="cart-items-container" class="card-content">
+                    </div>
+            </section>
+        </div>
+
+        <aside class="checkout-sidebar">
+            <div class="summary-card">
+                <h2 class="card-title">Resumo do Pedido</h2>
+                
+                <div class="summary-details card-content">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="summary-subtotal">R$ 0,00</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Frete</span>
+                        <span>Grátis</span>
+                    </div>
+                </div>
+
+                <div class="summary-total-line">
+                    <span>Total</span>
+                    <span id="summary-total">R$ 0,00</span>
+                </div>
+
+                <button id="checkout-button" class="btn btn-primary btn-block">
+                    Finalizar Compra
+                </button>
+                <a href="../../catalogo/HTML/catalogo.html" class="continue-shopping-link">
+                    <i class="fas fa-arrow-left"></i> Continuar comprando
+                </a>
+            </div>
+        </aside>
+
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../../inicio/js/main.js"></script>
+    <script src="../js/checkout.js"></script>
+
+</body>
+</html>
