@@ -1,3 +1,19 @@
+console.log("🔧 Limpando tokens antigos...");
+const oldToken = localStorage.getItem('jwtToken');
+if (oldToken) {
+    console.log("Token encontrado:", oldToken.substring(0, 20) + "...");
+    
+    try {
+        const parts = oldToken.split('.');
+        if (parts.length !== 3) {
+            console.log("❌ Token malformado, removendo...");
+            localStorage.removeItem('jwtToken');
+        }
+    } catch (e) {
+        console.log("❌ Erro ao validar token, removendo...");
+        localStorage.removeItem('jwtToken');
+    }
+}
 document.addEventListener("DOMContentLoaded", () => {
   const headerElement = document.querySelector("header.main-header");
   if (!headerElement) return;

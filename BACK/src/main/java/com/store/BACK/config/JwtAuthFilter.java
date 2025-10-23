@@ -34,42 +34,46 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        System.out.println("\n--- [FILTRO JWT] Recebido pedido para o URL: " + request.getRequestURI());
+        System.out.println("\n🔍 [FILTRO JWT] URL: " + request.getRequestURI());
+        System.out.println("📋 [FILTRO JWT] Método: " + request.getMethod());
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("--- [FILTRO JWT] Cabeçalho de autorização não existe ou não começa com 'Bearer '. A continuar sem autenticação JWT.");
+            System.out.println("⚠️ [FILTRO JWT] Sem token de autorização");
             filterChain.doFilter(request, response);
             return;
         }
 
         jwt = authHeader.substring(7);
+        System.out.println("🎫 [FILTRO JWT] Token recebido: " + jwt.substring(0, 20) + "...");
+        
         try {
             userEmail = jwtTokenService.extractUsername(jwt);
+            System.out.println("👤 [FILTRO JWT] Email extraído: " + userEmail);
         } catch (Exception e) {
-            System.out.println("!!! [FILTRO JWT] FALHA: Não foi possível extrair o email do token. Erro: " + e.getMessage());
+            System.err.println("❌ [FILTRO JWT] ERRO ao extrair email: " + e.getMessage());
+            e.printStackTrace();
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("--- [FILTRO JWT] Email extraído do token: " + userEmail);
-
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            System.out.println("--- [FILTRO JWT] Email presente no token e não há autenticação no contexto. A tentar carregar detalhes do utilizador...");
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            if (jwtTokenService.isTokenValid(jwt, userDetails)) {
-                System.out.println(">>> [FILTRO JWT] SUCESSO: Token é válido. A definir autenticação no contexto de segurança.");
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                System.out.println(">>> [FILTRO JWT] Autenticação definida com sucesso para: " + userDetails.getUsername() + " com permissões " + userDetails.getAuthorities());
-            } else {
-                System.out.println("!!! [FILTRO JWT] FALHA: A validação do token falhou.");
+            try {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                
+                if (jwtTokenService.isTokenValid(jwt, userDetails)) {
+                    System.out.println("✅ [FILTRO JWT] Token VÁLIDO para: " + userEmail);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    System.err.println("❌ [FILTRO JWT] Token INVÁLIDO para: " + userEmail);
+                }
+            } catch (Exception e) {
+                System.err.println("❌ [FILTRO JWT] ERRO na validação: " + e.getMessage());
+                e.printStackTrace();
             }
-        } else {
-            System.out.println("--- [FILTRO JWT] Email é nulo ou já existe uma autenticação no contexto de segurança. Nada a fazer.");
         }
 
         filterChain.doFilter(request, response);
