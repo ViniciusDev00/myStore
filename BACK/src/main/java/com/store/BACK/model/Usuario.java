@@ -2,7 +2,9 @@ package com.store.BACK.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,9 +14,11 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuarios") // Use o nome da sua tabela (provavelmente 'usuarios' ou 'tb_usuario')
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Usuario implements UserDetails {
 
     @Id
@@ -27,9 +31,16 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = true) // Adicionei nullable=true caso não seja um campo obrigatório no seu banco
+    private String cpf;
+
+    @Column(nullable = true)
+    private String telefone;
+
     @Column(nullable = false)
     private String senha;
 
+    // --- CAMPO ROLE CORRIGIDO/PADRONIZADO ---
     @Column(nullable = false)
     private String role = "ROLE_USER";
 
@@ -41,13 +52,11 @@ public class Usuario implements UserDetails {
     @JsonManagedReference("usuario-pedidos")
     private List<Pedido> pedidos;
 
-    public String getNome() {
-        return this.nome;
-    }
 
+    // --- MÉTODOS UserDetails ---
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role));
+    public String getUsername() {
+        return this.email;
     }
 
     @Override
@@ -56,8 +65,9 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Retorna a permissão (ROLE) para o Spring Security
+        return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override
