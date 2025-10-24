@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catálogo exclusivo de sneakers Japa Universe. Tênis limited edition, lançamentos e clássicos. Frete Grátis para todo Brasil.">
+    <title>Catálogo de Tênis | Japa Universe</title>
+
+    <meta property="og:title" content="Catálogo de Tênis | Japa Universe">
+    <meta property="og:description" content="Explore sneakers exclusivos e limited edition. Encontre seu par dos sonhos na Japa Universe.">
+    <meta property="og:type" content="website">
+
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" as="script" crossorigin>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../../../FRONT/assets/CSS/base.css">
+    <link rel="stylesheet" href="../CSS/catalogo.css">
+</head>
+<body>
+    <header class="main-header" data-basepath="../../.."></header>
+
+    <main>
+        <section class="catalog-hero">
+            <div class="container">
+                <h1 class="page-title">CATÁLOGO EXCLUSIVO</h1>
+                <p class="page-subtitle">Sneakers limited edition e lançamentos</p>
+            </div>
+        </section>
+
+        <section class="catalog-section section-padding">
+            <div class="container">
+                <div class="catalog-controls">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar por modelo, marca...">
+                        <button class="search-clear" id="searchClear" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <select id="brandFilter" class="filter-select">
+                                <option value="all">Todas as Marcas</option>
+                                <option value="Nike">Nike</option>
+                                <option value="Air Jordan">Air Jordan</option>
+                                <option value="Adidas">Adidas</option>
+                                <option value="Bape">Bape</option>
+                                <option value="Asics">Asics</option>
+                            </select>
+
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="all">Todas Categorias</option>
+                                <option value="lifestyle">Lifestyle</option>
+                                <option value="running">Running</option>
+                                <option value="basketball">Basquete</option>
+                                <option value="skateboarding">Skate</option>
+                            </select>
+
+                            <select id="priceFilter" class="filter-select">
+                                <option value="all">Qualquer Preço</option>
+                                <option value="0-200">Até R$ 200</option>
+                                <option value="200-500">R$ 200 - R$ 500</option>
+                                <option value="500-1000">R$ 500 - R$ 1000</option>
+                                <option value="1000-99999">Acima de R$ 1000</option>
+                            </select>
+
+                            <select id="sortFilter" class="filter-select">
+                                <option value="featured">Em Destaque</option>
+                                <option value="newest">Mais Recentes</option>
+                                <option value="price-asc">Preço: Menor → Maior</option>
+                                <option value="price-desc">Preço: Maior → Menor</option>
+                                <option value="name-asc">Nome A-Z</option>
+                            </select>
+                        </div>
+
+                        <div class="view-controls">
+                            <button class="view-btn active" data-view="grid" aria-label="Visualização em grade">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-btn" data-view="list" aria-label="Visualização em lista">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="active-filters" id="activeFilters"></div>
+                </div>
+
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando produtos...</p>
+                </div>
+
+                <div class="products-grid" id="products-grid" data-view="grid"></div>
+
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>Nenhum produto encontrado</h3>
+                    <p>Tente ajustar os filtros ou termos da busca</p>
+                    <button class="btn btn-outline" id="clearFiltersBtn">Limpar Filtros</button>
+                </div>
+
+                <div class="catalog-footer">
+                    <button id="loadMoreBtn" class="btn btn-primary load-more-btn">
+                        <span class="btn-text">Carregar Mais</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-logo">Japa<span> Universe</span></h3>
+                    <p>O seu par. O seu estilo.</p>
+                </div>
+                <div class="footer-col">
+                    <h3 class="footer-title">Categorias</h3>
+                    <ul>
+                        <li><a href="../../../FRONT/catalogo/HTML/catalogo.html">Todos os Tênis</a></li>
+                        <li><a href="#">Lançamentos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3 class="footer-title">Suporte</h3>
+                    <ul>
+                        <li><a href="../../../FRONT/contato/HTML/contato.html">Contato</a></li>
+                        <li><a href="#">Envios & Devoluções</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3 class="footer-title">Legal</h3>
+                    <ul>
+                        <li><a href="#">Termos de Serviço</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© <span id="currentYear"></span> Japa Universe. Todos os direitos reservados.</p>
+                <div class="footer-socials">
+                    <a href="https://www.instagram.com/japauniverse/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/5516993532283" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="quickViewModal" class="quickview-modal-overlay">
+        <div class="quickview-modal-content">
+            <button class="close-button" id="closeQuickViewBtn" aria-label="Fechar visualização rápida">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="quickview-content" id="quickViewContent">
+                </div>
+        </div>
+    </div>
+
+    <div class="cart-modal" id="cartModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <aside class="modal-content">
+            <div class="modal-header">
+                <h3>Seu Carrinho</h3>
+                <button class="close-modal" id="closeCartBtn" aria-label="Fechar carrinho">&times;</button>
+            </div>
+            <div class="modal-body" id="cartItemsContainer">
+                </div>
+            <div class="modal-footer">
+                <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal">R$ 0,00</span>
+                </div>
+                <p class="shipping-note">O frete será calculado no checkout.</p>
+                <button class="btn btn-primary checkout-btn">Finalizar Compra</button>
+            </div>
+        </aside>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../../../FRONT/assets/js/header.js"></script>
+    <script src="../../../FRONT/inicio/js/main.js"></script>
+    <script src="../js/catalogo.js"></script>
+</body>
+</html>
