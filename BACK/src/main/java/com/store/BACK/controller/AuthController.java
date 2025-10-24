@@ -1,68 +1,73 @@
 package com.store.BACK.controller;
 
 import com.store.BACK.dto.LoginRequestDTO;
-import com.store.BACK.dto.LoginResponseDTO;
+import com.store.BACK.dto.LoginResponseDTO; // Import necessário
 import com.store.BACK.dto.RegistroRequestDTO;
 import com.store.BACK.dto.UsuarioDTO;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.JwtTokenService;
 import com.store.BACK.service.UsuarioService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
-    private final JwtTokenService jwtTokenService;
-    private final UsuarioService usuarioService;
+    @Autowired
+    private UsuarioService usuarioService;
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        // 1. Tenta autenticar o usuário. Se a senha estiver incorreta, lança uma exceção (que resulta em 401)
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getSenha()
-                )
-        );
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-        // 2. Se a autenticação for bem-sucedida, carrega os detalhes do usuário
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
-        // 3. Gera o token JWT
-        final String jwt = jwtTokenService.generateToken(userDetails);
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-        // 4. Retorna o token para o cliente
-        return ResponseEntity.ok(new LoginResponseDTO(jwt));
+    @PostMapping("/registrar")
+    public ResponseEntity<UsuarioDTO> registrar(@RequestBody RegistroRequestDTO registroRequest) {
+        try {
+            Usuario novoUsuario = new Usuario();
+            novoUsuario.setNome(registroRequest.nome());
+            novoUsuario.setEmail(registroRequest.email());
+            novoUsuario.setSenha(registroRequest.senha());
+
+            UsuarioDTO usuarioSalvo = usuarioService.registrarUsuario(novoUsuario);
+            return ResponseEntity.ok(usuarioSalvo);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @PostMapping("/registro")
-    public ResponseEntity<UsuarioDTO> registrar(@RequestBody RegistroRequestDTO request) {
-        // Cria o objeto Usuario a partir do DTO
-        Usuario novoUsuario = new Usuario();
-        novoUsuario.setNome(request.getNome());
-        novoUsuario.setEmail(request.getEmail());
-        novoUsuario.setSenha(request.getSenha());
-        // Adicione CPF e Telefone aqui, se existirem no RegistroRequestDTO
-        // novoUsuario.setCpf(request.getCpf());
-        // novoUsuario.setTelefone(request.getTelefone());
+    // --- CÓDIGO CORRIGIDO PARA LOGIN ---
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+        try {
+            // 1. Tenta autenticar o usuário com a sintaxe correta do Record (email() e senha())
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha())
+            );
 
-        // 1. Tenta registrar o usuário (o serviço já criptografa a senha)
-        UsuarioDTO usuarioRegistrado = usuarioService.registrarUsuario(novoUsuario);
+            // 2. Se a autenticação passar, carrega os detalhes do usuário
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.email());
 
-        // 2. Retorna o DTO do novo usuário
-        return ResponseEntity.ok(usuarioRegistrado);
+            // 3. Gera o token JWT com base nos detalhes do usuário
+            final String jwt = jwtTokenService.generateToken(userDetails);
+
+            // 4. Retorna o token no formato DTO esperado pelo Frontend
+            return ResponseEntity.ok(new LoginResponseDTO(jwt));
+
+        } catch (Exception e) {
+            // Em caso de falha de autenticação (senha incorreta, etc.), retorna 401
+            return ResponseEntity.status(401).body("Credenciais inválidas");
+        }
     }
 }
