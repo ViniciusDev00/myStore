@@ -4,28 +4,38 @@ import com.store.BACK.dto.LoginRequestDTO;
 import com.store.BACK.dto.RegistroRequestDTO;
 import com.store.BACK.dto.UsuarioDTO;
 import com.store.BACK.model.Usuario;
-import com.store.BACK.service.JwtTokenService;
+import com.store.BACK.service.JwtTokenService; // 1. IMPORTE O SERVIÇO DE TOKEN
 import com.store.BACK.service.UsuarioService;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetailsService; // 2. IMPORTE O UserDetailsService
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.Map; // 3. IMPORTE O MAP PARA A RESPOSTA
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
-    private final UsuarioService usuarioService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenService jwtTokenService;
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private UsuarioService usuarioService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    // --- NOVAS INJEÇÕES DE DEPENDÊNCIA ---
+    @Autowired
+    private JwtTokenService jwtTokenService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+    // ------------------------------------
+
+    // Seu método de registrar está CORRETO!
     @PostMapping("/registrar")
     public ResponseEntity<UsuarioDTO> registrar(@RequestBody RegistroRequestDTO registroRequest) {
         try {
