@@ -117,16 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
-                const token = localStorage.getItem('jwtToken');
-                const headers = {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                };
-
-                console.log('[DEBUG] Token a ser enviado:', token);
-                console.log('[DEBUG] Cabeçalhos a serem enviados:', JSON.stringify(headers));
-
-                await apiClient.post('/enderecos', newAddress, { headers });
+                await apiClient.post('/enderecos', newAddress);
                 
                 toggleModal(false); 
                 loadProfileData(); 
