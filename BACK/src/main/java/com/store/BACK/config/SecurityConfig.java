@@ -30,7 +30,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults())
+                .cors(cors -> {
+                    CorsConfiguration configuration = new CorsConfiguration();
+                    configuration.setAllowedOrigins(List.of(
+                        "http://127.0.0.1:5500",
+                        "http://localhost:5500",
+                        "http://127.0.0.1:5501",
+                        "http://localhost:5501",
+                        "https://japa-front-production.up.railway.app",
+                        "https://www.japauniverse.com.br",
+                        "https://japauniverse.com.br"
+                    ));
+                    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+                    configuration.setAllowCredentials(true);
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", configuration);
+                    cors.configurationSource(source);
+                })
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // --- CORREÇÃO PRINCIPAL PARA O ERRO 403 FORBIDDEN ---
@@ -46,26 +63,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://127.0.0.1:5500",
-                "http://localhost:5500",
-                "http://127.0.0.1:5501",
-                "http://localhost:5501",
-                "https://japa-front-production.up.railway.app",
-                "https://www.japauniverse.com.br",
-                "https://japauniverse.com.br"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
