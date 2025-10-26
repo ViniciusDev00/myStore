@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
                         .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/api/enderecos/**").authenticated()
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
