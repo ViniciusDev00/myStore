@@ -34,7 +34,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        System.out.println("\n--- [FILTRO JWT] Recebido pedido para o URL: " + request.getRequestURI());
+        System.out.println("\n--- [DEBUG] BACKEND - NOVA REQUISIÇÃO ---");
+        System.out.println("[DEBUG] URI: " + request.getRequestURI());
+        java.util.Collections.list(request.getHeaderNames()).forEach(headerName ->
+                System.out.println("[DEBUG] Cabeçalho: " + headerName + " = " + request.getHeader(headerName))
+        );
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("--- [FILTRO JWT] Cabeçalho de autorização não existe ou não começa com 'Bearer '. A continuar sem autenticação JWT.");
