@@ -117,7 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
-                await apiClient.post('/enderecos', newAddress);
+                const token = localStorage.getItem('jwtToken');
+                await apiClient.post('/enderecos', newAddress, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 
                 toggleModal(false); 
                 loadProfileData(); 
