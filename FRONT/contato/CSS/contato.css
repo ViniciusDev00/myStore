@@ -1,0 +1,123 @@
+/* ===================================================
+    CSS/contato.css - Estilos Específicos do Contato
+   =================================================== */
+
+/* ===== ESTILOS ESPECÍFICOS DO CONTATO ===== */
+.page-header {
+    background-color: var(--surface);
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-top: calc(var(--header-height) + var(--space-xl));
+    padding-bottom: var(--space-xl);
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+}
+.page-title {
+    font-size: 3rem;
+    color: var(--primary);
+}
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0.5rem auto 0;
+}
+
+.contact-section {
+    padding-top: var(--space-xl);
+}
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+}
+.contact-info-wrapper {
+    grid-row: 1;
+}
+.contact-form-wrapper {
+    grid-row: 2;
+}
+.form-group {
+    margin-bottom: 1.25rem;
+}
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 0.9rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+#form-message {
+    margin-top: var(--space-md);
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: opacity 0.3s;
+}
+.contact-info {
+    background-color: var(--surface);
+    padding: var(--space-xl);
+    border-radius: 8px;
+}
+.contact-info h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.75rem;
+}
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: 1.75rem;
+}
+.contact-info-item i {
+    font-size: 1.5rem;
+    color: var(--primary);
+    width: 30px;
+    text-align: center;
+}
+.contact-info-item span {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.contact-info-item p {
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ===================================
+    RESPONSIVIDADE - PÁGINA DE CONTATO
+   =================================== */
+
+/* Tablet e maiores */
+@media (min-width: 992px) {
+    .page-title {
+        font-size: 4rem;
+    }
+    .contact-grid {
+        grid-template-columns: 1.2fr 1fr;
+        align-items: flex-start;
+    }
+    .contact-info-wrapper {
+        grid-row: auto;
+    }
+    .contact-form-wrapper {
+        grid-row: auto;
+    }
+}
