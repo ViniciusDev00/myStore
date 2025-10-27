@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Japa Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/CSS/base.css">
+    <link rel="stylesheet" href="../CSS/checkout.css">
+</head>
+<body>
+    
+    <header class="main-header" data-basepath="../.."></header>
+
+    <div class="page-title-bar">
+        <div class="container breadcrumb">
+            <a href="../../../index.html">Página Inicial</a> &nbsp;/&nbsp; <span>Carrinho</span>
+        </div>
+    </div>
+
+    <main class="container checkout-container">
+        <section class="checkout-content">
+            <h1 class="checkout-title">Meu Carrinho</h1>
+            <div id="cart-items-container">
+                </div>
+        </section>
+
+        <aside class="checkout-summary">
+            <h2 class="summary-title">Resumo do Pedido</h2>
+            <div class="summary-details">
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span id="summary-subtotal">R$ 0,00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Frete</span>
+                    <span>Grátis</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total</span>
+                    <span id="summary-total">R$ 0,00</span>
+                </div>
+            </div>
+            <button id="checkout-button" class="btn btn-primary btn-block">Finalizar Compra</button>
+            <a href="../../catalogo/HTML/catalogo.html" class="continue-shopping-link">Continuar comprando</a>
+        </aside>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../../inicio/js/main.js"></script> <script src="../js/checkout.js"></script>
+</body>
+</html>
