@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://api.japauniverse.com.br/api/produtos';
+    const API_URL = 'http://localhost:8080/api/produtos';
     const grid = document.getElementById('products-grid');
     
     if (grid) {
@@ -87,11 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
             getImageUrl: (path) => {
                 if (!path) return '/assets/images/placeholder-product.jpg';
                 if (path.startsWith('http')) return path;
-                return `https://api.japauniverse.com.br/${path}`;
+                return `http://localhost:8080/${path}`;
             },
 
             generateSkeletons: (count) => {
-                return Array.from({ length: count }, (_, index) => `
+                return Array.from({ length: count }, (_, index) => `'
                     <div class="product-card skeleton-card" style="--delay: ${index}">
                         <div class="product-image-wrapper skeleton skeleton-image"></div>
                         <div class="product-info">

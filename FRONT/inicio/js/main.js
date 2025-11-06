@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!path) return '/FRONT/assets/images/placeholder-product.jpg'; // Corrigido caminho
             if (path.startsWith('http')) return path;
             // Assume que a API está na raiz se não for URL completa
-            return `https://api.japauniverse.com.br/${path}`; 
+            return `http://localhost:8080/${path}`;
         } 
     };
   })();

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
     let userRole = '';
-    const apiUrl = 'https://api.japauniverse.com.br'; // **URL da API corrigida**
+    const apiUrl = 'http://localhost:8080'; // **URL da API corrigida**
 
     // Função para decodificar o token JWT (igual ao código antigo)
     const parseJwt = (token) => {

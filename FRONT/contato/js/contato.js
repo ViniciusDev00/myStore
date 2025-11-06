@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = 'https://api.japauniverse.com.br/api/public';
+    const API_URL = 'http://localhost:8080/api/public';
 
     const form = document.getElementById('contactForm');
     if (form) {

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const productDetailContainer = document.getElementById('product-detail-container');
-    const API_URL = 'https://api.japauniverse.com.br/api/produtos';
+    const API_URL = 'http://localhost:8080/api/produtos';
 
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (path.startsWith('http')) {
             return path;
         }
-        return `https://api.japauniverse.com.br/${path}`;
+        return `http://localhost:8080/${path}`;
     };
 
     const fetchProductData = async () => {

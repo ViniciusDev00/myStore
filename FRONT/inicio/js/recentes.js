@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const API_URL = "https://api.japauniverse.com.br/api/produtos";
+    const API_URL = "http://localhost:8080/api/produtos";
 
     // Mapeamento das seções e seus elementos Swiper
     const sectionsToBuild = [
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const getImageUrl = (path) => {
         if (!path) return 'FRONT/assets/images/placeholder-product.jpg'; // Usar um placeholder
         if (path.startsWith('http')) return path;
-        return `https://api.japauniverse.com.br/${path}`;
+        return `http://localhost:8080/${path}`;
     };
 
     // Renderiza os cards de produto em um container específico

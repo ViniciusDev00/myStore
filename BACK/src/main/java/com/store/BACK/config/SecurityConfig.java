@@ -32,13 +32,17 @@ public class SecurityConfig {
         http
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        // --- CORREÇÃO PRINCIPAL PARA O ERRO 403 FORBIDDEN ---
+                .authorizeHttpRequests(a -> a
+                        // CORREÇÃO: Rotas públicas (incluindo produtos)
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
-                        .requestMatchers("/api/usuario/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        // Rotas de Usuário (requerem ROLE_USER ou ROLE_ADMIN)
+                        .requestMatchers("/api/usuario/meus-dados").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        // Rota de Endereços (requer ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        // Rotas de Admin
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        // Qualquer outra requisição deve ser autenticada
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

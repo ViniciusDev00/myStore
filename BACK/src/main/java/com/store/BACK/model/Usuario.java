@@ -1,5 +1,6 @@
 package com.store.BACK.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // Import necessário
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,11 +35,11 @@ public class Usuario implements UserDetails {
     private String role = "ROLE_USER";
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference("usuario-enderecos")
+    @JsonIgnore // CORREÇÃO: Ignorar na deserialização (Jackson)
     private List<Endereco> enderecos;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference("usuario-pedidos")
+    @JsonIgnore // CORREÇÃO: Ignorar na deserialização (Jackson)
     private List<Pedido> pedidos;
 
     public String getNome() {

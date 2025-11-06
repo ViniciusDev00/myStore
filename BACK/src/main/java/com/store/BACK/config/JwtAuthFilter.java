@@ -59,6 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (jwtTokenService.isTokenValid(jwt, userDetails)) {
                 System.out.println(">>> [FILTRO JWT] SUCESSO: Token é válido. A definir autenticação no contexto de segurança.");
+                // CORREÇÃO: Usa as autoridades carregadas do UserDetails
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtTokenService {
 
-    // --- ATUALIZAÇÃO: Chave secreta agora é fixa e consistente ---
+    // --- CHAVE SECRETA (Mantida constante) ---
     private static final String SECRET_KEY_STRING = "ZEdWemEyVnlJR05sY25ScFptbGpZWFJsTFdWNGRISmhZMk52ZFc1MA==";
     private final SecretKey secretKey;
 
@@ -25,7 +25,7 @@ public class JwtTokenService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY_STRING);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
-    // --- FIM DA ATUALIZAÇÃO ---
+    // ------------------------------------------
 
     private final long jwtExpiration = 86400000; // 24 horas
 
@@ -33,15 +33,11 @@ public class JwtTokenService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Dentro da classe JwtTokenService
-
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        // --- INÍCIO DA CORREÇÃO ---
-        // Adiciona as permissões (roles) do usuário ao token
+        // CORREÇÃO: Adiciona as permissões (roles) do usuário ao token
         claims.put("authorities", userDetails.getAuthorities());
-        // --- FIM DA CORREÇÃO ---
 
         if (userDetails instanceof Usuario) {
             Usuario user = (Usuario) userDetails;

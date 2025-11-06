@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const addressesContainer = document.getElementById('addresses-container');
     const ordersContainer = document.getElementById('orders-container');
-    const token = localStorage.getItem('jwtToken');
-
+    
+    // REVERTIDO PARA A CHAVE CORRETA QUE MANTÉM O LOGIN
+    const token = localStorage.getItem('jwtToken'); 
+    
     const addressModal = document.getElementById('address-modal');
     const modalOverlay = document.getElementById('address-modal-overlay');
     const openModalBtn = document.querySelector('.btn.btn-primary');
@@ -14,13 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // --- CORREÇÃO DEFINITIVA APLICADA AQUI ---
-    // Cria a instância do Axios
+    // CORREÇÃO: Cria a instância do Axios com a URL base local
     const apiClient = axios.create({
-        baseURL: 'https://api.japauniverse.com.br/api',
+        baseURL: 'http://localhost:8080/api',
     });
 
-    // Usa um "interceptor" que adiciona o token mais recente a CADA requisição
+    // CORREÇÃO: Interceptor que garante o token mais recente a CADA requisição (essencial para o 403)
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, error => {
         return Promise.reject(error);
     });
-    // --- FIM DA CORREÇÃO ---
 
     const renderAddresses = (addresses) => {
         if (!addresses || addresses.length === 0) {
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erro ao carregar dados do perfil:', error);
             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('jwtToken'); 
                 window.location.href = '/FRONT/login/HTML/login.html';
             }
         }
@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
+                // Requisição POST usando o Interceptor
                 await apiClient.post('/enderecos', newAddress);
                 
                 toggleModal(false); 
@@ -125,7 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
             } catch (error) {
                 console.error('Erro ao adicionar endereço:', error);
-                alert('Não foi possível salvar o endereço. Tente novamente.');
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                     alert('Não foi possível salvar o endereço. Sua sessão pode ter expirado ou você não tem permissão.');
+                     localStorage.removeItem('jwtToken');
+                     window.location.href = '/FRONT/login/HTML/login.html';
+                } else {
+                     alert('Não foi possível salvar o endereço. Tente novamente.');
+                }
             }
         });
     }
