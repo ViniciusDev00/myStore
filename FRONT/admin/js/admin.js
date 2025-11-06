@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
     let userRole = '';
-    const apiUrl = 'http://localhost:8080'; // **URL da API corrigida**
+    // --- CORREÇÃO APLICADA AQUI: Mudar para URL local ---
+    const apiUrl = 'http://localhost:8080'; 
+    // --- FIM CORREÇÃO ---
 
     // Função para decodificar o token JWT (igual ao código antigo)
     const parseJwt = (token) => {
