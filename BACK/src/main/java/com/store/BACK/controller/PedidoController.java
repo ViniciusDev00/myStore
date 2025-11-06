@@ -1,6 +1,6 @@
 package com.store.BACK.controller;
 
-import com.store.BACK.dto.ItemPedidoDTO; // Importe o DTO que criamos
+import com.store.BACK.dto.CheckoutRequestDTO; // MODIFICADO: Importa o DTO correto
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.PedidoService;
@@ -20,15 +20,20 @@ public class PedidoController {
 
     /**
      * Endpoint para criar um novo pedido.
-     * Recebe uma lista de itens do carrinho e o usuário autenticado.
+     * Recebe o DTO de checkout que inclui a lista de itens E o ID do endereço.
      */
     @PostMapping
-    public ResponseEntity<Pedido> criarPedido(@RequestBody List<ItemPedidoDTO> itensDTO, @AuthenticationPrincipal Usuario usuarioLogado) {
+    // MODIFICADO: Receber CheckoutRequestDTO
+    public ResponseEntity<Pedido> criarPedido(@RequestBody CheckoutRequestDTO checkoutRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         // Validação para garantir que o usuário está logado
         if (usuarioLogado == null) {
             return ResponseEntity.status(403).build(); // Retorna "Forbidden" se não houver usuário
         }
-        Pedido novoPedido = pedidoService.criarPedido(itensDTO, usuarioLogado);
+        
+        // --- MODIFICADO: Passa o DTO inteiro ---
+        Pedido novoPedido = pedidoService.criarPedido(checkoutRequest, usuarioLogado);
+        // --- FIM MODIFICAÇÃO ---
+        
         return ResponseEntity.ok(novoPedido);
     }
 

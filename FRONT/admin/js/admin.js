@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Autenticação e Autorização ---
-    const token = localStorage.getItem('jwtToken');
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
     let userRole = '';
+    const apiUrl = 'https://api.japauniverse.com.br'; // **URL da API corrigida**
 
+    // Função para decodificar o token JWT (igual ao código antigo)
     const parseJwt = (token) => {
         try {
             const base64Url = token.split('.')[1];
@@ -12,52 +13,68 @@ document.addEventListener('DOMContentLoaded', () => {
             }).join(''));
             return JSON.parse(jsonPayload);
         } catch (e) {
+            console.error("Erro ao decodificar token:", e);
             return null;
         }
     };
 
+    // **MUDANÇA 2: Extrai a role diretamente do token**
     if (token) {
         const decodedToken = parseJwt(token);
-        if (decodedToken && decodedToken.authorities) {
+        // Verifica se o token foi decodificado e se contém as 'authorities'
+        if (decodedToken && decodedToken.authorities && decodedToken.authorities.length > 0) {
+            // Pega a primeira autoridade (role) da lista
             userRole = decodedToken.authorities[0].authority;
+        } else {
+            console.warn("Token decodificado não contém 'authorities' ou está malformado.");
         }
     }
 
+    // **MUDANÇA 3: Compara com 'ROLE_ADMIN' (como no código antigo)**
     if (userRole !== 'ROLE_ADMIN') {
         alert('Acesso negado. Você precisa ser um administrador.');
-        window.location.href = '../../../login/HTML/login.html';
+        // **MUDANÇA 4: Garante que o caminho para o login está correto**
+        window.location.href = '/FRONT/login/HTML/login.html'; // Usando caminho absoluto
         return;
     }
 
     // --- Configuração do Cliente API ---
+    // Cria a instância do Axios com a base URL correta e token
     const apiClient = axios.create({
-        baseURL: 'https://api.japauniverse.com.br/api/admin',
-        headers: { 
-            'Authorization': `Bearer ${token}`,
+        baseURL: `${apiUrl}/api/admin`, // Endpoint específico do admin
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
     });
-    const publicApiClient = axios.create({ baseURL: 'https://api.japauniverse.com.br/api' });
+     const publicApiClient = axios.create({ baseURL: `${apiUrl}/api` }); // Para endpoints públicos
 
-    // --- Elementos do DOM ---
+    // Elementos do DOM (igual ao seu código mais recente)
+    const produtosTableBody = document.getElementById('produtos-table-body');
+    const pedidosTableBody = document.getElementById('pedidos-table-body');
+    const addProdutoForm = document.getElementById('product-form'); // **Correção ID**
+    const produtoIdInput = document.getElementById('product-id');  // **Correção ID**
+    const nomeInput = document.getElementById('product-name'); // **Correção ID**
+    const descricaoInput = document.getElementById('product-description'); // **Correção ID**
+    const precoInput = document.getElementById('product-price'); // **Correção ID**
+    const precoOriginalInput = document.getElementById('product-original-price'); // **Adicionado**
+    const estoqueInput = document.getElementById('product-stock'); // **Adicionado**
+    const marcaSelect = document.getElementById('product-brand'); // **Correção ID**
+    const categoriaSelect = document.getElementById('product-category'); // **Correção ID**
+    const imagemInput = document.getElementById('product-image'); // **Correção ID**
+    const modalTitle = document.getElementById('modal-title'); // CORREÇÃO: Usando a variável original (formTitle renomeada para modalTitle)
+    const productModal = document.getElementById('product-modal'); // **Correção ID**
+    const closeModalBtn = document.getElementById('close-modal-btn'); // **Correção ID**
+    const addProductBtn = document.getElementById('add-product-btn'); // **Correção ID**
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewText = document.getElementById('image-preview-text');
+
     const pedidosSection = document.getElementById('pedidos-section');
     const produtosSection = document.getElementById('produtos-section');
     const mensagensSection = document.getElementById('mensagens-section');
     const navPedidos = document.getElementById('nav-pedidos');
     const navProdutos = document.getElementById('nav-produtos');
     const navMensagens = document.getElementById('nav-mensagens');
-    const pedidosTableBody = document.getElementById('pedidos-table-body');
-    const produtosTableBody = document.getElementById('produtos-table-body');
     const mensagensTableBody = document.getElementById('mensagens-table-body');
-    const productModal = document.getElementById('product-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const addProductBtn = document.getElementById('add-product-btn');
-    const productForm = document.getElementById('product-form');
-    const brandSelect = document.getElementById('product-brand');
-    const categorySelect = document.getElementById('product-category');
-    const productImageInput = document.getElementById('product-image');
-    const imagePreview = document.getElementById('image-preview');
-    const imagePreviewText = document.getElementById('image-preview-text');
     const messageModal = document.getElementById('message-modal');
     const closeMessageModalBtn = document.getElementById('close-message-modal-btn');
     const messageModalBody = document.getElementById('message-modal-body');
@@ -68,28 +85,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.querySelector('.sidebar-overlay');
     const toggleBtn = document.querySelector('.mobile-admin-toggle');
 
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-        });
-    }
+    // --- Funções Auxiliares ---
 
-    if (overlay) {
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    }
-
+    // Função auxiliar para obter URL da imagem (se necessário ajustar base URL)
     const getImageUrl = (path) => {
-        if (!path) return '';
+        if (!path) return 'placeholder.png'; // Imagem padrão se não houver
         if (path.startsWith('http')) {
             return path;
         }
-        return `/${path}`;
+         // Assumindo que o backend serve as imagens diretamente na raiz + path
+        return `${apiUrl}/${path}`;
     };
 
+    const resetForm = () => {
+        addProdutoForm.reset();
+        produtoIdInput.value = '';
+        modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO APLICADA AQUI
+        imagemInput.required = true;
+        imagePreview.classList.add('hidden');
+        imagePreview.src = '#';
+        imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
+        productModal.classList.remove('active'); // Garante que o modal fecha
+    };
+
+    // Popula selects de marca e categoria
     const populateSelect = (selectElement, items, placeholder) => {
         selectElement.innerHTML = `<option value="">${placeholder}</option>`;
         items.forEach(item => {
@@ -100,23 +119,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchBrandsAndCategories = async () => {
         try {
             const [brandsRes, categoriesRes] = await Promise.all([
-                publicApiClient.get('/produtos/marcas'),
-                publicApiClient.get('/produtos/categorias')
+                publicApiClient.get('/produtos/marcas'), // Usa apiClient público
+                publicApiClient.get('/produtos/categorias') // Usa apiClient público
             ]);
-            populateSelect(brandSelect, brandsRes.data, 'Selecione uma marca');
-            populateSelect(categorySelect, categoriesRes.data, 'Selecione uma categoria');
+            populateSelect(marcaSelect, brandsRes.data, 'Selecione uma marca');
+            populateSelect(categoriaSelect, categoriesRes.data, 'Selecione uma categoria');
         } catch (error) {
             console.error("Erro ao buscar marcas e categorias:", error);
+            alert("Erro ao carregar opções do formulário.");
         }
     };
 
+
+    // --- Renderização de Tabelas (Função de Pedidos Corrigida) ---
+
     const renderPedidos = (pedidos) => {
-        pedidosTableBody.innerHTML = pedidos.map(pedido => `
+        pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
+        pedidosTableBody.innerHTML = pedidos.map(pedido => {
+            const nomeCliente = pedido.usuario ? pedido.usuario.nome : 'Usuário Desconhecido';
+            const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
+            const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
+
+            return `
             <tr>
                 <td>#${String(pedido.id).padStart(6, '0')}</td>
-                <td>${pedido.usuario.nome}</td>
-                <td>${new Date(pedido.dataPedido).toLocaleDateString()}</td>
-                <td>R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}</td>
+                <td>${nomeCliente}</td>
+                <td>${dataFormatada}</td>
+                <td>${valorFormatado}</td>
                 <td>
                     <select class="status-select" data-pedido-id="${pedido.id}">
                         <option value="PENDENTE" ${pedido.status === 'PENDENTE' ? 'selected' : ''}>Pendente</option>
@@ -128,27 +157,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td><button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button></td>
             </tr>
-        `).join('');
+        `}).join('');
     };
-    
-    const renderProdutos = (produtos) => {
+
+     const renderProdutos = (produtos) => {
         produtosTableBody.innerHTML = produtos.map(produto => `
             <tr>
                 <td>${produto.id}</td>
+                <td><img src="${getImageUrl(produto.imagemUrl)}" alt="${produto.nome}" width="50" style="border-radius: 4px; object-fit: cover;"></td>
                 <td>${produto.nome}</td>
-                <td>${produto.marca.nome}</td>
                 <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
-                <td>${produto.estoque}</td>
+                 <td>${produto.marca?.nome || 'N/A'}</td> {/* Usando optional chaining */}
+                 <td>${produto.categoria?.nome || 'N/A'}</td> {/* Usando optional chaining */}
+                 <td>${produto.estoque || 0}</td> {/* Estoque */}
                 <td>
-                    <button class="btn btn-edit" data-product-id="${produto.id}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-delete" data-product-id="${produto.id}"><i class="fas fa-trash"></i></button>
+                    <button class="btn btn-warning btn-sm edit-produto-btn" data-product-id="${produto.id}"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-danger btn-sm delete-produto-btn" data-product-id="${produto.id}"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
     };
 
     const renderMensagens = (mensagens) => {
-        adminMessages = mensagens;
+        adminMessages = mensagens; // Guarda as mensagens para o modal
         mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
         mensagensTableBody.innerHTML = mensagens.map(msg => `
             <tr>
@@ -162,40 +193,59 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
 
+    // --- Carregamento de Dados ---
+
     const fetchPedidos = async () => {
         try {
-            const response = await apiClient.get('/pedidos');
+            const response = await apiClient.get('/pedidos'); // Usa apiClient autenticado
             renderPedidos(response.data);
         } catch (error) {
             console.error("Erro ao buscar pedidos:", error);
             pedidosTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar os pedidos.</td></tr>';
+             if (error.response && error.response.status === 403) {
+                alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                localStorage.removeItem('jwtToken');
+                window.location.href = '/FRONT/login/HTML/login.html';
+             }
         }
     };
-    
+
     const fetchProdutos = async () => {
         try {
-            const response = await apiClient.get('/produtos');
+            const response = await apiClient.get('/produtos'); // Usa apiClient autenticado
             renderProdutos(response.data);
         } catch (error) {
             console.error("Erro ao buscar produtos:", error);
-            produtosTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar os produtos.</td></tr>';
+            produtosTableBody.innerHTML = '<tr><td colspan="8">Não foi possível carregar os produtos.</td></tr>'; // Atualizado colspan
+             if (error.response && error.response.status === 403) {
+                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                 localStorage.removeItem('jwtToken');
+                window.location.href = '/FRONT/login/HTML/login.html';
+             }
         }
     };
 
     const fetchMensagens = async () => {
         try {
-            const response = await apiClient.get('/contatos');
+            const response = await apiClient.get('/contatos'); // Usa apiClient autenticado
             renderMensagens(response.data);
         } catch (error) {
             console.error("Erro ao buscar mensagens:", error);
             mensagensTableBody.innerHTML = '<tr><td colspan="6">Não foi possível carregar as mensagens.</td></tr>';
+             if (error.response && error.response.status === 403) {
+                 alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
+                 localStorage.removeItem('jwtToken');
+                 window.location.href = '/FRONT/login/HTML/login.html';
+             }
         }
     };
+
+    // --- Navegação e Modais ---
 
     const switchView = (view) => {
         [pedidosSection, produtosSection, mensagensSection].forEach(s => s.classList.remove('active'));
         [navPedidos, navProdutos, navMensagens].forEach(n => n.classList.remove('active'));
-        
+
         if (view === 'pedidos') {
             pedidosSection.classList.add('active');
             navPedidos.classList.add('active');
@@ -209,152 +259,225 @@ document.addEventListener('DOMContentLoaded', () => {
             navMensagens.classList.add('active');
             fetchMensagens();
         }
+         // Fecha o sidebar mobile ao trocar de aba
+         if (sidebar && overlay && sidebar.classList.contains('active')) {
+             sidebar.classList.remove('active');
+             overlay.classList.remove('active');
+         }
     };
 
     navPedidos.addEventListener('click', (e) => { e.preventDefault(); switchView('pedidos'); });
     navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
     navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
 
-    const openModal = (produto = null) => {
-        productForm.reset();
-        productImageInput.value = '';
-        imagePreview.classList.add('hidden');
-        imagePreview.src = '#';
-        imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
-        
+    // Abre o modal de produto (para adicionar ou editar)
+     const openProductModal = (produto = null) => {
+        resetForm(); // Limpa o formulário antes de preencher
+        imagemInput.required = !produto; // Imagem obrigatória só ao adicionar
+
         if (produto) {
-            modalTitle.textContent = 'Editar Produto';
-            document.getElementById('product-id').value = produto.id;
-            document.getElementById('product-name').value = produto.nome;
-            brandSelect.value = produto.marca.id;
-            categorySelect.value = produto.categoria.id;
-            document.getElementById('product-price').value = produto.preco;
-            document.getElementById('product-original-price').value = produto.precoOriginal || '';
-            document.getElementById('product-stock').value = produto.estoque;
-            document.getElementById('product-description').value = produto.descricao;
+            modalTitle.textContent = 'Editar Produto'; // CORREÇÃO: Usa modalTitle corretamente
+            produtoIdInput.value = produto.id;
+            nomeInput.value = produto.nome;
+            marcaSelect.value = produto.marca?.id || '';
+            categoriaSelect.value = produto.categoria?.id || '';
+            precoInput.value = produto.preco.toFixed(2);
+            precoOriginalInput.value = produto.precoOriginal ? produto.precoOriginal.toFixed(2) : '';
+            estoqueInput.value = produto.estoque || 0;
+            descricaoInput.value = produto.descricao || '';
+
             if (produto.imagemUrl) {
                 imagePreview.src = getImageUrl(produto.imagemUrl);
                 imagePreview.classList.remove('hidden');
-                imagePreviewText.textContent = 'Imagem atual do produto.';
+                imagePreviewText.textContent = 'Imagem atual. Selecione outra para substituir.';
             }
+
         } else {
-            modalTitle.textContent = 'Adicionar Novo Produto';
-            document.getElementById('product-id').value = '';
+            modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO: Usa modalTitle corretamente
         }
         productModal.classList.add('active');
     };
 
-    const closeModal = () => productModal.classList.remove('active');
+    const closeProductModal = () => productModal.classList.remove('active');
+
     const openMessageModal = (message) => {
         messageModalTitle.textContent = `Mensagem de: ${message.nome}`;
-        messageModalBody.innerHTML = `<p><strong>De:</strong> ${message.nome} (${message.email})</p><p><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p><h4>Assunto: ${message.assunto}</h4><p>${message.mensagem}</p>`;
+        messageModalBody.innerHTML = `
+            <p class="message-info"><strong>De:</strong> ${message.nome} (${message.email})</p>
+            <p class="message-info"><strong>Data:</strong> ${new Date(message.dataEnvio).toLocaleString('pt-BR')}</p>
+            <h4>Assunto: ${message.assunto}</h4>
+            <p>${message.mensagem}</p>`;
         messageModal.classList.add('active');
     };
     const closeMessageModal = () => messageModal.classList.remove('active');
-    
-    addProductBtn.addEventListener('click', () => openModal());
-    closeModalBtn.addEventListener('click', closeModal);
-    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeModal(); });
+
+    // Event Listeners para Modais
+    addProductBtn.addEventListener('click', () => openProductModal());
+    closeModalBtn.addEventListener('click', closeProductModal);
+    productModal.addEventListener('click', (e) => { if (e.target === productModal) closeProductModal(); });
     closeMessageModalBtn.addEventListener('click', closeMessageModal);
     messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
-    
-    productImageInput.addEventListener('change', (event) => {
+
+
+    // Preview da Imagem
+    imagemInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
                 imagePreview.classList.remove('hidden');
-                imagePreviewText.textContent = file.name;
+                imagePreviewText.textContent = `Nova imagem: ${file.name}`;
             };
             reader.readAsDataURL(file);
-        } else if (!document.getElementById('product-id').value) {
+        } else if (!produtoIdInput.value) { // Só limpa se estiver adicionando
             imagePreview.classList.add('hidden');
             imagePreview.src = '#';
             imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
         }
     });
 
-    pedidosTableBody.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('update-status-btn')) {
-            const pedidoId = e.target.dataset.pedidoId;
-            const newStatus = document.querySelector(`.status-select[data-pedido-id="${pedidoId}"]`).value;
-            try {
-                await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: newStatus });
-                alert(`Status do pedido #${pedidoId} atualizado.`);
-                fetchPedidos();
-            } catch (error) {
-                alert('Falha ao atualizar o status.');
-            }
-        }
-    });
-    
-    produtosTableBody.addEventListener('click', async (e) => {
-        const target = e.target.closest('button');
-        if (!target) return;
-        const productId = target.dataset.productId;
-        if (target.classList.contains('btn-edit')) {
-            try {
-                const response = await publicApiClient.get(`/produtos/${productId}`);
-                openModal(response.data);
-            } catch (error) {
-                alert('Não foi possível carregar os dados do produto.');
-            }
-        } else if (target.classList.contains('btn-delete')) {
-            if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}?`)) {
+    // --- Manipulação de Eventos das Tabelas ---
+
+    // Event Delegation para botões na tabela de PEDIDOS
+    pedidosTableBody.addEventListener('click', async (event) => {
+        const target = event.target;
+        const pedidoId = target.dataset.pedidoId;
+
+        // Atualizar Status do Pedido
+        if (target.classList.contains('update-status-btn')) {
+            const selectElement = target.closest('tr').querySelector(`select.status-select`);
+            const novoStatus = selectElement.value;
+
+            if (!novoStatus) return;
+
+            if (confirm(`Tem certeza que deseja atualizar o status do pedido #${pedidoId} para ${novoStatus}?`)) {
                 try {
-                    await apiClient.delete(`/produtos/${productId}`);
-                    alert('Produto excluído!');
-                    fetchProdutos();
+                     // **MUDANÇA: Usar PATCH e enviar JSON**
+                    await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: novoStatus });
+                    alert('Status do pedido atualizado com sucesso!');
+                    fetchPedidos(); // Atualiza a tabela
                 } catch (error) {
-                    alert('Falha ao excluir o produto.');
+                    alert('Erro ao atualizar o status do pedido.');
+                    console.error('Erro ao atualizar status:', error);
                 }
             }
         }
     });
 
-    mensagensTableBody.addEventListener('click', (e) => {
+    // Event Delegation para botões na tabela de PRODUTOS
+    produtosTableBody.addEventListener('click', async (event) => {
+        const target = event.target.closest('button'); // Pega o botão clicado
+        if (!target) return; // Sai se não clicou num botão
+
+        const productId = target.dataset.productId;
+
+        // Editar Produto
+        if (target.classList.contains('edit-produto-btn')) {
+            try {
+                 // **MUDANÇA: Usar publicApiClient para pegar detalhes do produto**
+                const response = await publicApiClient.get(`/produtos/${productId}`);
+                openProductModal(response.data); // Abre o modal com os dados
+            } catch (error) {
+                alert('Erro ao carregar dados do produto para edição.');
+                console.error("Erro ao buscar produto para editar:", error);
+            }
+        }
+
+        // Excluir Produto
+        if (target.classList.contains('delete-produto-btn')) {
+            if (confirm(`Tem certeza que deseja excluir o produto ID ${productId}?`)) {
+                try {
+                    await apiClient.delete(`/produtos/${productId}`);
+                    alert('Produto excluído com sucesso!');
+                    fetchProdutos(); // Atualiza a tabela
+                } catch (error) {
+                    alert('Erro ao excluir produto.');
+                    console.error("Erro ao excluir produto:", error);
+                }
+            }
+        }
+    });
+
+     // Event Delegation para botões na tabela de MENSAGENS
+     mensagensTableBody.addEventListener('click', (e) => {
         const target = e.target.closest('.view-message-btn');
         if (target) {
-            const message = adminMessages.find(m => m.id === parseInt(target.dataset.messageId, 10));
+            const messageId = parseInt(target.dataset.messageId, 10);
+            const message = adminMessages.find(m => m.id === messageId);
             if (message) openMessageModal(message);
         }
     });
 
-    productForm.addEventListener('submit', async (e) => {
+    // --- Submissão do Formulário de Produto ---
+    addProdutoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const [brandId, categoryId] = [parseInt(brandSelect.value, 10), parseInt(categorySelect.value, 10)];
-        if (isNaN(brandId) || isNaN(categoryId)) {
-            alert('Selecione marca e categoria.');
+        const id = produtoIdInput.value;
+        const isEditing = !!id;
+        const url = isEditing ? `/produtos/${id}` : '/produtos';
+        const method = isEditing ? 'put' : 'post'; // PUT para editar, POST para criar
+
+        // Validar se marca e categoria foram selecionados
+        const brandId = marcaSelect.value;
+        const categoryId = categoriaSelect.value;
+        if (!brandId || !categoryId) {
+            alert('Por favor, selecione a marca e a categoria.');
             return;
         }
-        
-        const id = document.getElementById('product-id').value;
+
         const formData = new FormData();
-        formData.append('produto', JSON.stringify({
-            nome: document.getElementById('product-name').value,
-            marca: { id: brandId },
-            categoria: { id: categoryId },
-            preco: parseFloat(document.getElementById('product-price').value),
-            precoOriginal: document.getElementById('product-original-price').value ? parseFloat(document.getElementById('product-original-price').value) : null,
-            estoque: parseInt(document.getElementById('product-stock').value),
-            descricao: document.getElementById('product-description').value,
-        }));
-        
-        if (productImageInput.files[0]) formData.append('imagem', productImageInput.files[0]);
+
+        // Monta o objeto JSON do produto
+        const produtoData = {
+            nome: nomeInput.value,
+            marca: { id: parseInt(brandId) }, // Envia objeto com ID
+            categoria: { id: parseInt(categoryId) }, // Envia objeto com ID
+            preco: parseFloat(precoInput.value),
+            precoOriginal: precoOriginalInput.value ? parseFloat(precoOriginalInput.value) : null,
+            estoque: parseInt(estoqueInput.value),
+            descricao: descricaoInput.value,
+        };
+        // Adiciona o JSON como uma parte 'produto'
+        formData.append('produto', JSON.stringify(produtoData));
+
+        // Adiciona a imagem se foi selecionada
+        if (imagemInput.files.length > 0) {
+            formData.append('imagem', imagemInput.files[0]);
+        } else if (!isEditing && imagemInput.required) {
+            alert('Por favor, selecione uma imagem para o novo produto.');
+            return; // Impede envio sem imagem ao criar
+        }
 
         try {
-            const url = id ? `/produtos/${id}` : '/produtos';
-            const method = id ? 'put' : 'post';
-            await apiClient[method](url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            alert(`Produto ${id ? 'atualizado' : 'adicionado'}!`);
-            closeModal();
-            fetchProdutos();
+            await apiClient({
+                method: method,
+                url: url,
+                data: formData,
+                headers: { 'Content-Type': 'multipart/form-data' } // Necessário para FormData
+            });
+
+            alert(`Produto ${isEditing ? 'atualizado' : 'adicionado'} com sucesso!`);
+            closeProductModal(); // Fecha o modal
+            fetchProdutos(); // Atualiza a tabela
         } catch (error) {
-            alert('Falha ao salvar o produto.');
+            alert(`Falha ao ${isEditing ? 'atualizar' : 'adicionar'} o produto.`);
+            console.error(`Erro ao salvar produto:`, error.response?.data || error.message);
         }
     });
 
-    fetchBrandsAndCategories();
-    switchView('pedidos');
+
+    // --- Inicialização ---
+    if (toggleBtn && sidebar && overlay) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    }
+
+    await fetchBrandsAndCategories(); // Carrega marcas/categorias primeiro
+    switchView('pedidos'); // Inicia na aba de pedidos
 });

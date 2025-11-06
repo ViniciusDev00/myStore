@@ -642,3 +642,141 @@
     -webkit-text-fill-color: initial;
   }
 }
+
+/* ===================================================
+    NOVO: ESTILOS PARA O MODAL DE SELEÇÃO DE TAMANHO (REPLICADO DO CATALOGO)
+   =================================================== */
+
+.size-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Garante que fique acima de outros elementos */
+    visibility: hidden; 
+    opacity: 0;
+    transition: visibility 0s, opacity 0.3s ease-in-out;
+}
+
+.size-modal-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.size-modal-content {
+    background-color: var(--background); /* Fundo principal */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    color: var(--text-primary);
+    animation: fadeInScale 0.3s ease-out;
+    border: 1px solid var(--border-color);
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.size-modal-content .close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: color 0.2s;
+}
+
+.size-modal-content .close-button:hover {
+    color: var(--primary);
+}
+
+.size-modal-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: var(--primary);
+    text-align: center;
+    font-weight: 700;
+}
+
+.size-options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.size-option {
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.size-option:hover {
+    border-color: var(--primary);
+    background-color: #333; /* Ajustar se necessário */
+}
+
+.size-option.selected {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    transform: scale(1.05);
+}
+
+.size-option.disabled {
+    background-color: #333; /* Cor neutra para desabilitado */
+    color: #666; /* Cor escura para texto */
+    cursor: not-allowed;
+    border-color: #444;
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.modal-error {
+    color: var(--error-color, #dc3545);
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+#addToCartModalBtn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+/* Responsividade: Reduzir tamanho do modal em telas pequenas */
+@media (max-width: 450px) {
+    .size-modal-content {
+        padding: 20px;
+    }
+    .size-modal-content h3 {
+        font-size: 1.3rem;
+    }
+    .size-option {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+    }
+}
