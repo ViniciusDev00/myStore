@@ -11,17 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.getElementById('close-address-modal');
     const addressForm = document.getElementById('address-form');
 
+    // Elementos do Formulário (Obrigatório ter estes IDs no HTML do formulário)
+    const cepInput = document.getElementById('cep');
+    const ruaInput = document.getElementById('rua');
+    const cidadeInput = document.getElementById('cidade');
+    const estadoInput = document.getElementById('estado');
+
     if (!token) {
         window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
-    // CORREÇÃO: Cria a instância do Axios com a URL base local
     const apiClient = axios.create({
         baseURL: 'http://localhost:8080/api',
     });
 
-    // CORREÇÃO: Interceptor que garante o token mais recente a CADA requisição (essencial para o 403)
     apiClient.interceptors.request.use(config => {
         const currentToken = localStorage.getItem('jwtToken');
         if (currentToken) {
@@ -31,6 +35,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }, error => {
         return Promise.reject(error);
     });
+
+    // --- NOVA FUNÇÃO: CONSULTA CEP E PREENCHIMENTO ---
+    const fillAddressByCep = async () => {
+        let cep = cepInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+        
+        // Verifica se o CEP tem 8 dígitos
+        if (cep.length !== 8) {
+            return;
+        }
+
+        // Limpa os campos de endereço enquanto espera
+        ruaInput.value = '...';
+        cidadeInput.value = '...';
+        estadoInput.value = '...';
+        
+        try {
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = response.data;
+
+            if (!data.erro) {
+                // Preenche os campos com os dados da API
+                ruaInput.value = data.logradouro;
+                cidadeInput.value = data.localidade;
+                estadoInput.value = data.uf;
+                
+                // Move o foco para o campo 'Número'
+                document.getElementById('numero').focus();
+                
+            } else {
+                // Se o CEP não for encontrado
+                alert('CEP não encontrado. Por favor, preencha o endereço manualmente.');
+                ruaInput.value = '';
+                cidadeInput.value = '';
+                estadoInput.value = '';
+            }
+
+        } catch (error) {
+            console.error('Erro ao buscar CEP:', error);
+            alert('Erro ao comunicar com o serviço de CEP. Tente novamente.');
+            ruaInput.value = '';
+            cidadeInput.value = '';
+            estadoInput.value = '';
+        }
+    };
+    // --- FIM DA NOVA FUNÇÃO ---
 
     const renderAddresses = (addresses) => {
         if (!addresses || addresses.length === 0) {
@@ -103,6 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if(closeModalBtn) closeModalBtn.addEventListener('click', () => toggleModal(false));
     if(modalOverlay) modalOverlay.addEventListener('click', () => toggleModal(false));
 
+    // --- NOVO LISTENER: Chama a consulta quando o CEP perde o foco ---
+    if (cepInput) {
+        cepInput.addEventListener('blur', fillAddressByCep);
+    }
+    // --- FIM NOVO LISTENER ---
+
     if(addressForm) {
         addressForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -117,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
     
             try {
-                // Requisição POST usando o Interceptor
                 await apiClient.post('/enderecos', newAddress);
                 
                 toggleModal(false); 
