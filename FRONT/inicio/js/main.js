@@ -427,7 +427,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Gera o HTML do conteúdo do modal
             quickViewElements.content.innerHTML = `
-                <div class="quickview-content"> <div class="quickview-gallery">
+                <div class="quickview-content">
+                    <div class="quickview-gallery">
                         <img src="${getImageUrl(product.images[0])}" 
                              alt="${product.nome}" 
                              class="quickview-main-image"
@@ -441,11 +442,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             `).join('')}
                         </div>
                     </div>
-                    
                     <div class="quickview-details">
                         <div class="quickview-brand">${product.marca?.nome || 'Marca Desconhecida'}</div>
                         <h1 class="quickview-title">${product.nome}</h1>
-                        
                         <div class="quickview-price">
                             <span class="quickview-current-price">${formatPrice(product.preco)}</span>
                             ${hasDiscount ? `
@@ -453,21 +452,17 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <span class="quickview-discount">-${discountPercent}%</span> 
                             ` : ''}
                         </div>
-                        
                         <div class="quickview-shipping">
                             <i class="fas fa-shipping-fast"></i>
                             <span>Frete Grátis</span>
                         </div>
-                        
                         <p class="quickview-description">${product.description}</p>
-                        
                         <div class="quickview-size-section">
                             <div class="quickview-size-title">Selecione o Tamanho:</div>
                             <div class="quickview-size-options" id="quickviewSizeOptions">
                                 ${Object.keys(product.sizes).map(size => {
                                     const quantity = product.sizes[size];
                                     const isDisabled = quantity <= 0;
-                                    // Renderiza o botão de tamanho
                                     return `
                                         <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
                                              data-size="${size}">
@@ -478,7 +473,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                 }).join('')}
                             </div>
                         </div>
-                        
                         <div class="quickview-actions">
                             <button class="btn btn-primary quickview-add-to-cart" 
                                     id="quickviewAddToCart"
@@ -487,7 +481,6 @@ document.addEventListener("DOMContentLoaded", () => {
                                 Adicionar ao Carrinho
                             </button>
                         </div>
-                        
                         <div class="quickview-features">
                             ${product.features.map(feature => `
                                 <div class="quickview-feature">
@@ -497,7 +490,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             `).join('')}
                         </div>
                     </div>
-                </div> `;
+                </div>
+            `;
 
             // Adiciona listeners para a galeria de imagens e botões internos do modal
             quickViewSystem.addGalleryEventListeners();
