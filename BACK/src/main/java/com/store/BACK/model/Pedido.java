@@ -1,5 +1,6 @@
 package com.store.BACK.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // Import necessário
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class Pedido {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnore // CORREÇÃO: Ignora a referência Lazy-Loaded para evitar o erro ByteBuddyInterceptor
     private Usuario usuario;
 
     @Column(nullable = false)

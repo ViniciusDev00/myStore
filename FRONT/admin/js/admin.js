@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('jwtToken'); // **MUDANÇA 1: Usar 'jwtToken' como no código antigo**
+    const token = localStorage.getItem('jwtToken');
     let userRole = '';
-    // --- CORREÇÃO APLICADA AQUI: Mudar para URL local ---
     const apiUrl = 'http://localhost:8080'; 
-    // --- FIM CORREÇÃO ---
 
-    // Função para decodificar o token JWT (igual ao código antigo)
+    // Função para decodificar o token JWT
     const parseJwt = (token) => {
         try {
             const base64Url = token.split('.')[1];
@@ -20,53 +18,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // **MUDANÇA 2: Extrai a role diretamente do token**
+    // Extrai a role
     if (token) {
         const decodedToken = parseJwt(token);
-        // Verifica se o token foi decodificado e se contém as 'authorities'
         if (decodedToken && decodedToken.authorities && decodedToken.authorities.length > 0) {
-            // Pega a primeira autoridade (role) da lista
             userRole = decodedToken.authorities[0].authority;
         } else {
             console.warn("Token decodificado não contém 'authorities' ou está malformado.");
         }
     }
 
-    // **MUDANÇA 3: Compara com 'ROLE_ADMIN' (como no código antigo)**
     if (userRole !== 'ROLE_ADMIN') {
         alert('Acesso negado. Você precisa ser um administrador.');
-        // **MUDANÇA 4: Garante que o caminho para o login está correto**
-        window.location.href = '/FRONT/login/HTML/login.html'; // Usando caminho absoluto
+        window.location.href = '/FRONT/login/HTML/login.html';
         return;
     }
 
     // --- Configuração do Cliente API ---
-    // Cria a instância do Axios com a base URL correta e token
     const apiClient = axios.create({
-        baseURL: `${apiUrl}/api/admin`, // Endpoint específico do admin
+        baseURL: `${apiUrl}/api/admin`, 
         headers: {
             'Authorization': `Bearer ${token}`
         }
     });
-     const publicApiClient = axios.create({ baseURL: `${apiUrl}/api` }); // Para endpoints públicos
+     const publicApiClient = axios.create({ baseURL: `${apiUrl}/api` });
 
-    // Elementos do DOM (igual ao seu código mais recente)
+    // Elementos do DOM
     const produtosTableBody = document.getElementById('produtos-table-body');
     const pedidosTableBody = document.getElementById('pedidos-table-body');
-    const addProdutoForm = document.getElementById('product-form'); // **Correção ID**
-    const produtoIdInput = document.getElementById('product-id');  // **Correção ID**
-    const nomeInput = document.getElementById('product-name'); // **Correção ID**
-    const descricaoInput = document.getElementById('product-description'); // **Correção ID**
-    const precoInput = document.getElementById('product-price'); // **Correção ID**
-    const precoOriginalInput = document.getElementById('product-original-price'); // **Adicionado**
-    const estoqueInput = document.getElementById('product-stock'); // **Adicionado**
-    const marcaSelect = document.getElementById('product-brand'); // **Correção ID**
-    const categoriaSelect = document.getElementById('product-category'); // **Correção ID**
-    const imagemInput = document.getElementById('product-image'); // **Correção ID**
-    const modalTitle = document.getElementById('modal-title'); // CORREÇÃO: Usando a variável original (formTitle renomeada para modalTitle)
-    const productModal = document.getElementById('product-modal'); // **Correção ID**
-    const closeModalBtn = document.getElementById('close-modal-btn'); // **Correção ID**
-    const addProductBtn = document.getElementById('add-product-btn'); // **Correção ID**
+    const addProdutoForm = document.getElementById('product-form'); 
+    const produtoIdInput = document.getElementById('product-id');  
+    const nomeInput = document.getElementById('product-name'); 
+    const descricaoInput = document.getElementById('product-description'); 
+    const precoInput = document.getElementById('product-price'); 
+    const precoOriginalInput = document.getElementById('product-original-price'); 
+    const estoqueInput = document.getElementById('product-stock'); 
+    const marcaSelect = document.getElementById('product-brand'); 
+    const categoriaSelect = document.getElementById('product-category'); 
+    const imagemInput = document.getElementById('product-image'); 
+    const modalTitle = document.getElementById('modal-title'); 
+    const productModal = document.getElementById('product-modal'); 
+    const closeModalBtn = document.getElementById('close-modal-btn'); 
+    const addProductBtn = document.getElementById('add-product-btn'); 
     const imagePreview = document.getElementById('image-preview');
     const imagePreviewText = document.getElementById('image-preview-text');
 
@@ -89,25 +82,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Funções Auxiliares ---
 
-    // Função auxiliar para obter URL da imagem (se necessário ajustar base URL)
+    // Função auxiliar para obter URL da imagem
     const getImageUrl = (path) => {
-        if (!path) return 'placeholder.png'; // Imagem padrão se não houver
+        if (!path) return 'placeholder.png'; 
         if (path.startsWith('http')) {
             return path;
         }
-         // Assumindo que o backend serve as imagens diretamente na raiz + path
         return `${apiUrl}/${path}`;
     };
 
     const resetForm = () => {
         addProdutoForm.reset();
         produtoIdInput.value = '';
-        modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO APLICADA AQUI
+        modalTitle.textContent = 'Adicionar Novo Produto'; 
         imagemInput.required = true;
         imagePreview.classList.add('hidden');
         imagePreview.src = '#';
         imagePreviewText.textContent = 'Nenhuma imagem selecionada.';
-        productModal.classList.remove('active'); // Garante que o modal fecha
+        productModal.classList.remove('active'); 
     };
 
     // Popula selects de marca e categoria
@@ -121,8 +113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fetchBrandsAndCategories = async () => {
         try {
             const [brandsRes, categoriesRes] = await Promise.all([
-                publicApiClient.get('/produtos/marcas'), // Usa apiClient público
-                publicApiClient.get('/produtos/categorias') // Usa apiClient público
+                publicApiClient.get('/produtos/marcas'),
+                publicApiClient.get('/produtos/categorias')
             ]);
             populateSelect(marcaSelect, brandsRes.data, 'Selecione uma marca');
             populateSelect(categoriaSelect, categoriesRes.data, 'Selecione uma categoria');
@@ -133,11 +125,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
 
-    // --- Renderização de Tabelas (Função de Pedidos Corrigida) ---
+    // --- Renderização de Tabelas ---
 
     const renderPedidos = (pedidos) => {
         pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
         pedidosTableBody.innerHTML = pedidos.map(pedido => {
+            // Nota: O log indica que Pedido.usuario está LAZY. No Admin, talvez seja melhor
+            // buscar o nome pelo AdminService ou garantir que o Usuario seja EAGER/DTO.
+            // Por enquanto, o código abaixo deve usar a referência se estiver disponível:
             const nomeCliente = pedido.usuario ? pedido.usuario.nome : 'Usuário Desconhecido';
             const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
             const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
@@ -162,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `}).join('');
     };
 
+     // FUNÇÃO CORRIGIDA: REMOÇÃO DOS COMENTÁRIOS JS NA TEMPLATE STRING
      const renderProdutos = (produtos) => {
         produtosTableBody.innerHTML = produtos.map(produto => `
             <tr>
@@ -169,9 +165,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td><img src="${getImageUrl(produto.imagemUrl)}" alt="${produto.nome}" width="50" style="border-radius: 4px; object-fit: cover;"></td>
                 <td>${produto.nome}</td>
                 <td>R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
-                 <td>${produto.marca?.nome || 'N/A'}</td> {/* Usando optional chaining */}
-                 <td>${produto.categoria?.nome || 'N/A'}</td> {/* Usando optional chaining */}
-                 <td>${produto.estoque || 0}</td> {/* Estoque */}
+                 
+                <td>${produto.marca?.nome || 'N/A'}</td> 
+                <td>${produto.categoria?.nome || 'N/A'}</td> 
+                <td>${produto.estoque || 0}</td>
+                
                 <td>
                     <button class="btn btn-warning btn-sm edit-produto-btn" data-product-id="${produto.id}"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger btn-sm delete-produto-btn" data-product-id="${produto.id}"><i class="fas fa-trash"></i></button>
@@ -218,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderProdutos(response.data);
         } catch (error) {
             console.error("Erro ao buscar produtos:", error);
-            produtosTableBody.innerHTML = '<tr><td colspan="8">Não foi possível carregar os produtos.</td></tr>'; // Atualizado colspan
+            produtosTableBody.innerHTML = '<tr><td colspan="8">Não foi possível carregar os produtos.</td></tr>'; 
              if (error.response && error.response.status === 403) {
                  alert("Sua sessão expirou ou você não tem permissão. Faça login novamente.");
                  localStorage.removeItem('jwtToken');
@@ -274,11 +272,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Abre o modal de produto (para adicionar ou editar)
      const openProductModal = (produto = null) => {
-        resetForm(); // Limpa o formulário antes de preencher
-        imagemInput.required = !produto; // Imagem obrigatória só ao adicionar
+        resetForm(); 
+        imagemInput.required = !produto; 
 
         if (produto) {
-            modalTitle.textContent = 'Editar Produto'; // CORREÇÃO: Usa modalTitle corretamente
+            modalTitle.textContent = 'Editar Produto'; 
             produtoIdInput.value = produto.id;
             nomeInput.value = produto.nome;
             marcaSelect.value = produto.marca?.id || '';
@@ -295,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
         } else {
-            modalTitle.textContent = 'Adicionar Novo Produto'; // CORREÇÃO: Usa modalTitle corretamente
+            modalTitle.textContent = 'Adicionar Novo Produto'; 
         }
         productModal.classList.add('active');
     };
@@ -355,10 +353,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (confirm(`Tem certeza que deseja atualizar o status do pedido #${pedidoId} para ${novoStatus}?`)) {
                 try {
-                     // **MUDANÇA: Usar PATCH e enviar JSON**
                     await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: novoStatus });
                     alert('Status do pedido atualizado com sucesso!');
-                    fetchPedidos(); // Atualiza a tabela
+                    fetchPedidos(); 
                 } catch (error) {
                     alert('Erro ao atualizar o status do pedido.');
                     console.error('Erro ao atualizar status:', error);
@@ -369,17 +366,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Event Delegation para botões na tabela de PRODUTOS
     produtosTableBody.addEventListener('click', async (event) => {
-        const target = event.target.closest('button'); // Pega o botão clicado
-        if (!target) return; // Sai se não clicou num botão
+        const target = event.target.closest('button'); 
+        if (!target) return; 
 
         const productId = target.dataset.productId;
 
         // Editar Produto
         if (target.classList.contains('edit-produto-btn')) {
             try {
-                 // **MUDANÇA: Usar publicApiClient para pegar detalhes do produto**
                 const response = await publicApiClient.get(`/produtos/${productId}`);
-                openProductModal(response.data); // Abre o modal com os dados
+                openProductModal(response.data); 
             } catch (error) {
                 alert('Erro ao carregar dados do produto para edição.');
                 console.error("Erro ao buscar produto para editar:", error);
@@ -392,7 +388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     await apiClient.delete(`/produtos/${productId}`);
                     alert('Produto excluído com sucesso!');
-                    fetchProdutos(); // Atualiza a tabela
+                    fetchProdutos(); 
                 } catch (error) {
                     alert('Erro ao excluir produto.');
                     console.error("Erro ao excluir produto:", error);
@@ -417,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const id = produtoIdInput.value;
         const isEditing = !!id;
         const url = isEditing ? `/produtos/${id}` : '/produtos';
-        const method = isEditing ? 'put' : 'post'; // PUT para editar, POST para criar
+        const method = isEditing ? 'put' : 'post'; 
 
         // Validar se marca e categoria foram selecionados
         const brandId = marcaSelect.value;
@@ -432,8 +428,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Monta o objeto JSON do produto
         const produtoData = {
             nome: nomeInput.value,
-            marca: { id: parseInt(brandId) }, // Envia objeto com ID
-            categoria: { id: parseInt(categoryId) }, // Envia objeto com ID
+            marca: { id: parseInt(brandId) }, 
+            categoria: { id: parseInt(categoryId) }, 
             preco: parseFloat(precoInput.value),
             precoOriginal: precoOriginalInput.value ? parseFloat(precoOriginalInput.value) : null,
             estoque: parseInt(estoqueInput.value),
@@ -447,7 +443,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('imagem', imagemInput.files[0]);
         } else if (!isEditing && imagemInput.required) {
             alert('Por favor, selecione uma imagem para o novo produto.');
-            return; // Impede envio sem imagem ao criar
+            return; 
         }
 
         try {
@@ -455,12 +451,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 method: method,
                 url: url,
                 data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' } // Necessário para FormData
+                headers: { 'Content-Type': 'multipart/form-data' } 
             });
 
             alert(`Produto ${isEditing ? 'atualizado' : 'adicionado'} com sucesso!`);
-            closeProductModal(); // Fecha o modal
-            fetchProdutos(); // Atualiza a tabela
+            closeProductModal(); 
+            fetchProdutos(); 
         } catch (error) {
             alert(`Falha ao ${isEditing ? 'atualizar' : 'adicionar'} o produto.`);
             console.error(`Erro ao salvar produto:`, error.response?.data || error.message);
@@ -480,6 +476,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    await fetchBrandsAndCategories(); // Carrega marcas/categorias primeiro
-    switchView('pedidos'); // Inicia na aba de pedidos
+    await fetchBrandsAndCategories(); 
+    switchView('pedidos'); 
 });
