@@ -3,12 +3,9 @@ package com.store.BACK.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.BACK.model.Contato;
 import com.store.BACK.model.Pedido;
-import com.store.BACK.model.PedidoAviso;
 import com.store.BACK.model.Produto;
 import com.store.BACK.service.AdminService;
-import com.store.BACK.service.PedidoAvisoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +20,6 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
-    private final PedidoAvisoService pedidoAvisoService;
     private final ObjectMapper objectMapper;
 
     // --- NOVO ENDPOINT PARA MENSAGENS ---
@@ -75,18 +71,5 @@ public class AdminController {
     public ResponseEntity<Void> deleteProduto(@PathVariable Long id) {
         adminService.deletarProduto(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/pedidos/{pedidoId}/avisos")
-    public ResponseEntity<PedidoAviso> createAviso(
-            @PathVariable Long pedidoId,
-            @RequestParam("mensagem") String mensagem,
-            @RequestParam(value = "imagem", required = false) MultipartFile imagem) {
-        try {
-            PedidoAviso aviso = pedidoAvisoService.createAviso(pedidoId, mensagem, imagem);
-            return ResponseEntity.status(HttpStatus.CREATED).body(aviso);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 }
