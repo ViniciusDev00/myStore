@@ -107,7 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             return;
         }
-        ordersContainer.innerHTML = orders.map(order => {
+        const recentOrders = orders.slice(0, 3);
+        ordersContainer.innerHTML = recentOrders.map(order => {
              return `
             <div class="order-card">
                 <div class="order-header">
@@ -121,11 +122,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadProfileData = async () => {
         try {
-            const response = await apiClient.get('/usuario/meus-dados');
-            const userData = response.data;
+            const [userDataResponse, ordersResponse] = await Promise.all([
+                apiClient.get('/usuario/meus-dados'),
+                apiClient.get('/pedidos')
+            ]);
+
+            const userData = userDataResponse.data;
+            const ordersData = ordersResponse.data;
             
             renderAddresses(userData.enderecos);
-            renderOrders(userData.pedidos);
+            renderOrders(ordersData);
 
         } catch (error) {
             console.error('Erro ao carregar dados do perfil:', error);

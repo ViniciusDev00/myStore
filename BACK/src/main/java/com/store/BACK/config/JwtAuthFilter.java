@@ -1,6 +1,7 @@
 package com.store.BACK.config;
 
 import com.store.BACK.service.JwtTokenService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +18,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,10 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        System.out.println("\n--- [FILTRO JWT] Recebido pedido para o URL: " + request.getRequestURI());
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("--- [FILTRO JWT] Cabeçalho de autorização não existe ou não começa com 'Bearer '. A continuar sem autenticação JWT.");
             filterChain.doFilter(request, response);
             return;
         }
@@ -46,33 +48,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             userEmail = jwtTokenService.extractUsername(jwt);
         } catch (Exception e) {
-            System.out.println("!!! [FILTRO JWT] FALHA: Não foi possível extrair o email do token. Erro: " + e.getMessage());
             filterChain.doFilter(request, response);
             return;
         }
 
-        System.out.println("--- [FILTRO JWT] Email extraído do token: " + userEmail);
-
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            System.out.println("--- [FILTRO JWT] Email presente no token e não há autenticação no contexto. A tentar carregar detalhes do utilizador...");
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
             if (jwtTokenService.isTokenValid(jwt, userDetails)) {
-                System.out.println(">>> [FILTRO JWT] SUCESSO: Token é válido. A definir autenticação no contexto de segurança.");
-                // CORREÇÃO: Usa as autoridades carregadas do UserDetails
+                Claims claims = jwtTokenService.extractAllClaims(jwt);
+                List<Map<String, String>> authorities = (List<Map<String, String>>) claims.get("authorities");
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
+                        userDetails,
+                        null,
+                        authorities.stream()
+                                   .map(auth -> new SimpleGrantedAuthority(auth.get("authority")))
+                                   .collect(Collectors.toList())
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                System.out.println(">>> [FILTRO JWT] Autenticação definida com sucesso para: " + userDetails.getUsername() + " com permissões " + userDetails.getAuthorities());
-            } else {
-                System.out.println("!!! [FILTRO JWT] FALHA: A validação do token falhou.");
             }
-        } else {
-            System.out.println("--- [FILTRO JWT] Email é nulo ou já existe uma autenticação no contexto de segurança. Nada a fazer.");
         }
-
         filterChain.doFilter(request, response);
     }
 }
