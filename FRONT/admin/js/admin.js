@@ -76,13 +76,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const messageModalTitle = document.getElementById('message-modal-title');
     let adminMessages = [];
 
-    const avisoModal = document.getElementById('aviso-modal');
-    const closeAvisoModalBtn = document.getElementById('close-aviso-modal-btn');
-    const avisoForm = document.getElementById('aviso-form');
-    const avisoPedidoIdInput = document.getElementById('aviso-pedido-id');
-    const avisoMensagemInput = document.getElementById('aviso-mensagem');
-    const avisoImagemInput = document.getElementById('aviso-imagem');
-
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const toggleBtn = document.querySelector('.mobile-admin-toggle');
@@ -159,10 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <option value="CANCELADO" ${pedido.status === 'CANCELADO' ? 'selected' : ''}>Cancelado</option>
                     </select>
                 </td>
-                <td class="action-buttons">
-                    <button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}" title="Atualizar Status"><i class="fas fa-sync-alt"></i></button>
-                    <button class="btn btn-info btn-sm add-aviso-btn" data-pedido-id="${pedido.id}" title="Adicionar Aviso"><i class="fas fa-plus-circle"></i></button>
-                </td>
+                <td><button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}">Atualizar</button></td>
             </tr>
         `}).join('');
     };
@@ -321,24 +311,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     const closeMessageModal = () => messageModal.classList.remove('active');
 
-    const openAvisoModal = (pedidoId) => {
-        avisoPedidoIdInput.value = pedidoId;
-        avisoModal.classList.add('active');
-    };
-
-    const closeAvisoModal = () => {
-        avisoForm.reset();
-        avisoModal.classList.remove('active');
-    };
-
     // Event Listeners para Modais
     addProductBtn.addEventListener('click', () => openProductModal());
     closeModalBtn.addEventListener('click', closeProductModal);
     productModal.addEventListener('click', (e) => { if (e.target === productModal) closeProductModal(); });
     closeMessageModalBtn.addEventListener('click', closeMessageModal);
     messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
-    closeAvisoModalBtn.addEventListener('click', closeAvisoModal);
-    avisoModal.addEventListener('click', (e) => { if (e.target === avisoModal) closeAvisoModal(); });
 
 
     // Preview da Imagem
@@ -363,9 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Event Delegation para botões na tabela de PEDIDOS
     pedidosTableBody.addEventListener('click', async (event) => {
-        const target = event.target.closest('button');
-        if (!target) return;
-
+        const target = event.target;
         const pedidoId = target.dataset.pedidoId;
 
         // Atualizar Status do Pedido
@@ -379,17 +355,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 try {
                     await apiClient.patch(`/pedidos/${pedidoId}/status`, { status: novoStatus });
                     alert('Status do pedido atualizado com sucesso!');
-                    fetchPedidos();
+                    fetchPedidos(); 
                 } catch (error) {
                     alert('Erro ao atualizar o status do pedido.');
                     console.error('Erro ao atualizar status:', error);
                 }
             }
-        }
-
-        // Adicionar Aviso
-        if (target.classList.contains('add-aviso-btn')) {
-            openAvisoModal(pedidoId);
         }
     });
 
@@ -492,31 +463,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-
-    // --- Submissão do Formulário de Aviso ---
-    avisoForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const pedidoId = avisoPedidoIdInput.value;
-        const mensagem = avisoMensagemInput.value;
-        const imagem = avisoImagemInput.files[0];
-
-        const formData = new FormData();
-        formData.append('mensagem', mensagem);
-        if (imagem) {
-            formData.append('imagem', imagem);
-        }
-
-        try {
-            await apiClient.post(`/pedidos/${pedidoId}/avisos`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            alert('Aviso adicionado com sucesso!');
-            closeAvisoModal();
-        } catch (error) {
-            alert('Erro ao adicionar aviso.');
-            console.error('Erro ao adicionar aviso:', error);
-        }
-    });
 
     // --- Inicialização ---
     if (toggleBtn && sidebar && overlay) {
