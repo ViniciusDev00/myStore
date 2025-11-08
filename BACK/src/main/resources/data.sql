@@ -1,3 +1,4 @@
+DELETE FROM pedido_aviso;
 DELETE FROM itens_pedido;
 DELETE FROM pedidos;
 DELETE FROM produtos;
