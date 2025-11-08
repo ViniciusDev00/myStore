@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const adminUrl = "/FRONT/admin/HTML/admin.html";
   const perfilUrl = "/FRONT/perfil/HTML/perfil.html";
   const loginUrl = "/FRONT/login/HTML/login.html";
+  const pedidosUrl = "/FRONT/perfil/HTML/pedidos.html";
 
   headerElement.innerHTML = `
         <div class="container">
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="account-dropdown">
                     ${isAdmin ? `<a href="${adminUrl}">Painel Admin</a>` : ''}
                     <a href="${perfilUrl}">Meus Dados</a>
+                    <a href="${pedidosUrl}">Meus Pedidos</a>
                     <button id="logoutBtn" class="logout-button">Sair</button>
                 </div>
             </div>
@@ -92,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const mobileAccountLinks = `
             <li class="nav-separator"></li>
             <li class="nav-item-account"><a href="${perfilUrl}" class="nav-link"><i class="fas fa-user"></i> Meus Dados</a></li>
+            <li class="nav-item-account"><a href="${pedidosUrl}" class="nav-link"><i class="fas fa-box"></i> Meus Pedidos</a></li>
             ${isAdmin ? `<li class="nav-item-account"><a href="${adminUrl}" class="nav-link"><i class="fas fa-cogs"></i> Painel Admin</a></li>` : ''}
             <li class="nav-item-account"><button id="mobileLogoutBtn" class="nav-link-logout"><i class="fas fa-sign-out-alt"></i> Sair</button></li>
         `;
