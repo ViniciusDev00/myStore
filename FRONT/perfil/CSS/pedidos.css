@@ -1,73 +1,179 @@
-/* Estilos para a página de pedidos */
+/* ===================================================
+    CSS/pedidos.css - Estilos Aprimorados para Pedidos
+    (Melhoria: Fonte Branca e Borda Laranja no Status)
+   =================================================== */
+
+/* --- Card Principal do Pedido --- */
 .order-card {
-    background-color: var(--surface-color);
+    background-color: var(--surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-md);
     padding: var(--space-md);
-    margin-bottom: var(--space-md);
-    transition: box-shadow var(--transition-fast);
+    margin-bottom: var(--space-lg);
+    transition: box-shadow var(--transition-fast), transform 0.1s ease-out;
 }
 
 .order-card:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 0 15px rgba(255, 122, 0, 0.15); 
+    transform: translateY(-2px);
 }
 
+/* --- Cabeçalho e Metadados do Pedido --- */
 .order-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm); 
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+}
+
+/* Nova seção para o Valor Total */
+.order-details-summary {
+    display: flex;
+    justify-content: flex-end;
+    font-size: var(--font-size-md);
     margin-bottom: var(--space-md);
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding-top: var(--space-xs);
+    border-top: 1px dashed var(--border-color);
+}
+
+.order-details-summary strong {
+    color: var(--primary); 
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.5px;
 }
 
 .order-id {
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-lg);
+    color: var(--primary);
+    letter-spacing: 1px;
 }
 
+.order-date {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+/* --- Status do Pedido (Melhorado para ser mais Aparente) --- */
 .order-status {
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-bold); 
+    font-size: var(--font-size-sm); 
+    
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--border-radius-pill);
-    color: var(--light-text-color);
+    
+    /* 🌟 CORREÇÃO 1: Garante que o texto seja branco para alto contraste */
+    color: #FFFFFF; 
+    
+    /* 🌟 CORREÇÃO 2: Adiciona a borda laranja (var(--primary)) */
+    border: 2px solid var(--primary); 
+    
     text-transform: uppercase;
-    font-size: var(--font-size-xs);
-    letter-spacing: 0.5px;
+    letter-spacing: 1.2px; 
+    
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); 
+    
+    margin-left: auto;
 }
 
-.order-status.pending { background-color: #f39c12; }
-.order-status.processing { background-color: #3498db; }
-.order-status.shipped { background-color: #2ecc71; }
-.order-status.delivered { background-color: #9b59b6; }
-.order-status.cancelled { background-color: #e74c3c; }
+/* 🌟 PALETA DE CORES MELHORADA */
+.order-status.pending { 
+    /* Laranja mais suave/escuro, pois a borda e a fonte branca dão o contraste */
+    background-color: #e67e22; 
+    border-color: #f39c12; /* Borda laranja mais clara */
+} 
+.order-status.processing { 
+    background-color: #3498db; /* Azul */
+    border-color: #2980b9; 
+}
+.order-status.shipped { 
+    background-color: #2ecc71; /* Verde */ 
+    border-color: #27ae60;
+}
+.order-status.delivered { 
+    background-color: #9b59b6; /* Roxo */ 
+    border-color: #8e44ad;
+}
+.order-status.cancelled { 
+    background-color: #e74c3c; /* Vermelho */ 
+    border-color: #c0392b;
+}
 
+/* --- Lista de Itens --- */
 .order-body {
     display: grid;
-    gap: var(--space-md);
+    gap: var(--space-lg);
+    padding-top: var(--space-md);
 }
 
 .order-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-md);
+    padding: var(--space-sm);
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.order-item-image {
+.order-item-image, .order-item-placeholder {
     width: 80px;
+    min-width: 80px;
     height: 80px;
     object-fit: cover;
     border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color); 
+}
+
+/* --- Detalhes do Item --- */
+.order-item-details {
+    flex-grow: 1;
 }
 
 .order-item-details h4 {
-    margin: 0;
+    margin: 0 0 4px 0;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
 }
 
 .order-item-details p {
     margin: 0;
     font-size: var(--font-size-sm);
-    color: var(--text-muted-color);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 600px) {
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-xs);
+    }
+    
+    .order-details-summary {
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: var(--space-sm);
+    }
+    
+    .order-status {
+        align-self: flex-start; 
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        margin-top: var(--space-sm);
+    }
+
+    .order-item-image, .order-item-placeholder {
+        width: 60px;
+        min-width: 60px;
+        height: 60px;
+    }
 }

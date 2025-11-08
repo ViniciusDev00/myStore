@@ -29,13 +29,29 @@ public class PedidoController {
         if (usuarioLogado == null) {
             return ResponseEntity.status(403).build(); // Retorna "Forbidden" se não houver usuário
         }
-        
+
         // --- MODIFICADO: Passa o DTO inteiro ---
         Pedido novoPedido = pedidoService.criarPedido(checkoutRequest, usuarioLogado);
         // --- FIM MODIFICAÇÃO ---
-        
+
         return ResponseEntity.ok(novoPedido);
     }
+
+    // --- NOVO: Endpoint para buscar todos os pedidos do usuário logado ---
+    /**
+     * Endpoint para buscar todos os pedidos do usuário logado.
+     */
+    @GetMapping // Mapeia para GET /api/pedidos
+    public ResponseEntity<List<Pedido>> getPedidosDoUsuario(@AuthenticationPrincipal Usuario usuarioLogado) {
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(403).build();
+        }
+        // Utiliza o ID do usuário logado para buscar os pedidos
+        List<Pedido> pedidos = pedidoService.getPedidosByUsuarioId(usuarioLogado.getId());
+
+        return ResponseEntity.ok(pedidos);
+    }
+    // --- FIM NOVO ---
 
     /**
      * Endpoint para buscar um pedido específico pelo seu ID.
