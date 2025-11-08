@@ -34,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
             <div class="order-card">
                 <div class="order-header">
-                    <span class="order-id">Pedido #${order.id}</span>
+                    <span class="order-id">Pedido #${String(order.id).padStart(6, '0')}</span>
+                    <span class="order-date">Data: ${new Date(order.dataPedido).toLocaleDateString()}</span>
+                    <span class="order-total">Total: R$ ${order.valorTotal.toFixed(2).replace('.', ',')}</span>
                     <span class="order-status ${statusClass}">${order.status}</span>
                 </div>
                 <div class="order-body">
@@ -44,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="order-item-details">
                                 <h4>${item.produto.nome}</h4>
                                 <p>Quantidade: ${item.quantidade}</p>
-                                <p>Preço: R$ ${item.precoUnitario.toFixed(2)}</p>
+                                <p>Preço Unitário: R$ ${item.precoUnitario.toFixed(2).replace('.', ',')}</p>
                             </div>
                         </div>
                     `).join('')}
