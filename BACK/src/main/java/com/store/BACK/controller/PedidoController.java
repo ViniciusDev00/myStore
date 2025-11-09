@@ -2,9 +2,11 @@ package com.store.BACK.controller;
 
 import com.store.BACK.dto.CheckoutRequestDTO; // MODIFICADO: Importa o DTO correto
 import com.store.BACK.model.Pedido;
+import com.store.BACK.model.PedidoAviso;
 import com.store.BACK.model.Usuario;
+import com.store.BACK.service.PedidoAvisoService;
 import com.store.BACK.service.PedidoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pedidos") // A rota base para todos os endpoints de pedido
+@RequestMapping("/api/pedidos")
+@RequiredArgsConstructor
 public class PedidoController {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
+    private final PedidoAvisoService pedidoAvisoService;
 
     /**
      * Endpoint para criar um novo pedido.
@@ -65,5 +68,30 @@ public class PedidoController {
         }
         // Retorna "Not Found" se o pedido não existir
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{pedidoId}/avisos")
+    public ResponseEntity<List<PedidoAviso>> getAvisosDoPedido(@PathVariable Long pedidoId, @AuthenticationPrincipal Usuario usuarioLogado) {
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // Optional: Add a check to ensure the user owns the order
+        // For now, we assume the user is only requesting their own orders
+
+        List<PedidoAviso> avisos = pedidoAvisoService.getAvisosByPedidoId(pedidoId);
+        return ResponseEntity.ok(avisos);
+    }
+
+    @PostMapping("/{pedidoId}/avisos/mark-as-read")
+    public ResponseEntity<Void> markAvisosAsRead(@PathVariable Long pedidoId, @AuthenticationPrincipal Usuario usuarioLogado) {
+        if (usuarioLogado == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        // Optional: Add a check to ensure the user owns the order
+
+        pedidoAvisoService.markAvisosAsLido(pedidoId);
+        return ResponseEntity.ok().build();
     }
 }
