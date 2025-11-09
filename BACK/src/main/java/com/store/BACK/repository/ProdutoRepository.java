@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
@@ -18,4 +19,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findWithFilters(@Param("nome") String nome,
                                   @Param("marcaId") Long marcaId,
                                   @Param("categoriaId") Long categoriaId); // Novo parâmetro
+
+    @Query("SELECT SUM(p.estoque) FROM Produto p")
+    Optional<Long> sumEstoque();
 }

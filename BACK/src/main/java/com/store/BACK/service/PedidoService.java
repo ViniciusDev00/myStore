@@ -101,4 +101,10 @@ public class PedidoService {
     public Pedido getPedidoById(Long id) {
         return pedidoRepository.findById(id).orElse(null);
     }
+
+    public boolean isOwner(Long pedidoId, Long usuarioId) {
+        return pedidoRepository.findById(pedidoId)
+                .map(pedido -> pedido.getUsuario().getId().equals(usuarioId))
+                .orElse(false);
+    }
 }

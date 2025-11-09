@@ -18,7 +18,8 @@
         <aside class="sidebar">
             <h1 class="logo">Japa<span> Universe</span></h1>
             <nav class="sidebar-nav">
-                <a href="#" id="nav-pedidos" class="nav-item active"><i class="fas fa-box"></i> Pedidos</a>
+                <a href="./dashboard.html" id="nav-dashboard" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="./admin.html" id="nav-pedidos" class="nav-item active"><i class="fas fa-box"></i> Pedidos</a>
                 <a href="#" id="nav-produtos" class="nav-item"><i class="fas fa-tag"></i> Produtos</a>
                 <a href="#" id="nav-mensagens" class="nav-item"><i class="fas fa-envelope"></i> Mensagens</a>
             </nav>
@@ -187,5 +188,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../js/admin.js"></script>
+
+    <div id="details-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="details-modal-title">Detalhes do Pedido</h3>
+                <button id="close-details-modal-btn" class="close-modal">&times;</button>
+            </div>
+            <div id="details-modal-body" class="modal-body-view"></div>
+        </div>
+    </div>
 </body>
 </html>

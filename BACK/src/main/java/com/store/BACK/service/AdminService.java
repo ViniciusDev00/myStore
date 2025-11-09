@@ -1,5 +1,6 @@
 package com.store.BACK.service;
 
+import com.store.BACK.dto.PedidoAdminResponse;
 import com.store.BACK.model.Contato;
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.Produto;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects; // Importar Objects para comparação segura
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,10 @@ public class AdminService {
     private final EmailService emailService;
     // ------------------------------------
 
-    public List<Pedido> listarTodosOsPedidos() {
-        return pedidoRepository.findAll();
+    public List<PedidoAdminResponse> listarTodosOsPedidos() {
+        return pedidoRepository.findAll().stream()
+                .map(PedidoAdminResponse::fromPedido)
+                .collect(Collectors.toList());
     }
 
     public List<Produto> listarTodosOsProdutos() {
@@ -109,5 +113,9 @@ public class AdminService {
     @Transactional
     public void deletarProduto(Long id) {
         produtoRepository.deleteById(id);
+    }
+
+    public Pedido getPedidoById(Long id) {
+        return pedidoRepository.findById(id).orElse(null);
     }
 }
