@@ -6,9 +6,8 @@ import com.store.BACK.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.store.BACK.dto.DashboardStatsDTO;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +17,12 @@ public class DashboardService {
     private final ProdutoRepository produtoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public Map<String, Object> getDashboardStatistics() {
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("vendasTotais", pedidoRepository.findTotalVendas().orElse(BigDecimal.ZERO));
-        stats.put("totalDePedidos", pedidoRepository.count());
-        stats.put("totalDeClientes", usuarioRepository.count());
-        stats.put("produtosEmEstoque", produtoRepository.sumEstoque().orElse(0L));
-        return stats;
+    public DashboardStatsDTO getDashboardStatistics() {
+        long totalPedidos = pedidoRepository.count();
+        long totalClientes = usuarioRepository.count();
+        BigDecimal receitaTotal = pedidoRepository.findTotalVendas().orElse(BigDecimal.ZERO);
+        long produtosTotais = produtoRepository.countTotalProdutos();
+
+        return new DashboardStatsDTO(totalPedidos, totalClientes, receitaTotal, produtosTotais);
     }
 }

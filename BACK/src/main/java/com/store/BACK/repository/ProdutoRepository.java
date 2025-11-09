@@ -22,4 +22,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("SELECT SUM(p.estoque) FROM Produto p")
     Optional<Long> sumEstoque();
+
+    @Query("SELECT COUNT(p) FROM Produto p")
+    long countTotalProdutos();
 }
