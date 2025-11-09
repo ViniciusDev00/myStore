@@ -48,9 +48,8 @@ public class FileStorageService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            // CORREÇÃO: Retorna apenas o caminho relativo consistente
-            // O frontend irá adicionar o baseUrl conforme necessário
-            return "uploads/" + newFileName;
+            // CORREÇÃO: Retorna a URL completa
+            return baseUrl + "/uploads/" + newFileName;
 
         } catch (IOException e) {
             throw new RuntimeException("Falha ao armazenar o arquivo.", e);
