@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const response = await apiClient.get('/stats');
             const stats = response.data;
 
-            document.getElementById('vendas-totais').textContent = `R$ ${stats.vendasTotais.toFixed(2).replace('.', ',')}`;
-            document.getElementById('total-pedidos').textContent = stats.totalDePedidos;
-            document.getElementById('total-clientes').textContent = stats.totalDeClientes;
-            document.getElementById('produtos-estoque').textContent = stats.produtosEmEstoque;
+            document.getElementById('vendas-totais').textContent = `R$ ${stats.receitaTotal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('total-pedidos').textContent = stats.totalPedidos;
+            document.getElementById('total-clientes').textContent = stats.totalClientes;
+            document.getElementById('produtos-totais').textContent = stats.produtosTotais;
 
         } catch (error) {
             console.error("Erro ao buscar estatísticas do dashboard:", error);

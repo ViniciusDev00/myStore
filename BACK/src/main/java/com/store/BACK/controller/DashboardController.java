@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+import com.store.BACK.dto.DashboardStatsDTO;
+
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getDashboardStatistics() {
+    public ResponseEntity<DashboardStatsDTO> getDashboardStatistics() {
         return ResponseEntity.ok(dashboardService.getDashboardStatistics());
     }
 }

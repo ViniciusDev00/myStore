@@ -15,7 +15,7 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
-    private final Path uploadDir = Paths.get("src/main/resources/static/uploads");
+    private final Path uploadDir = Paths.get("./uploads");
     
     // Adicione esta propriedade no application.properties: app.base-url=https://api.japauniverse.com.br
     @Value("${app.base-url:http://localhost:8080}")

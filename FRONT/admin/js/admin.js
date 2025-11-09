@@ -146,9 +146,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
         pedidosTableBody.innerHTML = pedidos.map(pedido => {
             // Nota: O log indica que Pedido.usuario está LAZY. No Admin, talvez seja melhor
-            // buscar o nome pelo AdminService ou garantir que o Usuario seja EAGER/DTO.
-            // Por enquanto, o código abaixo deve usar a referência se estiver disponível:
-            const nomeCliente = pedido.usuario ? pedido.usuario.nome : 'Usuário Desconhecido';
+            // A API agora retorna PedidoAdminResponse, que já tem o campo 'nomeCliente'.
+            const nomeCliente = pedido.nomeCliente || 'Usuário Desconhecido';
             const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
             const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
 
