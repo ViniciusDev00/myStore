@@ -157,6 +157,17 @@ button {
   color: var(--primary);
 }
 
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
 .section-title {
   font-size: 3rem;
   color: rgba(255, 255, 255, 0.851);
