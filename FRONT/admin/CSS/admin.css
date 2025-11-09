@@ -133,6 +133,26 @@ body {
     font-family: var(--font-display);
 }
 
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.chart-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--space-lg);
+}
+
+.chart-card h3 {
+    font-family: var(--font-display);
+    margin-top: 0;
+    margin-bottom: var(--space-lg);
+}
+
 /* --- Tabelas --- */
 .table-container {
     background-color: var(--surface);

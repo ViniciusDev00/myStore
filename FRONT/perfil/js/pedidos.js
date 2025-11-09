@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsModalBody = document.getElementById('details-modal-body');
     const updatesModal = document.getElementById('updates-modal');
     const updatesModalBody = document.getElementById('updates-modal-body');
+    const imageLightboxModal = document.getElementById('image-lightbox-modal');
+    const lightboxImage = document.getElementById('lightbox-image');
     
     // 🌟 CORREÇÃO FINAL: Ajuste da BASE_URL. 
     // Como o JSON já inclui "uploads/...", usamos apenas a raiz do backend.
@@ -227,11 +229,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    [detailsModal, updatesModal].forEach(modal => {
+    [detailsModal, updatesModal, imageLightboxModal].forEach(modal => {
         modal.addEventListener('click', (event) => {
             if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
                 modal.classList.remove('active');
             }
         });
+    });
+
+    updatesModalBody.addEventListener('click', (event) => {
+        if (event.target.classList.contains('update-image')) {
+            lightboxImage.src = event.target.src;
+            imageLightboxModal.classList.add('active');
+        }
     });
 });
