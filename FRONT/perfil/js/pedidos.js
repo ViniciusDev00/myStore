@@ -46,12 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div class="modal-section">
-                <h4>Pagamento</h4>
-                <p><strong>PIX Copia e Cola:</strong></p>
-                <textarea class="pix-code" readonly>${order.pixCopiaECola || 'Não disponível'}</textarea>
-            </div>
-
-            <div class="modal-section">
                 <h4>Itens do Pedido</h4>
                 ${order.itens.map(item => `
                     <div class="order-item-modal">
