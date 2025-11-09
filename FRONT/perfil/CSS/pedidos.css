@@ -562,29 +562,6 @@
     border-color: var(--primary);
 }
 
-#image-lightbox-modal .lightbox-content {
-    padding: 1rem;
-    background-color: var(--surface);
-    text-align: center;
-}
-
-#lightbox-image {
-    max-width: 90vw;
-    max-height: 80vh;
-    object-fit: contain;
-}
-
-#image-lightbox-modal .close-modal-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 2.5rem;
-    color: var(--text-secondary);
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
 /* --- Estados Vazios --- */
 #orders-container:empty::before {
     content: 'Nenhum pedido encontrado';

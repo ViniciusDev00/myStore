@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.store.BACK.dto.DashboardStatsDTO;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,17 +24,5 @@ public class DashboardService {
         long produtosTotais = produtoRepository.countTotalProdutos();
 
         return new DashboardStatsDTO(totalPedidos, totalClientes, receitaTotal, produtosTotais);
-    }
-
-    public List<Map<String, Object>> getSalesOverTime() {
-        return pedidoRepository.findSalesOverTime();
-    }
-
-    public Map<String, Long> getOrderStatusDistribution() {
-        return pedidoRepository.countByStatus().stream()
-                .collect(Collectors.toMap(
-                        record -> (String) record[0],
-                        record -> (Long) record[1]
-                ));
     }
 }
