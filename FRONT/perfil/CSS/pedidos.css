@@ -103,7 +103,10 @@
     background-color: #e74c3c; /* Vermelho */ 
     border-color: #c0392b;
 }
-
+.order-status.pendente {
+    background-color: #e67e22;
+    border-color: #f39c12;
+}
 /* --- Lista de Itens --- */
 .order-body {
     display: grid;
@@ -149,6 +152,16 @@
     line-height: 1.4;
 }
 
+/* --- Rodapé do Card --- */
+.order-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
+}
+
 /* --- Responsividade --- */
 @media (max-width: 600px) {
     .order-header {
@@ -176,16 +189,27 @@
         min-width: 60px;
         height: 60px;
     }
+
+    .order-footer {
+        flex-direction: column;
+    }
+
+    .order-footer .btn {
+        width: 100%;
+    }
 }
 
-/* --- Modal Styles --- */
+/* ============================ */
+/* --- Estilos para o Modal --- */
+/* ============================ */
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo mais escuro */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -204,12 +228,14 @@
     background-color: var(--surface);
     padding: var(--space-lg);
     border-radius: var(--border-radius-md);
+    border: 1px solid var(--primary);
     width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
+    max-width: 700px; /* Aumenta a largura máxima */
+    max-height: 90vh; /* Aumenta a altura máxima */
     overflow-y: auto;
     transform: scale(0.9);
     transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .modal-overlay.active .modal-content {
@@ -244,6 +270,69 @@
     transform: rotate(90deg);
 }
 
+/* --- Seções do Modal --- */
+.modal-section {
+    margin-bottom: var(--space-lg);
+}
+
+.modal-section h4 {
+    color: var(--primary);
+    margin-bottom: var(--space-sm);
+    border-left: 3px solid var(--primary);
+    padding-left: var(--space-sm);
+}
+
+.modal-section p {
+    margin-bottom: var(--space-xs);
+    line-height: 1.6;
+}
+
+/* --- Status no Modal --- */
+.order-status-modal {
+    font-weight: var(--font-weight-bold);
+    padding: 3px 8px;
+    border-radius: var(--border-radius-sm);
+    color: white;
+}
+
+/* --- Textarea do PIX --- */
+.pix-code {
+    width: 100%;
+    background-color: var(--background);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-sm);
+    font-family: monospace;
+    resize: none;
+    min-height: 80px;
+}
+
+/* --- Item de Pedido no Modal --- */
+.order-item-modal {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+.order-item-modal:last-child {
+    border-bottom: none;
+}
+
+.order-item-image-modal {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+}
+
+.order-item-details-modal h5 {
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+}
+
+/* --- Itens de Atualização --- */
 .update-item {
     padding: var(--space-md);
     border-bottom: 1px solid var(--border-color);

@@ -16,24 +16,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const order = currentOrders.find(o => o.id == orderId);
         if (!order) return;
 
+        const formattedDate = new Date(order.dataPedido).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const endereco = order.enderecoDeEntrega;
+        const enderecoCompleto = endereco ? `${endereco.rua}, ${endereco.numero}${endereco.complemento ? `, ${endereco.complemento}` : ''} - ${endereco.cidade}, ${endereco.estado} - CEP: ${endereco.cep}` : 'Endereço não informado';
+
         detailsModalBody.innerHTML = `
-            <p><strong>Pedido ID:</strong> #${order.id}</p>
-            <p><strong>Data:</strong> ${new Date(order.dataPedido).toLocaleDateString('pt-BR')}</p>
-            <p><strong>Status:</strong> ${order.status}</p>
-            <p><strong>Valor Total:</strong> ${order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-            <hr>
-            <h4>Itens do Pedido:</h4>
-            ${order.itens.map(item => `
-                <div class="order-item">
-                    <img src="${BASE_URL}${item.produto.imagemUrl}" alt="${item.produto.nome}" class="order-item-image">
-                    <div class="order-item-details">
-                        <h4>${item.produto.nome}</h4>
-                        <p>Tamanho: ${item.tamanho || 'N/A'}</p>
-                        <p>Quantidade: ${item.quantidade}</p>
-                        <p>Preço Unitário: R$ ${item.precoUnitario.toFixed(2)}</p>
+            <div class="modal-section">
+                <h4>Resumo do Pedido</h4>
+                <p><strong>ID do Pedido:</strong> #${order.id}</p>
+                <p><strong>Data do Pedido:</strong> ${formattedDate}</p>
+                <p><strong>Status:</strong> <span class="order-status-modal ${order.status.toLowerCase()}">${order.status}</span></p>
+                <p><strong>Valor Total:</strong> ${order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+            </div>
+
+            <div class="modal-section">
+                <h4>Endereço de Entrega</h4>
+                <p><strong>Destinatário:</strong> ${order.nomeDestinatario}</p>
+                <p><strong>CPF:</strong> ${order.cpfDestinatario}</p>
+                <p><strong>Telefone:</strong> ${order.telefoneDestinatario}</p>
+                <p><strong>Endereço:</strong> ${enderecoCompleto}</p>
+                ${order.observacoes ? `<p><strong>Observações:</strong> ${order.observacoes}</p>` : ''}
+            </div>
+
+            <div class="modal-section">
+                <h4>Pagamento</h4>
+                <p><strong>PIX Copia e Cola:</strong></p>
+                <textarea class="pix-code" readonly>${order.pixCopiaECola || 'Não disponível'}</textarea>
+            </div>
+
+            <div class="modal-section">
+                <h4>Itens do Pedido</h4>
+                ${order.itens.map(item => `
+                    <div class="order-item-modal">
+                        <img src="${BASE_URL}${item.produto.imagemUrl}" alt="${item.produto.nome}" class="order-item-image-modal">
+                        <div class="order-item-details-modal">
+                            <h5>${item.produto.nome}</h5>
+                            <p>Tamanho: ${item.tamanho || 'N/A'}</p>
+                            <p>Quantidade: ${item.quantidade}</p>
+                            <p>Preço Unitário: ${item.precoUnitario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                        </div>
                     </div>
-                </div>
-            `).join('')}
+                `).join('')}
+            </div>
         `;
         detailsModal.classList.add('active');
     };
@@ -118,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const renderOrders = (orders) => {
+    const renderOrders = async (orders) => {
         if (!orders || orders.length === 0) {
             ordersContainer.innerHTML = '<p>Você ainda não fez nenhum pedido.</p>';
             return;
@@ -181,9 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ordersContainer.innerHTML = ordersHTML;
 
-        orders.forEach(order => {
-            checkUnreadAvisos(order.id);
-        });
+        await Promise.all(orders.map(order => checkUnreadAvisos(order.id)));
     };
 
     fetchOrders();
