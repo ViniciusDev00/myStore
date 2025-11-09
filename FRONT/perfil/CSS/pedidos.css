@@ -295,25 +295,13 @@
     color: white;
 }
 
-/* --- Textarea do PIX --- */
-.pix-code {
-    width: 100%;
-    background-color: var(--background);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    padding: var(--space-sm);
-    font-family: monospace;
-    resize: none;
-    min-height: 80px;
-}
-
 /* --- Item de Pedido no Modal --- */
 .order-item-modal {
-    display: flex;
+    display: grid;
+    grid-template-columns: 120px 1fr;
     align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-sm);
+    gap: var(--space-lg);
+    padding: var(--space-md) 0;
     border-bottom: 1px solid var(--border-color);
 }
 .order-item-modal:last-child {
@@ -321,15 +309,24 @@
 }
 
 .order-item-image-modal {
-    width: 60px;
-    height: 60px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
 }
 
 .order-item-details-modal h5 {
-    font-size: 1rem;
-    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.order-item-details-modal p {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
 }
 
 /* --- Itens de Atualização --- */
