@@ -177,7 +177,14 @@
                 </div>
                 <div class="form-group">
                     <label for="aviso-imagem">Imagem (opcional)</label>
-                    <input type="file" id="aviso-imagem" accept="image/*">
+                    <input type="file" id="aviso-imagem" accept="image/*" class="file-input">
+                    <label for="aviso-imagem" class="file-upload-label">
+                        <i class="fas fa-upload"></i> Escolher Imagem
+                    </label>
+                    <div id="aviso-image-preview-container" class="hidden">
+                        <img id="aviso-image-preview" src="#" alt="Pré-visualização">
+                        <span id="aviso-image-preview-text"></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Enviar Aviso</button>

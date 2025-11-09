@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Mapeia /uploads/** para a pasta física de uploads
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("classpath:/static/uploads/")
+                .addResourceLocations("file:./uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
     }
 }

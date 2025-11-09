@@ -30,7 +30,7 @@ public class AdminService {
     // ------------------------------------
 
     public List<PedidoAdminResponse> listarTodosOsPedidos() {
-        return pedidoRepository.findAll().stream()
+        return pedidoRepository.findAllWithUsuario().stream()
                 .map(PedidoAdminResponse::fromPedido)
                 .collect(Collectors.toList());
     }

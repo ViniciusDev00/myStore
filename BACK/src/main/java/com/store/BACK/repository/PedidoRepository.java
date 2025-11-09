@@ -19,4 +19,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     @Query("SELECT SUM(p.valorTotal) FROM Pedido p")
     Optional<BigDecimal> findTotalVendas();
+
+    @Query("SELECT p FROM Pedido p JOIN FETCH p.usuario")
+    List<Pedido> findAllWithUsuario();
 }
