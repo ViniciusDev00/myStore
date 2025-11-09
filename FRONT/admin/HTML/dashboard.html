@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Japa Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https-cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/admin.css">
+</head>
+<body>
+    <div class="sidebar-overlay"></div>
+    <button class="mobile-admin-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <h1 class="logo">Japa<span> Universe</span></h1>
+            <nav class="sidebar-nav">
+                <a href="./dashboard.html" id="nav-dashboard" class="nav-item active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="./admin.html" id="nav-pedidos" class="nav-item"><i class="fas fa-box"></i> Pedidos</a>
+                <a href="#" id="nav-produtos" class="nav-item"><i class="fas fa-tag"></i> Produtos</a>
+                <a href="#" id="nav-mensagens" class="nav-item"><i class="fas fa-envelope"></i> Mensagens</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../../../index.html" class="nav-item"><i class="fas fa-store"></i> Voltar para Loja</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Dashboard</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="card-content">
+                            <p>Vendas Totais</p>
+                            <h3 id="vendas-totais">R$ 0,00</h3>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="card-content">
+                            <p>Total de Pedidos</p>
+                            <h3 id="total-pedidos">0</h3>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <div class="card-content">
+                            <p>Total de Clientes</p>
+                            <h3 id="total-clientes">0</h3>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon"><i class="fas fa-box-open"></i></div>
+                        <div class="card-content">
+                            <p>Produtos em Estoque</p>
+                            <h3 id="produtos-estoque">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.store.BACK.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.store.BACK.dto.PedidoAdminResponse;
 import com.store.BACK.model.Contato;
 import com.store.BACK.model.Pedido;
 import com.store.BACK.model.PedidoAviso;
@@ -34,8 +35,17 @@ public class AdminController {
 
     // Endpoints de Pedidos
     @GetMapping("/pedidos")
-    public ResponseEntity<List<Pedido>> getAllPedidos() {
+    public ResponseEntity<List<PedidoAdminResponse>> getAllPedidos() {
         return ResponseEntity.ok(adminService.listarTodosOsPedidos());
+    }
+
+    @GetMapping("/pedidos/{id}")
+    public ResponseEntity<Pedido> getPedidoById(@PathVariable Long id) {
+        Pedido pedido = adminService.getPedidoById(id);
+        if (pedido != null) {
+            return ResponseEntity.ok(pedido);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PatchMapping("/pedidos/{pedidoId}/status")

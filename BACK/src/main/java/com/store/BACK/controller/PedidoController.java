@@ -8,6 +8,7 @@ import com.store.BACK.service.PedidoAvisoService;
 import com.store.BACK.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,13 +72,11 @@ public class PedidoController {
     }
 
     @GetMapping("/{pedidoId}/avisos")
+    @PreAuthorize("@pedidoService.isOwner(#pedidoId, principal.id) or hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<PedidoAviso>> getAvisosDoPedido(@PathVariable Long pedidoId, @AuthenticationPrincipal Usuario usuarioLogado) {
         if (usuarioLogado == null) {
             return ResponseEntity.status(403).build();
         }
-
-        // Optional: Add a check to ensure the user owns the order
-        // For now, we assume the user is only requesting their own orders
 
         List<PedidoAviso> avisos = pedidoAvisoService.getAvisosByPedidoId(pedidoId);
         return ResponseEntity.ok(avisos);

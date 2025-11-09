@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
@@ -14,4 +16,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     // Consulta correta para forçar o carregamento de Pedido -> Itens -> Produto
     @Query("SELECT p FROM Pedido p JOIN FETCH p.itens i JOIN FETCH i.produto WHERE p.usuario.id = :usuarioId")
     List<Pedido> findByUsuarioId(@Param("usuarioId") Long usuarioId);
+
+    @Query("SELECT SUM(p.valorTotal) FROM Pedido p")
+    Optional<BigDecimal> findTotalVendas();
 }

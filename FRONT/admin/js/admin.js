@@ -83,6 +83,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const avisoMensagemInput = document.getElementById('aviso-mensagem');
     const avisoImagemInput = document.getElementById('aviso-imagem');
 
+    const detailsModal = document.getElementById('details-modal');
+    const closeDetailsModalBtn = document.getElementById('close-details-modal-btn');
+    const detailsModalBody = document.getElementById('details-modal-body');
+    const detailsModalTitle = document.getElementById('details-modal-title');
+
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     const toggleBtn = document.querySelector('.mobile-admin-toggle');
@@ -331,6 +336,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         avisoModal.classList.remove('active');
     };
 
+    const openDetailsModal = (pedido) => {
+        detailsModalTitle.textContent = `Detalhes do Pedido #${String(pedido.id).padStart(6, '0')}`;
+
+        const itensHtml = pedido.itens.map(item => `
+            <div class="order-item">
+                <img src="${getImageUrl(item.produto.imagemUrl)}" alt="${item.produto.nome}" class="item-image">
+                <div class="item-details">
+                    <p class="item-name">${item.produto.nome}</p>
+                    <p>Tamanho: ${item.tamanho}</p>
+                    <p>Qtd: ${item.quantidade}</p>
+                </div>
+                <div class="item-price">
+                    R$ ${(item.precoUnitario * item.quantidade).toFixed(2).replace('.', ',')}
+                </div>
+            </div>
+        `).join('');
+
+        detailsModalBody.innerHTML = `
+            <div class="order-details-grid">
+                <div class="detail-card">
+                    <h5>Cliente</h5>
+                    <p><strong>Nome:</strong> ${pedido.nomeDestinatario}</p>
+                    <p><strong>CPF:</strong> ${pedido.cpfDestinatario}</p>
+                    <p><strong>Telefone:</strong> ${pedido.telefoneDestinatario}</p>
+                </div>
+                <div class="detail-card">
+                    <h5>Entrega</h5>
+                    <p><strong>Endereço:</strong> ${pedido.enderecoDeEntrega.rua}, ${pedido.enderecoDeEntrega.numero}</p>
+                    <p><strong>Bairro:</strong> ${pedido.enderecoDeEntrega.bairro}</p>
+                    <p><strong>Cidade:</strong> ${pedido.enderecoDeEntrega.cidade} - ${pedido.enderecoDeEntrega.estado}</p>
+                    <p><strong>CEP:</strong> ${pedido.enderecoDeEntrega.cep}</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <h5>Itens do Pedido</h5>
+                <div class="order-items-container">${itensHtml}</div>
+            </div>
+        `;
+        detailsModal.classList.add('active');
+    };
+
+    const closeDetailsModal = () => detailsModal.classList.remove('active');
+
     // Event Listeners para Modais
     addProductBtn.addEventListener('click', () => openProductModal());
     closeModalBtn.addEventListener('click', closeProductModal);
@@ -339,6 +387,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     messageModal.addEventListener('click', (e) => { if (e.target === messageModal) closeMessageModal(); });
     closeAvisoModalBtn.addEventListener('click', closeAvisoModal);
     avisoModal.addEventListener('click', (e) => { if (e.target === avisoModal) closeAvisoModal(); });
+    closeDetailsModalBtn.addEventListener('click', closeDetailsModal);
+    detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeDetailsModal(); });
 
 
     // Preview da Imagem
@@ -390,6 +440,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Adicionar Aviso
         if (target.classList.contains('add-aviso-btn')) {
             openAvisoModal(pedidoId);
+        }
+
+        // Ver Detalhes
+        if (target.classList.contains('view-details-btn')) {
+            try {
+                const response = await apiClient.get(`/pedidos/${pedidoId}`);
+                openDetailsModal(response.data);
+            } catch (error) {
+                alert('Erro ao carregar detalhes do pedido.');
+                console.error("Erro ao buscar detalhes do pedido:", error);
+            }
         }
     });
 
