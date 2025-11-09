@@ -1,10 +1,153 @@
 document.addEventListener('DOMContentLoaded', () => {
     const ordersContainer = document.getElementById('orders-container');
     const token = localStorage.getItem("jwtToken");
+    let currentOrders = [];
+
+    const detailsModal = document.getElementById('details-modal');
+    const detailsModalBody = document.getElementById('details-modal-body');
+    const updatesModal = document.getElementById('updates-modal');
+    const updatesModalBody = document.getElementById('updates-modal-body');
     
     // 🌟 CORREÇÃO FINAL: Ajuste da BASE_URL. 
     // Como o JSON já inclui "uploads/...", usamos apenas a raiz do backend.
     const BASE_URL = 'http://localhost:8080/'; 
+
+    const openDetailsModal = (orderId) => {
+        const order = currentOrders.find(o => o.id == orderId);
+        if (!order) return;
+
+        const endereco = order.enderecoDeEntrega;
+        const enderecoCompleto = endereco ? `${endereco.rua}, ${endereco.numero} ${endereco.complemento || ''} - ${endereco.cidade}, ${endereco.estado} - CEP: ${endereco.cep}` : 'Endereço não informado.';
+
+        detailsModalBody.innerHTML = `
+            <div class="order-details-grid">
+                <div class="detail-item">
+                    <h4>ID do Pedido</h4>
+                    <p>#${order.id}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Data</h4>
+                    <p>${new Date(order.dataPedido).toLocaleString('pt-BR')}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Status</h4>
+                    <p>${order.status}</p>
+                </div>
+                <div class="detail-item">
+                    <h4>Valor Total</h4>
+                    <p>${order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h4>Endereço de Entrega</h4>
+            <p>${enderecoCompleto}</p>
+
+            <h4>Destinatário</h4>
+            <p><strong>Nome:</strong> ${order.nomeDestinatario}</p>
+            <p><strong>Telefone:</strong> ${order.telefoneDestinatario}</p>
+            <p><strong>CPF:</strong> ${order.cpfDestinatario}</p>
+            ${order.observacoes ? `<p><strong>Observações:</strong> ${order.observacoes}</p>` : ''}
+
+            <hr>
+
+            <h4>PIX Copia e Cola</h4>
+            <div class="pix-container">
+                <textarea readonly>${order.pixCopiaECola}</textarea>
+                <button class="btn btn-primary copy-pix-btn">Copiar</button>
+            </div>
+
+            <hr>
+
+            <h4>Itens do Pedido</h4>
+            ${order.itens.map(item => `
+                <div class="order-item">
+                    <img src="${BASE_URL}${item.produto.imagemUrl}" alt="${item.produto.nome}" class="order-item-image">
+                    <div class="order-item-details">
+                        <h4>${item.produto.nome}</h4>
+                        <p>Tamanho: ${item.tamanho || 'N/A'}</p>
+                        <p>Quantidade: ${item.quantidade}</p>
+                        <p>Preço Unitário: R$ ${item.precoUnitario.toFixed(2)}</p>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        detailsModal.classList.add('active');
+
+        const copyBtn = detailsModalBody.querySelector('.copy-pix-btn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                const pixText = detailsModalBody.querySelector('textarea');
+                pixText.select();
+                document.execCommand('copy');
+                alert('Código PIX copiado!');
+            });
+        }
+    };
+
+    const openUpdatesModal = async (orderId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/pedidos/${orderId}/avisos`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const avisos = response.data;
+
+            if (avisos.length === 0) {
+                updatesModalBody.innerHTML = '<p>Nenhuma atualização para este pedido.</p>';
+            } else {
+                updatesModalBody.innerHTML = avisos.map(aviso => `
+                    <div class="update-item">
+                        <p><strong>${new Date(aviso.dataAviso).toLocaleString('pt-BR')}</strong></p>
+                        <p>${aviso.mensagem}</p>
+                        ${aviso.imagemUrl ? `<img src="${BASE_URL}${aviso.imagemUrl}" alt="Imagem do aviso" class="update-image">` : ''}
+                    </div>
+                `).join('');
+            }
+
+            await axios.post(`http://localhost:8080/api/pedidos/${orderId}/avisos/mark-as-read`, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const orderCard = ordersContainer.querySelector(`.order-card[data-order-id='${orderId}']`);
+            if (orderCard) {
+                const badge = orderCard.querySelector('.notification-badge');
+                if (badge) {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            updatesModal.classList.add('active');
+        } catch (error) {
+            console.error('Erro ao buscar atualizações:', error);
+            updatesModalBody.innerHTML = '<p>Não foi possível carregar as atualizações.</p>';
+            updatesModal.classList.add('active');
+        }
+    };
+
+    const checkUnreadAvisos = async (orderId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/pedidos/${orderId}/avisos`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const avisos = response.data;
+            const hasUnread = avisos.some(aviso => !aviso.lido);
+
+            const orderCard = ordersContainer.querySelector(`.order-card[data-order-id='${orderId}']`);
+            if (orderCard) {
+                const badge = orderCard.querySelector('.notification-badge');
+                if (badge) {
+                    if (hasUnread) {
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao checar avisos não lidos:', error);
+        }
+    };
 
     const fetchOrders = async () => {
         if (!token) {
@@ -33,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        currentOrders = orders;
+
         const ordersHTML = orders.map(order => {
             const statusClass = order.status ? order.status.toLowerCase() : '';
             
@@ -42,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedTotal = order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
             return `
-            <div class="order-card">
+            <div class="order-card" data-order-id="${order.id}">
                 <div class="order-header">
                     <span class="order-id">Pedido #${order.id}</span>
                     <span class="order-date">Data: ${formattedDate}</span> 
@@ -76,11 +221,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     }).join('') : '<p>Itens do pedido não disponíveis.</p>'}
                 </div>
+                <div class="order-footer">
+                    <button class="btn btn-secondary view-details-btn">Ver Detalhes</button>
+                    <button class="btn btn-primary view-updates-btn">
+                        Ver Atualizações
+                        <span class="notification-badge hidden"></span>
+                    </button>
+                </div>
             </div>
         `}).join('');
 
         ordersContainer.innerHTML = ordersHTML;
+
+        orders.forEach(order => {
+            checkUnreadAvisos(order.id);
+        });
     };
 
     fetchOrders();
+
+    ordersContainer.addEventListener('click', async (event) => {
+        const target = event.target;
+        const orderCard = target.closest('.order-card');
+        if (!orderCard) return;
+
+        const orderId = orderCard.dataset.orderId;
+
+        if (target.classList.contains('view-details-btn')) {
+            openDetailsModal(orderId);
+        }
+
+        if (target.classList.contains('view-updates-btn')) {
+            await openUpdatesModal(orderId);
+        }
+    });
+
+    [detailsModal, updatesModal].forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
+                modal.classList.remove('active');
+            }
+        });
+    });
 });
