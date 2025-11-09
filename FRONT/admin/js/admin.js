@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const avisoPedidoIdInput = document.getElementById('aviso-pedido-id');
     const avisoMensagemInput = document.getElementById('aviso-mensagem');
     const avisoImagemInput = document.getElementById('aviso-imagem');
+    const avisoImagePreviewContainer = document.getElementById('aviso-image-preview-container');
+    const avisoImagePreview = document.getElementById('aviso-image-preview');
+    const avisoImagePreviewText = document.getElementById('aviso-image-preview-text');
 
     const detailsModal = document.getElementById('details-modal');
     const closeDetailsModalBtn = document.getElementById('close-details-modal-btn');
@@ -167,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td class="action-buttons">
                     <button class="btn btn-primary btn-sm update-status-btn" data-pedido-id="${pedido.id}" title="Atualizar Status"><i class="fas fa-sync-alt"></i></button>
                     <button class="btn btn-info btn-sm add-aviso-btn" data-pedido-id="${pedido.id}" title="Adicionar Aviso"><i class="fas fa-plus-circle"></i></button>
+                    <button class="btn btn-secondary btn-sm view-details-btn" data-pedido-id="${pedido.id}" title="Ver Detalhes"><i class="fas fa-eye"></i></button>
                 </td>
             </tr>
         `}).join('');
@@ -333,6 +337,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const closeAvisoModal = () => {
         avisoForm.reset();
+        avisoImagePreviewContainer.classList.add('hidden');
+        avisoImagePreview.src = '#';
+        avisoImagePreviewText.textContent = '';
         avisoModal.classList.remove('active');
     };
 
@@ -388,6 +395,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeAvisoModalBtn.addEventListener('click', closeAvisoModal);
     avisoModal.addEventListener('click', (e) => { if (e.target === avisoModal) closeAvisoModal(); });
     closeDetailsModalBtn.addEventListener('click', closeDetailsModal);
+
+    avisoImagemInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                avisoImagePreview.src = e.target.result;
+                avisoImagePreviewText.textContent = file.name;
+                avisoImagePreviewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            avisoImagePreviewContainer.classList.add('hidden');
+            avisoImagePreview.src = '#';
+            avisoImagePreviewText.textContent = '';
+        }
+    });
     detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeDetailsModal(); });
 
 

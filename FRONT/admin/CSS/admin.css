@@ -338,6 +338,79 @@ body {
     outline: none;
     box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
 }
+
+/* --- ESTILOS VISUAIS PARA O MODAL DE AVISO (MELHORADO) --- */
+#aviso-form .form-group {
+    margin-bottom: var(--space-lg); /* Aumenta o espaçamento entre os campos */
+}
+
+#aviso-form .form-group label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+#aviso-form .form-group textarea {
+    min-height: 120px;
+    font-size: 1rem;
+    padding: var(--space-sm);
+}
+
+/* Estilo para o input de arquivo (imagem) */
+#aviso-form input[type="file"] {
+    display: none; /* Esconde o input padrão */
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--background);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+.file-upload-label:hover {
+    background-color: var(--surface);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.file-upload-label i {
+    margin-right: 0.5rem;
+}
+
+#aviso-image-preview-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: var(--space-md);
+    border-radius: 4px;
+    background-color: var(--background);
+    border: 1px dashed var(--border-color);
+    min-height: 60px; /* Altura mínima para visibilidade */
+}
+
+#aviso-image-preview {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+#aviso-image-preview-container.hidden {
+    display: none;
+}
+
+#aviso-image-preview-text {
+    color: var(--text-secondary);
+    font-style: italic;
+}
 #product-form .form-group input[type="file"] {
     padding: 0;
     border: none;
