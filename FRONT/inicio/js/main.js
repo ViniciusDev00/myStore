@@ -423,7 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderProductDetails: (product) => {
             const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
             const discountPercent = hasDiscount ? 
-                Math.round(((product.precoOriginal - product.preco) / product.preco) * 100) : 0; // Correção no cálculo percentual
+                Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0; // CORREÇÃO APLICADA AQUI
 
             // Gera o HTML do conteúdo do modal
             quickViewElements.content.innerHTML = `
@@ -579,7 +579,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 // Se a função global não for encontrada (erro de script)
                 console.error("Função window.addToCart não encontrada. Verifique se CartModule está inicializado.");
-                quickViewSystem.closeQuickView(); // Fecha o modal mesmo assim
+                quickViewSystem.closeQuickView(); // Fecham o modal mesmo assim
                 showNotification('Erro interno ao adicionar ao carrinho.', 'error');
             }
         },
