@@ -36,11 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         System.out.println("\n--- [FILTRO JWT] Recebido pedido para o URL: " + request.getRequestURI());
 
-        if (request.getServletPath().contains("/uploads")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("--- [FILTRO JWT] Cabeçalho de autorização não existe ou não começa com 'Bearer '. A continuar sem autenticação JWT.");
             filterChain.doFilter(request, response);

@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
-                        // CORREÇÃO: Rotas públicas (incluindo produtos)
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**").permitAll()
+                        // CORREÇÃO: Rotas públicas (incluindo produtos e imagens)
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", "/FRONT/**").permitAll()
                         // Rotas de Usuário (requerem ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/usuario/meus-dados").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
