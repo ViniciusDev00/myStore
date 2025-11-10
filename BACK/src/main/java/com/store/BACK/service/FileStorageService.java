@@ -1,58 +1,90 @@
 package com.store.BACK.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.util.stream.Stream;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileStorageService {
 
-    private final Path uploadDir = Paths.get("./uploads");
-    
-    // Adicione esta propriedade no application.properties: app.base-url=https://api.japauniverse.com.br
-    @Value("${app.base-url:http://localhost:8080}")
-    private String baseUrl;
+  // CORREÇÃO: Aponta para a pasta física correta
+  private final Path root = Paths.get("src/main/resources/static/uploads");
 
-    public FileStorageService() {
+  public void init() {
+    try {
+      Files.createDirectories(root);
+    } catch (IOException e) {
+      throw new RuntimeException("Could not initialize folder for upload!");
+    }
+  }
+
+  public void save(MultipartFile file) {
+    try {
+      Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+    } catch (Exception e) {
+      if (e instanceof FileAlreadyExistsException) {
+        throw new RuntimeException("A file of that name already exists.");
+      }
+
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+    public String saveAndGetFilename(MultipartFile file) {
         try {
-            Files.createDirectories(uploadDir);
-        } catch (IOException e) {
-            throw new RuntimeException("Não foi possível criar o diretório de uploads", e);
+            String filename = file.getOriginalFilename();
+            Files.copy(file.getInputStream(), this.root.resolve(filename));
+            return filename;
+        } catch (Exception e) {
+            if (e instanceof FileAlreadyExistsException) {
+                throw new RuntimeException("A file of that name already exists.");
+            }
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    public String store(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new RuntimeException("Falha ao armazenar arquivo vazio.");
-        }
+  public Resource load(String filename) {
+    try {
+      Path file = root.resolve(filename);
+      Resource resource = new UrlResource(file.toUri());
 
-        try {
-            String originalFilename = file.getOriginalFilename();
-            String extension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            String newFileName = UUID.randomUUID().toString() + extension;
-
-            Path destinationFile = this.uploadDir.resolve(Paths.get(newFileName)).normalize().toAbsolutePath();
-
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
-            }
-
-            // CORREÇÃO: Retorna a URL completa
-            return baseUrl + "/uploads/" + newFileName;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Falha ao armazenar o arquivo.", e);
-        }
+      if (resource.exists() || resource.isReadable()) {
+        return resource;
+      } else {
+        throw new RuntimeException("Could not read the file!");
+      }
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Error: " + e.getMessage());
     }
+  }
+
+  public void deleteAll() {
+    // FileSystemUtils.deleteRecursively(root.toFile());
+  }
+
+  public Stream<Path> loadAll() {
+    try {
+      return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
+    } catch (IOException e) {
+      throw new RuntimeException("Could not load the files!");
+    }
+  }
+
+  public boolean delete(String filename) {
+    try {
+      Path file = root.resolve(filename);
+      return Files.deleteIfExists(file);
+    } catch (IOException e) {
+      throw new RuntimeException("Error: " + e.getMessage());
+    }
+  }
 }
