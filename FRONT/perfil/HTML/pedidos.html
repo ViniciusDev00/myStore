@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pedidos | Japa Universe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../../FRONT/assets/CSS/base.css">
+    <link rel="stylesheet" href="../CSS/perfil.css">
+    <link rel="stylesheet" href="../CSS/pedidos.css">
+</head>
+<body>
+
+    <header class="main-header" data-basepath="../../.."></header>
+
+    <div class="page-title-bar">
+        <div class="container breadcrumb">
+            <a href="../../../index.html">Página Inicial</a> &nbsp;/&nbsp; <a href="./perfil.html">Minha conta</a> &nbsp;/&nbsp; <span>Meus Pedidos</span>
+        </div>
+    </div>
+
+    <main class="container perfil-container">
+        <aside class="perfil-sidebar">
+            <nav class="perfil-nav">
+                <a href="./perfil.html">Meus Dados</a>
+                <a href="./pedidos.html" class="active">Meus Pedidos</a>
+                <a href="../../../index.html" id="sidebar-logout">Sair</a>
+            </nav>
+        </aside>
+
+        <section class="perfil-content">
+            <div class="perfil-section">
+                <h2 class="perfil-section-title">Meus Pedidos</h2>
+                <div id="orders-container">
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="details-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes do Pedido</h3>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="details-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <div id="updates-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Atualizações do Pedido</h3>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="updates-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <div id="image-lightbox-modal" class="modal-overlay">
+        <div class="modal-content lightbox-content">
+            <button class="close-modal-btn">&times;</button>
+            <img src="" alt="Imagem Ampliada" id="lightbox-image">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../../../FRONT/assets/js/header.js"></script>
+    <script src="../js/pedidos.js"></script>
+</body>
+</html>
