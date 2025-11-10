@@ -13,5 +13,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:./uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
+
+        // Mapeia /FRONT/** para a pasta física de assets do frontend
+        registry.addResourceHandler("/FRONT/**")
+                .addResourceLocations("file:./FRONT/")
+                .setCachePeriod(3600); // Cache de 1 hora
     }
 }
