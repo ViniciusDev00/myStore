@@ -35,13 +35,8 @@ public class ProdutoController {
             @RequestParam(required = false) Long categoriaId,
             @RequestParam(required = false, defaultValue = "default") String ordenacao) {
 
-        List<Produto> produtos = produtoService.buscarProdutosFiltrados(nome, marcaId, categoriaId);
-
-        if ("price-asc".equals(ordenacao)) {
-            produtos.sort(Comparator.comparing(Produto::getPreco));
-        } else if ("price-desc".equals(ordenacao)) {
-            produtos.sort(Comparator.comparing(Produto::getPreco).reversed());
-        }
+        // ALTERAÇÃO: A ordenação foi removida daqui e passada para a camada Service/Repository.
+        List<Produto> produtos = produtoService.buscarProdutosFiltrados(nome, marcaId, categoriaId, ordenacao);
 
         return produtos;
     }
