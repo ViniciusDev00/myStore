@@ -9,9 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mapeia /uploads/** para a pasta física de uploads
+        // CORREÇÃO: Mapeia /uploads/** para a pasta física correta
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:./uploads/")
+                .addResourceLocations("file:src/main/resources/static/uploads/")
                 .setCachePeriod(3600); // Cache de 1 hora
 
         // Mapeia /FRONT/** para a pasta física de assets do frontend
