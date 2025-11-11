@@ -48,6 +48,11 @@
             <label for="login-password">Senha</label>
           </div>
           <button type="submit" class="btn-primary">Entrar</button>
+          
+          <a href="#" class="forgot-password-link" id="forgotPasswordLink"
+            >Esqueceu sua senha?</a
+          >
+
           <p class="form-message" id="loginMessage"></p>
         </form>
 
@@ -85,13 +90,35 @@
           <button type="submit" class="btn-primary">Criar Conta</button>
           <p class="form-message" id="registerMessage"></p>
         </form>
-        
-        </div>
+      </div>
       <a href="../../../index.html" class="back-link"
         ><i class="fas fa-arrow-left"></i> Voltar para a loja</a
       >
     </div>
 
+    <div id="forgotPasswordModal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="closeModalBtn" class="modal-close">&times;</button>
+        <h2>Redefinir Senha</h2>
+        <p class="modal-text">
+          Digite seu e-mail e enviaremos um link para você redefinir sua senha.
+        </p>
+        <form id="forgotPasswordForm">
+          <div class="form-group">
+            <input
+              type="email"
+              id="forgot-email"
+              required
+              autocomplete="email"
+              placeholder=" "
+            />
+            <label for="forgot-email">Seu e-mail de cadastro</label>
+          </div>
+          <button type="submit" class="btn-primary">Enviar link</button>
+          <p class="form-message" id="forgotMessage"></p>
+        </form>
+      </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../js/login.js"></script>
   </body>
