@@ -1,76 +1,81 @@
+// Local: BACK/src/main/java/com/store/BACK/controller/AuthController.java
 package com.store.BACK.controller;
 
 import com.store.BACK.dto.LoginRequestDTO;
 import com.store.BACK.dto.RegistroRequestDTO;
-import com.store.BACK.dto.UsuarioDTO;
 import com.store.BACK.model.Usuario;
-import com.store.BACK.service.JwtTokenService; // 1. IMPORTE O SERVIÇO DE TOKEN
-import com.store.BACK.service.UsuarioService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.store.BACK.repository.UsuarioRepository;
+import com.store.BACK.service.JwtTokenService;
+import com.store.BACK.service.UsuarioService; // NOVO IMPORT
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService; // 2. IMPORTE O UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map; // 3. IMPORTE O MAP PARA A RESPOSTA
+import java.util.Map; // NOVO IMPORT
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioRepository usuarioRepository;
+    private final JwtTokenService jwtTokenService;
+    private final PasswordEncoder passwordEncoder;
+    private final UsuarioService usuarioService; // NOVO CAMPO
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    // SEU MÉTODO ORIGINAL (COPIADO DO ARQUIVO)
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(loginRequestDTO.email(), loginRequestDTO.senha());
+        var auth = this.authenticationManager.authenticate(usernamePassword);
+        var token = jwtTokenService.generateToken((Usuario) auth.getPrincipal());
+        return ResponseEntity.ok(Map.of("token", token));
+    }
 
-    // --- NOVAS INJEÇÕES DE DEPENDÊNCIA ---
-    @Autowired
-    private JwtTokenService jwtTokenService;
+    // SEU MÉTODO ORIGINAL (COPIADO DO ARQUIVO)
+    @PostMapping("/registro")
+    public ResponseEntity<?> registro(@RequestBody RegistroRequestDTO registroRequestDTO) {
+        if (this.usuarioRepository.findByEmail(registroRequestDTO.email()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "E-mail já cadastrado."));
+        }
+        Usuario newUser = new Usuario();
+        newUser.setNome(registroRequestDTO.nome());
+        newUser.setCpf(registroRequestDTO.cpf());
+        newUser.setEmail(registroRequestDTO.email());
+        newUser.setSenha(passwordEncoder.encode(registroRequestDTO.senha()));
+        newUser.setRole("ROLE_USER");
+        this.usuarioRepository.save(newUser);
+        return ResponseEntity.ok(Map.of("message", "Usuário registrado com sucesso"));
+    }
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    // ------------------------------------
-
-    // Seu método de registrar está CORRETO!
-    @PostMapping("/registrar")
-    public ResponseEntity<UsuarioDTO> registrar(@RequestBody RegistroRequestDTO registroRequest) {
+    // NOVO ENDPOINT
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
         try {
-            Usuario novoUsuario = new Usuario();
-            novoUsuario.setNome(registroRequest.nome());
-            novoUsuario.setEmail(registroRequest.email());
-            novoUsuario.setSenha(registroRequest.senha());
-
-            UsuarioDTO usuarioSalvo = usuarioService.registrarUsuario(novoUsuario);
-            return ResponseEntity.ok(usuarioSalvo);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            String email = request.get("email");
+            usuarioService.createPasswordResetToken(email);
+            return ResponseEntity.ok(Map.of("message", "E-mail de redefinição enviado com sucesso. Verifique sua caixa de entrada."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // --- AJUSTE NO MÉTODO DE LOGIN ---
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+    // NOVO ENDPOINT
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody Map<String, String> request) {
         try {
-            // 1. O Spring Security valida o email e a senha
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha())
-            );
-
-            // 2. Se a autenticação passar, buscamos os detalhes do usuário
-            var userDetails = userDetailsService.loadUserByUsername(loginRequest.email());
-
-            // 3. Geramos o token JWT com base nos detalhes do usuário
-            String token = jwtTokenService.generateToken(userDetails);
-
-            // 4. Retornamos o token em um corpo JSON: { "token": "seu.token.aqui" }
-            return ResponseEntity.ok(Map.of("token", token));
-
+            String newPassword = request.get("newPassword");
+            if (newPassword == null || newPassword.isEmpty()) {
+                 return ResponseEntity.badRequest().body(Map.of("error", "A nova senha não pode estar vazia."));
+            }
+            usuarioService.resetPassword(token, newPassword);
+            return ResponseEntity.ok(Map.of("message", "Senha redefinida com sucesso."));
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Credenciais inválidas");
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 }
