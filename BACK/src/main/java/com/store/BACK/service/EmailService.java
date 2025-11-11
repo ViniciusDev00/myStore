@@ -1,113 +1,85 @@
+// Local: BACK/src/main/java/com/store/BACK/service/EmailService.java
 package com.store.BACK.service;
 
+import com.store.BACK.model.ItemPedido;
 import com.store.BACK.model.Pedido;
-import com.store.BACK.model.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async; // 1. IMPORTE AQUI
 import org.springframework.stereotype.Service;
-import jakarta.mail.internet.MimeMessage;
-
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
-
-    /**
-     * Envia o e-mail inicial (Email 1) quando o pedido é criado.
-     * Agora inclui as instruções de pagamento e o código Pix.
-     * ESTE MÉTODO AGORA É ASSÍNCRONO
-     */
-    @Async // 2. ADICIONE ESTA ANOTAÇÃO
-    public void enviarConfirmacaoDePedido(Usuario usuario, Pedido pedido) {
+    // SEU MÉTODO ORIGINAL (COPIADO DO ARQUIVO)
+    public void sendOrderConfirmationEmail(Pedido pedido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(fromEmail, "Japa Universe");
-            helper.setTo(usuario.getEmail());
-            helper.setSubject("Japa Universe: Pedido #" + pedido.getId() + " aguardando pagamento");
+            // Construa o conteúdo HTML do e-mail
+            String htmlContent = "<h1>Confirmação de Pedido</h1>"
+                    + "<p>Obrigado por seu pedido, " + pedido.getClient().getNome() + "!</p>"
+                    + "<p>Seu pedido #" + pedido.getId() + " foi recebido e está sendo processado.</p>"
+                    + "<p>Total: R$ " + String.format("%.2f", pedido.getTotal()) + "</p>"
+                    + "<h2>Itens do Pedido:</h2>";
+            
+            htmlContent += "<ul>";
+            for (ItemPedido item : pedido.getItens()) {
+                htmlContent += "<li>" + item.getProduto().getNome() + " - " 
+                            + item.getQuantidade() + " x R$ " + String.format("%.2f", item.getPreco()) 
+                            + " (Tamanho: " + item.getTamanho() + ")"
+                            + "</li>";
+            }
+            htmlContent += "</ul>";
+            
+            htmlContent += "<h2>Endereço de Entrega:</h2>"
+                    + "<p>" + pedido.getEndereco().getRua() + ", " + pedido.getEndereco().getNumero() + "</p>"
+                    + "<p>" + pedido.getEndereco().getBairro() + ", " + pedido.getEndereco().getCidade() + " - " + pedido.getEndereco().getEstado() + "</p>"
+                    + "<p>CEP: " + pedido.getEndereco().getCep() + "</p>";
 
-            String valorFormatado = formatarMoeda(pedido.getValorTotal());
-
-            String htmlContent = "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>"
-                               + "<h2>Olá " + usuario.getNome() + "!</h2>"
-                               + "<p>Seu pedido <strong>#" + pedido.getId() + "</strong> foi realizado com sucesso e está aguardando pagamento.</p>"
-                               + "<p style='font-size: 1.2rem;'>Valor Total: <strong>" + valorFormatado + "</strong></p>"
-                               + "<hr style='border: 0; border-top: 1px solid #eee;'>"
-                               + "<h3>Pague com Pix para confirmar</h3>"
-                               + "<p>Para finalizar seu pedido, copie o código abaixo e cole no seu aplicativo de banco na opção <strong>Pix Copia e Cola</strong>.</p>"
-                               + "<p>O QR Code também está disponível na página de pagamento em nosso site.</p>"
-                               + "<p style='font-weight: bold; margin-bottom: 5px;'>Pix Copia e Cola:</p>"
-                               + "<pre style='background-color: #f4f4f4; border: 1px solid #ddd; padding: 15px; font-size: 0.9rem; line-height: 1.4; word-wrap: break-word; white-space: pre-wrap;'>"
-                               + pedido.getPixCopiaECola() // Código Pix
-                               + "</pre>"
-                               + "<p style='margin-top: 20px; font-size: 0.9rem; color: #555;'>"
-                               + "Após o pagamento, iremos identificar automaticamente e alterar o status do seu pedido. Você receberá um novo e-mail assim que ele for confirmado."
-                               + "</p>"
-                               + "<br><p>Obrigado por comprar na <strong>Japa Universe</strong>!</p>"
-                               + "</div>";
-
+            helper.setTo(pedido.getClient().getEmail());
+            helper.setSubject("Confirmação de Pedido #" + pedido.getId());
             helper.setText(htmlContent, true);
+            helper.setFrom("nao-responda@japauniverse.com.br"); // Configure isso no seu application.properties
 
             mailSender.send(message);
-
-        } catch (Exception e) {
-            System.err.println("Falha ao enviar e-mail de confirmação (Async): " + e.getMessage());
+        } catch (MessagingException e) {
+            // Trate a exceção (ex: logar o erro)
             e.printStackTrace();
         }
     }
 
-    /**
-     * Envia o e-mail (Email 2) quando o pagamento é confirmado.
-     * ESTE MÉTODO AGORA TAMBÉM É ASSÍNCRONO
-     */
-    @Async // 3. ADICIONE AQUI TAMBÉM
-    public void enviarConfirmacaoPagamento(Usuario usuario, Pedido pedido) {
+    // NOVO MÉTODO PARA REDEFINIÇÃO DE SENHA
+    public void sendPasswordResetEmail(String to, String token) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(fromEmail, "Japa Universe");
-            helper.setTo(usuario.getEmail());
-            helper.setSubject("Japa Universe: Pagamento Confirmado! Pedido #" + pedido.getId());
+            // !! IMPORTANTE !!
+            // Este URL deve apontar para sua página de "nova senha" no FRONT-END
+            // Para testes locais, pode ser isso:
+            String url = "http://127.0.0.1:5500/FRONT/login/HTML/nova-senha.html?token=" + token;
 
-            String valorFormatado = formatarMoeda(pedido.getValorTotal());
+            String htmlContent = "<h1>Redefinição de Senha - JapaUniverse</h1>"
+                               + "<p>Você solicitou a redefinição da sua senha.</p>"
+                               + "<p>Clique no link abaixo para criar uma nova senha (o link expira em 1 hora):</p>"
+                               + "<a href=\"" + url + "\" style=\"background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">Redefinir Senha</a>"
+                               + "<p>Se você não solicitou isso, por favor ignore este e-mail.</p>";
 
-            String htmlContent = "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>"
-                               + "<h2>Oba, " + usuario.getNome() + "!</h2>"
-                               + "<p>Recebemos a confirmação do seu pagamento para o pedido <strong>#" + pedido.getId() + "</strong> no valor de <strong>" + valorFormatado + "</strong>.</p>"
-                               + "<p>Seu pedido está agora com o status: <strong>PAGO</strong>.</p>"
-                               + "<p>Já estamos separando seus produtos e em breve ele será enviado.</p>"
-                               + "<br><p>Obrigado por comprar na <strong>Japa Universe</strong>!</p>"
-                               + "</div>";
-
+            helper.setTo(to);
+            helper.setSubject("JapaUniverse - Redefinição de Senha");
             helper.setText(htmlContent, true);
+            helper.setFrom("nao-responda@japauniverse.com.br"); // Deve ser o mesmo e-mail configurado
 
             mailSender.send(message);
-
-        } catch (Exception e) {
-            System.err.println("Falha ao enviar e-mail de pagamento confirmado (Async): " + e.getMessage());
-            e.printStackTrace();
+        } catch (MessagingException e) {
+            throw new RuntimeException("Falha ao enviar e-mail de redefinição de senha", e);
         }
-    }
-
-    // Método utilitário para formatar BRL (R$)
-    private String formatarMoeda(BigDecimal valor) {
-        if (valor == null) {
-            return NumberFormat.getCurrencyInstance(new Locale("pt", "BR")).format(BigDecimal.ZERO);
-        }
-        Locale ptBr = new Locale("pt", "BR");
-        return NumberFormat.getCurrencyInstance(ptBr).format(valor);
     }
 }
