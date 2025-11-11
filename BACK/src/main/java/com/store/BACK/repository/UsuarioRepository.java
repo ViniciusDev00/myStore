@@ -1,3 +1,4 @@
+// Local: BACK/src/main/java/com/store/BACK/repository/UsuarioRepository.java
 package com.store.BACK.repository;
 
 import com.store.BACK.model.Usuario;
@@ -9,4 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByEmail(String email);
+
+    // NOVO MÉTODO
+    Optional<Usuario> findByPasswordResetToken(String passwordResetToken);
 }
