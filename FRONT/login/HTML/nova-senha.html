@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Senha | Japa Universe</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/CSS/base.css" />
+    <link rel="stylesheet" href="../CSS/login.css" />
+  </head>
+  <body>
+    <canvas id="background-canvas"></canvas>
+
+    <div class="page-container">
+      <a href="../../../index.html" class="logo">Japa <span>Universe</span></a>
+      <div class="form-box">
+        <h2>Crie sua Nova Senha</h2>
+        <form id="resetPasswordForm" class="form active">
+          <div class="form-group">
+            <input
+              type="password"
+              id="new-password"
+              required
+              autocomplete="new-password"
+              placeholder=" "
+            />
+            <label for="new-password">Nova Senha</label>
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="confirm-password"
+              required
+              autocomplete="new-password"
+              placeholder=" "
+            />
+            <label for="confirm-password">Confirme a Nova Senha</label>
+          </div>
+          <button type="submit" class="btn-primary">Salvar Nova Senha</button>
+          <p class="form-message" id="resetMessage"></p>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/nova-senha.js"></script>
+  </body>
+</html>
