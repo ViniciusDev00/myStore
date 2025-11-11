@@ -1,64 +1,56 @@
+// Local: BACK/src/main/java/com/store/BACK/model/Usuario.java
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // Import necessário
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime; // NOVO IMPORT
 import java.util.Collection;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "usuarios")
-@Getter
-@Setter
+@Table(name = "_usuario")
 public class Usuario implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String nome;
-
-    @Column(nullable = false, unique = true)
+    private String cpf;
     private String email;
-
-    @Column(nullable = false)
     private String senha;
+    private String role;
 
-    @Column(nullable = false)
-    private String role = "ROLE_USER";
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore // CORREÇÃO: Ignorar na deserialização (Jackson)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore // CORREÇÃO: Ignorar na deserialização (Jackson)
-    private List<Pedido> pedidos;
-
-    public String getNome() {
-        return this.nome;
-    }
+    // NOVOS CAMPOS PARA RESET DE SENHA
+    private String passwordResetToken;
+    private LocalDateTime tokenExpiryDate;
+    // FIM DOS NOVOS CAMPOS
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role));
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     @Override
     public String getPassword() {
-        return this.senha;
+        return senha;
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return email;
     }
 
     @Override
