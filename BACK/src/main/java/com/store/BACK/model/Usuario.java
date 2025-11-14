@@ -1,4 +1,3 @@
-// Local: BACK/src/main/java/com/store/BACK/model/Usuario.java
 package com.store.BACK.model;
 
 import jakarta.persistence.*;
@@ -6,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString; // NOVO IMPORT
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,7 +30,9 @@ public class Usuario implements UserDetails {
     private String senha;
     private String role;
 
-    // CORREÇÃO CRÍTICA: Mapeamento alterado de "client" para "usuario" para corresponder ao Endereco.java
+    // CORREÇÃO CRÍTICA: O @ToString.Exclude impede que o filtro de segurança chame
+    // a coleção Lazy (enderecos) e cause a LazyInitializationException (o erro 401/403).
+    @ToString.Exclude
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 

@@ -3,6 +3,7 @@ package com.store.BACK.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod; // NOVO IMPORT: Importante para liberar OPTIONS
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,15 +34,22 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
-                        // CORREÇÃO: Rotas públicas (incluindo produtos e imagens)
+                        // CORREÇÃO CRÍTICA PARA CORS: Permite o método OPTIONS globalmente
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Rotas públicas existentes:
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", "/FRONT/**").permitAll()
+
                         // Rotas de Usuário (requerem ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/usuario/meus-dados").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         // Rota de Endereços (requer ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         // Rotas de Admin
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
                         // Qualquer outra requisição deve ser autenticada
                         .anyRequest().authenticated()
                 )
