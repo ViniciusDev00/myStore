@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects; // Importar Objects para comparação segura
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +23,9 @@ public class AdminService {
     private final PedidoRepository pedidoRepository;
     private final ProdutoRepository produtoRepository;
     private final FileStorageService fileStorageService;
-    private final ContatoRepository contatoRepository; // Dependência existente
+    private final ContatoRepository contatoRepository;
 
-    // --- NOVA INJEÇÃO DE DEPENDÊNCIA ---
     private final EmailService emailService;
-    // ------------------------------------
 
     public List<PedidoAdminResponse> listarTodosOsPedidos() {
         return pedidoRepository.findAllWithUsuario().stream()
@@ -39,7 +37,6 @@ public class AdminService {
         return produtoRepository.findAll();
     }
 
-    // Novo método para buscar todas as mensagens de contato
     public List<Contato> listarTodasAsMensagens() {
         return contatoRepository.findAll();
     }
@@ -53,30 +50,22 @@ public class AdminService {
         Pedido pedido = pedidoRepository.findById(pedidoId)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
-        // Pega o status antigo ANTES de alterar
         String statusAntigo = pedido.getStatus();
 
-        // Atualiza o status
         pedido.setStatus(novoStatus);
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
-        // --- GATILHO DE E-MAIL ---
-        // Verifica se o NOVO status é "PAGO" e se o status ANTIGO era DIFERENTE de "PAGO"
-        // Isso evita enviar e-mails repetidos se você atualizar um pedido que já estava pago.
-        final String STATUS_PAGO = "PAGO"; // Define uma constante para evitar erros de digitação
+        final String STATUS_PAGO = "PAGO";
 
         if (STATUS_PAGO.equalsIgnoreCase(novoStatus) && !STATUS_PAGO.equalsIgnoreCase(statusAntigo)) {
-            // Se a condição for verdadeira, envia o e-mail de confirmação de pagamento
             try {
-                emailService.enviarConfirmacaoPagamento(pedidoSalvo.getUsuario(), pedidoSalvo);
+                // CORREÇÃO: Chamada ajustada para o método que recebe apenas Pedido
+                emailService.enviarConfirmacaoPagamento(pedidoSalvo);
             } catch (Exception e) {
-                // Mesmo que o e-mail falhe, o status foi salvo.
-                // Apenas registra o erro no console.
                 System.err.println("ERRO: Status do pedido " + pedidoId + " atualizado, mas falha ao enviar e-mail de confirmação.");
                 e.printStackTrace();
             }
         }
-        // -------------------------
 
         return pedidoSalvo;
     }
@@ -84,7 +73,8 @@ public class AdminService {
     @Transactional
     public Produto adicionarProduto(Produto produto, MultipartFile imagemFile) {
         if (imagemFile != null && !imagemFile.isEmpty()) {
-            String imagemUrl = fileStorageService.store(imagemFile);
+            // CORREÇÃO: store(imagemFile) -> saveAndGetFilename(imagemFile)
+            String imagemUrl = fileStorageService.saveAndGetFilename(imagemFile);
             produto.setImagemUrl(imagemUrl);
         }
         return produtoRepository.save(produto);
@@ -96,7 +86,8 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
         if (imagemFile != null && !imagemFile.isEmpty()) {
-            String imagemUrl = fileStorageService.store(imagemFile);
+            // CORREÇÃO: store(imagemFile) -> saveAndGetFilename(imagemFile)
+            String imagemUrl = fileStorageService.saveAndGetFilename(imagemFile);
             produto.setImagemUrl(imagemUrl);
         }
 

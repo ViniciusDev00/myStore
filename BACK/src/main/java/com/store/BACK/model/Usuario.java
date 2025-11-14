@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime; // NOVO IMPORT
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,13 +30,12 @@ public class Usuario implements UserDetails {
     private String senha;
     private String role;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    // CORREÇÃO CRÍTICA: Mapeamento alterado de "client" para "usuario" para corresponder ao Endereco.java
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> enderecos;
 
-    // NOVOS CAMPOS PARA RESET DE SENHA
     private String passwordResetToken;
     private LocalDateTime tokenExpiryDate;
-    // FIM DOS NOVOS CAMPOS
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

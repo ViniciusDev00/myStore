@@ -16,66 +16,71 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    // SEU MÉTODO ORIGINAL (COPIADO DO ARQUIVO)
-    public void sendOrderConfirmationEmail(Pedido pedido) {
+    // NOVO MÉTODO: Usado pelo AdminService para notificar pagamento
+    public void enviarConfirmacaoPagamento(Pedido pedido) {
+        // Reutiliza a lógica de confirmação do pedido
+        enviarConfirmacaoDePedido(pedido);
+    }
+
+    // MÉTODO AJUSTADO: Usado pelo PedidoService para confirmar pedido
+    public void enviarConfirmacaoDePedido(Pedido pedido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            // Construa o conteúdo HTML do e-mail
+            // CORREÇÕES: getClient() -> getUsuario(), getTotal() -> getValorTotal()
             String htmlContent = "<h1>Confirmação de Pedido</h1>"
-                    + "<p>Obrigado por seu pedido, " + pedido.getClient().getNome() + "!</p>"
+                    + "<p>Obrigado por seu pedido, " + pedido.getUsuario().getNome() + "!</p>"
                     + "<p>Seu pedido #" + pedido.getId() + " foi recebido e está sendo processado.</p>"
-                    + "<p>Total: R$ " + String.format("%.2f", pedido.getTotal()) + "</p>"
+                    + "<p>Total: R$ " + String.format("%.2f", pedido.getValorTotal()) + "</p>"
                     + "<h2>Itens do Pedido:</h2>";
-            
+
             htmlContent += "<ul>";
             for (ItemPedido item : pedido.getItens()) {
-                htmlContent += "<li>" + item.getProduto().getNome() + " - " 
-                            + item.getQuantidade() + " x R$ " + String.format("%.2f", item.getPreco()) 
-                            + " (Tamanho: " + item.getTamanho() + ")"
-                            + "</li>";
+                // CORREÇÃO: getPreco() -> getPrecoUnitario()
+                htmlContent += "<li>" + item.getProduto().getNome() + " - "
+                        + item.getQuantidade() + " x R$ " + String.format("%.2f", item.getPrecoUnitario())
+                        + " (Tamanho: " + item.getTamanho() + ")"
+                        + "</li>";
             }
             htmlContent += "</ul>";
-            
-            htmlContent += "<h2>Endereço de Entrega:</h2>"
-                    + "<p>" + pedido.getEndereco().getRua() + ", " + pedido.getEndereco().getNumero() + "</p>"
-                    + "<p>" + pedido.getEndereco().getBairro() + ", " + pedido.getEndereco().getCidade() + " - " + pedido.getEndereco().getEstado() + "</p>"
-                    + "<p>CEP: " + pedido.getEndereco().getCep() + "</p>";
 
-            helper.setTo(pedido.getClient().getEmail());
+            // CORREÇÃO: getEndereco() -> getEnderecoDeEntrega() e removido getBairro()
+            htmlContent += "<h2>Endereço de Entrega:</h2>"
+                    + "<p>" + pedido.getEnderecoDeEntrega().getRua() + ", " + pedido.getEnderecoDeEntrega().getNumero() + "</p>"
+                    + "<p>" + pedido.getEnderecoDeEntrega().getCidade() + " - " + pedido.getEnderecoDeEntrega().getEstado() + "</p>"
+                    + "<p>CEP: " + pedido.getEnderecoDeEntrega().getCep() + "</p>";
+
+            // CORREÇÃO: getClient() -> getUsuario()
+            helper.setTo(pedido.getUsuario().getEmail());
             helper.setSubject("Confirmação de Pedido #" + pedido.getId());
             helper.setText(htmlContent, true);
-            helper.setFrom("nao-responda@japauniverse.com.br"); // Configure isso no seu application.properties
+            helper.setFrom("nao-responda@japauniverse.com.br");
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            // Trate a exceção (ex: logar o erro)
             e.printStackTrace();
         }
     }
 
-    // NOVO MÉTODO PARA REDEFINIÇÃO DE SENHA
+    // MÉTODO PARA REDEFINIÇÃO DE SENHA
     public void sendPasswordResetEmail(String to, String token) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            // !! IMPORTANTE !!
-            // Este URL deve apontar para sua página de "nova senha" no FRONT-END
-            // Para testes locais, pode ser isso:
             String url = "http://127.0.0.1:5500/FRONT/login/HTML/nova-senha.html?token=" + token;
 
             String htmlContent = "<h1>Redefinição de Senha - JapaUniverse</h1>"
-                               + "<p>Você solicitou a redefinição da sua senha.</p>"
-                               + "<p>Clique no link abaixo para criar uma nova senha (o link expira em 1 hora):</p>"
-                               + "<a href=\"" + url + "\" style=\"background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">Redefinir Senha</a>"
-                               + "<p>Se você não solicitou isso, por favor ignore este e-mail.</p>";
+                    + "<p>Você solicitou a redefinição da sua senha.</p>"
+                    + "<p>Clique no link abaixo para criar uma nova senha (o link expira em 1 hora):</p>"
+                    + "<a href=\"" + url + "\" style=\"background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">Redefinir Senha</a>"
+                    + "<p>Se você não solicitou isso, por favor ignore este e-mail.</p>";
 
             helper.setTo(to);
             helper.setSubject("JapaUniverse - Redefinição de Senha");
             helper.setText(htmlContent, true);
-            helper.setFrom("nao-responda@japauniverse.com.br"); // Deve ser o mesmo e-mail configurado
+            helper.setFrom("nao-responda@japauniverse.com.br");
 
             mailSender.send(message);
         } catch (MessagingException e) {

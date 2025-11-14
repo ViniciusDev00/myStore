@@ -6,7 +6,7 @@ import com.store.BACK.dto.RegistroRequestDTO;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.repository.UsuarioRepository;
 import com.store.BACK.service.JwtTokenService;
-import com.store.BACK.service.UsuarioService; // NOVO IMPORT
+import com.store.BACK.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,7 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map; // NOVO IMPORT
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,7 +25,7 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final JwtTokenService jwtTokenService;
     private final PasswordEncoder passwordEncoder;
-    private final UsuarioService usuarioService; // NOVO CAMPO
+    private final UsuarioService usuarioService;
 
     // SEU MÉTODO ORIGINAL (COPIADO DO ARQUIVO)
     @PostMapping("/login")
@@ -43,6 +43,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "E-mail já cadastrado."));
         }
         Usuario newUser = new Usuario();
+        // Setters corrigidos via Lombok
         newUser.setNome(registroRequestDTO.nome());
         newUser.setCpf(registroRequestDTO.cpf());
         newUser.setEmail(registroRequestDTO.email());
@@ -70,7 +71,7 @@ public class AuthController {
         try {
             String newPassword = request.get("newPassword");
             if (newPassword == null || newPassword.isEmpty()) {
-                 return ResponseEntity.badRequest().body(Map.of("error", "A nova senha não pode estar vazia."));
+                return ResponseEntity.badRequest().body(Map.of("error", "A nova senha não pode estar vazia."));
             }
             usuarioService.resetPassword(token, newPassword);
             return ResponseEntity.ok(Map.of("message", "Senha redefinida com sucesso."));

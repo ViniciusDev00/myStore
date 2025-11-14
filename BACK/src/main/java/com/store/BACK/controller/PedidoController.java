@@ -5,7 +5,7 @@ import com.store.BACK.model.Pedido;
 import com.store.BACK.model.PedidoAviso;
 import com.store.BACK.model.Usuario;
 import com.store.BACK.service.PedidoAvisoService;
-import com.store.BACK.service.PedidoService;
+import com.store.BACK.service.PedidoService; // CORREÇÃO: Importa PedidoService para resolver 'cannot find symbol'
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

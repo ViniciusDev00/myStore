@@ -26,13 +26,13 @@ public class UsuarioController {
 
     @GetMapping("/meus-dados")
     public ResponseEntity<UsuarioDTO> getMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
+        // CORREÇÃO: Chamada que funcionará com o método corrigido no UsuarioService
         UsuarioDTO usuarioDTO = usuarioService.getDadosUsuario(usuarioLogado);
         return ResponseEntity.ok(usuarioDTO);
     }
 
     @GetMapping("/meus-pedidos")
     public ResponseEntity<List<Pedido>> getMeusPedidos(@AuthenticationPrincipal Usuario usuarioLogado) {
-        // --- CORREÇÃO APLICADA AQUI ---
         List<Pedido> pedidos = pedidoService.getPedidosByUsuarioId(usuarioLogado.getId());
         return ResponseEntity.ok(pedidos);
     }

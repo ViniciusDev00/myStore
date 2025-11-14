@@ -88,7 +88,8 @@ public class PedidoService {
             throw new RuntimeException("Falha crítica ao gerar o código PIX para o pedido. Pedido ID: " + pedidoSalvo.getId());
         }
 
-        emailService.enviarConfirmacaoDePedido(usuario, pedidoSalvo);
+        // CORREÇÃO: Assinatura do método alterada para Pedido
+        emailService.enviarConfirmacaoDePedido(pedidoSalvo);
 
         return pedidoSalvo;
     }

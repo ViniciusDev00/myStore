@@ -27,7 +27,8 @@ public class PedidoAvisoService {
 
         String imagemUrl = null;
         if (imagem != null && !imagem.isEmpty()) {
-            imagemUrl = fileStorageService.store(imagem);
+            // CORREÇÃO: store(imagem) -> saveAndGetFilename(imagem)
+            imagemUrl = fileStorageService.saveAndGetFilename(imagem);
         }
 
         PedidoAviso aviso = new PedidoAviso(null, mensagem, imagemUrl, java.time.LocalDateTime.now(), false, pedido);
