@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+import java.util.UUID; // Importação necessária para UUID
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -28,29 +29,35 @@ public class FileStorageService {
   }
 
   public void save(MultipartFile file) {
+    // Este método também precisa ser corrigido para evitar colisões
+    this.saveAndGetFilename(file);
+  }
+
+  public String saveAndGetFilename(MultipartFile file) {
     try {
-      Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
-    } catch (Exception e) {
-      if (e instanceof FileAlreadyExistsException) {
-        throw new RuntimeException("A file of that name already exists.");
+      String originalFilename = file.getOriginalFilename();
+      String fileExtension = "";
+      int dotIndex = originalFilename.lastIndexOf('.');
+
+      // Extrai a extensão do arquivo
+      if (dotIndex > 0) {
+        fileExtension = originalFilename.substring(dotIndex);
       }
 
+      // CORREÇÃO: Cria um nome único usando UUID
+      String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+      Files.copy(file.getInputStream(), this.root.resolve(uniqueFilename));
+      return uniqueFilename; // Retorna o nome único
+    } catch (Exception e) {
+      if (e instanceof FileAlreadyExistsException) {
+        // Embora improvável com UUID, mantemos a exceção
+        throw new RuntimeException("A file of that name already exists.");
+      }
+      // Lança RuntimeException para o erro 500 do Spring
       throw new RuntimeException(e.getMessage());
     }
   }
-
-    public String saveAndGetFilename(MultipartFile file) {
-        try {
-            String filename = file.getOriginalFilename();
-            Files.copy(file.getInputStream(), this.root.resolve(filename));
-            return filename;
-        } catch (Exception e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
-            }
-            throw new RuntimeException(e.getMessage());
-        }
-    }
 
   public Resource load(String filename) {
     try {

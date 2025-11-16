@@ -25,17 +25,14 @@ public class DashboardController {
     }
 
     @GetMapping("/sales-over-time")
-    @SuppressWarnings("unchecked") // Adicionado para suprimir o warning do cast
     public ResponseEntity<List<Map<String, Object>>> getSalesOverTime() {
-        // CORREÇÃO: Cast para forçar a compatibilidade de tipo e resolver o erro de compilação
-        return ResponseEntity.ok((List<Map<String, Object>>) dashboardService.getSalesOverTime());
+        // Não é mais necessário o cast ou supressão, pois o Service faz a conversão.
+        return ResponseEntity.ok(dashboardService.getSalesOverTime());
     }
 
     @GetMapping("/order-status-distribution")
-    @SuppressWarnings("unchecked") // Adicionado para suprimir o warning do cast
     public ResponseEntity<Map<String, Long>> getOrderStatusDistribution() {
-        // CORREÇÃO: Cast para forçar a compatibilidade de tipo e resolver o erro de compilação
-        // (Isso também corrige o erro se o serviço estiver retornando List em vez de Map)
-        return ResponseEntity.ok((Map<String, Long>) dashboardService.getOrderStatusDistribution());
+        // Não é mais necessário o cast ou supressão.
+        return ResponseEntity.ok(dashboardService.getOrderStatusDistribution());
     }
 }

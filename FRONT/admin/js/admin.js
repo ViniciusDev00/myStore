@@ -103,7 +103,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (path.startsWith('http')) {
             return path;
         }
-        return `${apiUrl}/${path}`;
+        // CORREÇÃO: Inclui o prefixo 'uploads/' para coincidir com o mapeamento do Spring Boot
+        return `${apiUrl}/uploads/${path}`;
     };
 
     const resetForm = () => {
@@ -359,6 +360,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `).join('');
 
+        // Renderização dos Avisos e Imagens
+        const avisosHtml = (pedido.avisos || [])
+            .sort((a, b) => new Date(b.dataAviso) - new Date(a.dataAviso)) // Mais recentes primeiro
+            .map(aviso => {
+                const dataFormatada = new Date(aviso.dataAviso).toLocaleString('pt-BR');
+                let imagemHtml = '';
+
+                if (aviso.imagemUrl) {
+                    // Constrói o URL completo usando a função getImageUrl
+                    const imageUrl = getImageUrl(aviso.imagemUrl);
+                    imagemHtml = `<div class="aviso-image-container"><img src="${imageUrl}" alt="Imagem do Aviso" style="max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px;"></div>`;
+                }
+
+                return `
+                    <div class="aviso-item-details">
+                        <p class="aviso-date-message"><strong>${dataFormatada}:</strong></p>
+                        <p>${aviso.mensagem}</p>
+                        ${imagemHtml}
+                        <hr>
+                    </div>
+                `;
+            }).join('');
+
         detailsModalBody.innerHTML = `
             <div class="order-details-grid">
                 <div class="detail-card">
@@ -378,6 +402,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="detail-card">
                 <h5>Itens do Pedido</h5>
                 <div class="order-items-container">${itensHtml}</div>
+            </div>
+            <div class="detail-card">
+                <h5>Atualizações do Pedido</h5>
+                <div class="order-avisos-container">
+                    ${avisosHtml.length > 0 ? avisosHtml : '<p>Nenhum aviso ou atualização para este pedido.</p>'}
+                </div>
             </div>
         `;
         detailsModal.classList.add('active');

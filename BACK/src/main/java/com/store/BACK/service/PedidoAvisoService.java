@@ -27,7 +27,7 @@ public class PedidoAvisoService {
 
         String imagemUrl = null;
         if (imagem != null && !imagem.isEmpty()) {
-            // CORREÇÃO: store(imagem) -> saveAndGetFilename(imagem)
+            // Usa o método corrigido que retorna um nome de arquivo único (UUID)
             imagemUrl = fileStorageService.saveAndGetFilename(imagem);
         }
 
