@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (path.startsWith('http')) {
             return path;
         }
-        // CORREÇÃO: Inclui o prefixo 'uploads/' para coincidir com o mapeamento do Spring Boot
+        // LINHA CORRIGIDA
         return `${apiUrl}/uploads/${path}`;
     };
 
