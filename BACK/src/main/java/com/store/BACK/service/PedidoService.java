@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,13 +51,21 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Endereço de entrega não encontrado: " + enderecoEntregaId));
         pedido.setEnderecoDeEntrega(endereco);
 
+        // CORREÇÃO: Usando os métodos getNomeDestinatario e getTelefoneDestinatario
         pedido.setNomeDestinatario(checkoutRequest.getNomeDestinatario());
         pedido.setTelefoneDestinatario(checkoutRequest.getTelefoneDestinatario());
+
         pedido.setCpfDestinatario(checkoutRequest.getCpfDestinatario());
         pedido.setObservacoes(checkoutRequest.getObservacoes());
 
+        // --- NOVAS OPÇÕES SALVAS NO PEDIDO ---
+        pedido.setComCaixa(checkoutRequest.isComCaixa());
+        pedido.setEntregaPrioritaria(checkoutRequest.isEntregaPrioritaria());
+        // --- FIM NOVAS OPÇÕES ---
+
+
         List<ItemPedido> itensPedido = new ArrayList<>();
-        BigDecimal valorTotal = BigDecimal.ZERO;
+        BigDecimal subtotal = BigDecimal.ZERO;
 
         List<ItemPedidoDTO> itensDTO = checkoutRequest.getItens();
         for (ItemPedidoDTO itemDTO : itensDTO) {
@@ -71,11 +80,28 @@ public class PedidoService {
             itemPedido.setPrecoUnitario(produto.getPreco());
 
             itensPedido.add(itemPedido);
-            valorTotal = valorTotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDTO.getQuantidade())));
+            subtotal = subtotal.add(produto.getPreco().multiply(BigDecimal.valueOf(itemDTO.getQuantidade())));
         }
 
         pedido.setItens(itensPedido);
-        pedido.setValorTotal(valorTotal);
+
+        // --- CÁLCULO DAS TAXAS E VALOR FINAL ---
+        BigDecimal valorTotal = subtotal;
+
+        final BigDecimal TAXA = new BigDecimal("0.05");
+
+        if (pedido.isComCaixa()) {
+            BigDecimal taxaCaixa = subtotal.multiply(TAXA);
+            valorTotal = valorTotal.add(taxaCaixa);
+        }
+
+        if (pedido.isEntregaPrioritaria()) {
+            BigDecimal taxaPrioritaria = subtotal.multiply(TAXA);
+            valorTotal = valorTotal.add(taxaPrioritaria);
+        }
+
+        pedido.setValorTotal(valorTotal.setScale(2, RoundingMode.HALF_UP));
+        // --- FIM CÁLCULO DAS TAXAS ---
 
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
@@ -88,7 +114,6 @@ public class PedidoService {
             throw new RuntimeException("Falha crítica ao gerar o código PIX para o pedido. Pedido ID: " + pedidoSalvo.getId());
         }
 
-        // CORREÇÃO: Assinatura do método alterada para Pedido
         emailService.enviarConfirmacaoDePedido(pedidoSalvo);
 
         return pedidoSalvo;

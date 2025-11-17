@@ -1,327 +1,299 @@
-/* ===================================
-    LAYOUT HÍBRIDO DE CHECKOUT
-    (2 Colunas Desktop / 1 Coluna Mobile)
-   =================================== */
-
-/* Layout Base (Mobile-first) */
+/* Estrutura Básica e Responsividade */
 .checkout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.checkout-layout {
     display: grid;
-    grid-template-columns: 1fr; /* 1 coluna por padrão */
-    gap: var(--space-lg);
-    padding: var(--space-lg) var(--space-md);
-    align-items: flex-start;
-    margin-top: var(--space-lg); /* <-- CORREÇÃO ADICIONADA AQUI */
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-top: 30px;
 }
 
-.checkout-flow {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg); /* Espaço entre os cards */
+/* Formulário de Seções */
+.checkout-form-section h2 {
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 5px;
 }
 
-.checkout-title {
-    font-size: 2.5rem;
-    font-family: var(--font-display);
-    color: var(--text-primary);
-}
-
-/* Estilo de "Card" Padrão */
-.checkout-card,
-.summary-card {
-    background-color: var(--surface);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.card-title {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
+.checkout-form-section h3.section-subtitle {
     font-size: 1.5rem;
-    font-weight: 600;
-    font-family: var(--font-body);
+    margin-top: 30px;
+    margin-bottom: 15px;
     color: var(--text-primary);
-    padding: var(--space-md) var(--space-lg);
-    border-bottom: 1px solid var(--border-light);
 }
 
-/* Número do Passo */
-.step-number {
-    background-color: var(--primary);
-    color: var(--background);
-    font-weight: 700;
-    font-size: 1rem;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+.form-group-row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    gap: 20px;
 }
 
-.card-content {
-    padding: var(--space-lg);
+.form-group, .form-group-row .form-group {
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-group-row .one-third { flex: 0 0 30%; }
+.form-group-row .two-thirds { flex: 0 0 65%; }
+.form-group-row .full-width { flex: 1 1 100%; }
+
+/* --- NOVOS ESTILOS PARA OPÇÕES E VALIDAÇÃO --- */
+.validation-message {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    height: 1.2rem; /* Reserva espaço para evitar CLS */
+}
+
+#phone-match-message {
+    color: var(--error-color);
+}
+
+.options-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md); /* Espaço entre itens dentro do card */
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-/* ===================================
-    BARRA LATERAL / RESUMO
-   =================================== */
-
-.summary-card {
-    padding: 0; /* Padding será por seções */
-}
-.summary-card .card-title {
-    border-bottom: 1px solid var(--border-light);
-}
-.summary-card .summary-details {
-    border-bottom: 1px solid var(--border-light);
-}
-.summary-card .btn-block {
-    margin: var(--space-lg);
-    width: calc(100% - var(--space-lg) * 2); /* Botão com padding */
-    justify-content: center;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
-    font-size: 1.1rem;
-}
-.summary-card .continue-shopping-link {
-    margin-bottom: var(--space-lg);
+.option-card {
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+.option-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.option-card p.option-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.radio-options label {
+    display: block;
+    cursor: pointer;
+    padding: 8px 0;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.radio-options input[type="radio"] {
+    margin-right: 8px;
+    accent-color: var(--primary-color);
+}
+/* --- FIM NOVOS ESTILOS PARA OPÇÕES E VALIDAÇÃO --- */
+
+/* Resumo do Pedido */
+.order-summary-section {
+    background-color: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    align-self: flex-start;
+    position: sticky;
+    top: 20px; /* Mantém o resumo visível ao rolar */
+}
+
+.order-summary-section h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+}
+
+.summary-items {
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.summary-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(var(--border-rgb), 0.1);
+}
+
+.summary-item-details {
+    flex-grow: 1;
+}
+
+.summary-item-details h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.summary-item-details p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+}
+
+.summary-item-image {
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    border-radius: var(--border-radius-sm);
+}
+
+.summary-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.summary-details {
+    margin-top: 20px;
+    padding-top: 10px;
+}
 
 .summary-line {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
     font-size: 1rem;
-    color: var(--text-secondary);
-}
-.summary-line span:last-child {
-    font-weight: 500;
     color: var(--text-primary);
 }
 
-.summary-total-line {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.3rem;
+.summary-line.option-line {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+.summary-line.total-line {
+    border-top: 2px solid var(--border-color);
+    padding-top: 15px;
+    margin-top: 15px;
+    font-size: 1.4rem;
     font-weight: 700;
-    color: var(--text-primary);
-    padding: var(--space-lg);
-}
-.summary-total-line span:last-child {
-    color: var(--primary); /* Total destacado */
+    color: var(--primary-color);
 }
 
-.continue-shopping-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-.continue-shopping-link:hover {
-    color: var(--primary);
-    text-decoration: underline;
+.summary-line.total-line h3 {
+    font-size: 1.4rem;
 }
 
-/* ===================================
-    CONTEÚDO INJETADO (Endereço e Itens)
-   =================================== */
-
-/* --- Estilos de Endereço --- */
-.address-option {
-    display: flex;
-    gap: var(--space-sm);
-    padding: var(--space-md);
-    border: 2px solid var(--border-color); /* Borda mais grossa para clique */
-    border-radius: 8px;
-    cursor: pointer;
-    transition: border-color 0.2s, background-color 0.2s;
-    background-color: var(--card-bg); /* Fundo mais escuro */
-}
-.address-option:hover {
-    border-color: var(--primary-light);
-}
-.address-option:has(input[type="radio"]:checked) {
-    border-color: var(--primary);
-    background-color: rgba(255, 122, 0, 0.05);
-}
-.address-option input[type="radio"] {
-    margin-top: 5px;
-    accent-color: var(--primary);
-    transform: scale(1.1);
-}
-.address-details p {
-    margin: 0;
-    line-height: 1.5;
-    color: var(--text-secondary);
-}
-.address-details p strong {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-.add-address-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-/* --- Estilos dos Itens do Carrinho --- */
-.cart-item {
-    display: grid;
-    grid-template-columns: 80px 1fr auto; /* Imagem, Detalhes, Ações */
-    gap: var(--space-md);
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--border-light);
-    align-items: center;
-}
-.cart-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 6px;
-    background-color: var(--card-bg);
-}
-.item-details .item-name {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: var(--space-xs);
-}
-.item-details .item-size {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-.item-details .item-price {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-top: var(--space-xs);
-}
-.item-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-sm);
-}
-.quantity-control {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border-light);
-    border-radius: 4px;
-    overflow: hidden;
-}
-.quantity-control button {
-    width: 30px;
-    height: 30px;
-    color: var(--text-primary);
-    background-color: var(--surface);
-    transition: background-color 0.2s;
-}
-.quantity-control button:hover { background-color: var(--primary); }
-.quantity-control .item-quantity {
-    width: 35px;
-    height: 30px;
-    text-align: center;
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-}
-.remove-item {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    transition: color 0.2s;
-}
-.remove-item:hover { color: #e53935; }
-.empty-cart {
-    text-align: center;
-    padding: var(--space-lg) 0;
-    color: var(--text-muted);
-}
-
-/* ===================================
-    NOVOS ESTILOS PARA FORMULÁRIO
-   =================================== */
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
+.btn-checkout {
     width: 100%;
+    margin-top: 20px;
 }
 
-.form-group label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+.hidden {
+    display: none !important;
 }
 
-.form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    font-family: var(--font-body);
-    color: var(--text-primary);
-    background-color: var(--card-bg); /* Fundo similar ao do endereço */
+/* --- ESTILOS PARA PRAZO DE ENTREGA --- */
+.delivery-info {
+    margin-top: 20px;
+    padding: 15px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    border-radius: var(--border-radius-md);
+    background-color: var(--input-bg);
 }
 
-.form-control::placeholder {
-    color: var(--text-muted);
+.delivery-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 10px;
 }
 
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1);
-}
-
-/* Para campos lado a lado */
-.form-row {
+.delivery-line {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
 }
 
-/* Em telas maiores, coloca CPF e Telefone lado a lado */
-@media (min-width: 768px) {
-    .form-row {
-        flex-direction: row;
-        gap: var(--space-lg);
+.delivery-line i {
+    margin-right: 10px;
+    color: var(--accent-color);
+}
+
+.delivery-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    font-style: italic;
+}
+/* --- FIM ESTILOS PARA PRAZO DE ENTREGA --- */
+
+
+/* Responsividade para telas menores */
+@media (max-width: 1024px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .order-summary-section {
+        position: static;
+        top: auto;
     }
 }
 
-
-/* ===================================
-    RESPONSIVIDADE (Desktop)
-   =================================== */
-
-@media (min-width: 992px) {
-    .checkout-container {
-        /* 2 colunas: 2 partes para o fluxo, 1 para o resumo */
-        grid-template-columns: 2fr 1.2fr; 
-        gap: var(--space-xl);
+@media (max-width: 768px) {
+    .form-group-row {
+        flex-direction: column;
+        gap: 0;
     }
 
-    .checkout-sidebar .summary-card {
-        /* Faz o resumo "grudar" no topo ao rolar */
-        position: sticky;
-        /* (80px header + 2.5rem gap) */
-        top: calc(var(--header-height, 80px) + var(--space-lg)); 
+    .form-group-row .form-group {
+        flex: 1 1 100%;
+    }
+    
+    .form-group-row .one-third, .form-group-row .two-thirds {
+        flex: 1 1 100%;
+    }
+    
+    .options-group {
+        flex-direction: column;
     }
 }

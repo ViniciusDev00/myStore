@@ -1,28 +1,66 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- MANTENHA AS VARIÁVEIS EXISTENTES ---
-    const cartItemsContainer = document.getElementById('cart-items-container');
-    const summarySubtotal = document.getElementById('summary-subtotal');
-    const summaryTotal = document.getElementById('summary-total');
-    const checkoutButton = document.getElementById('checkout-button');
-    const token = localStorage.getItem('jwtToken');
-
-    // --- VARIÁVEL E ELEMENTO DE ENDEREÇO ---
-    const addressSelectionContainer = document.getElementById('address-selection'); 
-    let selectedAddressId = null; // Para guardar o ID do endereço selecionado
     
-    // --- NOVOS ELEMENTOS DO FORMULÁRIO DE DESTINATÁRIO ---
-    const nomeDestinatarioEl = document.getElementById('nomeDestinatario');
-    const cpfDestinatarioEl = document.getElementById('cpfDestinatario');
-    const telefoneDestinatarioEl = document.getElementById('telefoneDestinatario');
-    const observacoesEl = document.getElementById('observacoes');
-    // --- FIM NOVOS ELEMENTOS ---
+    const token = localStorage.getItem('jwtToken');
+    const baseImageUrl = 'http://localhost:8080/'; 
+    
+    // --- CONSTANTES DE PRAZOS DE ENTREGA ---
+    const PRAZO_ENTREGA = {
+        PRIORITARIA: {
+            CORREIOS: '10-15 dias',
+            RESIDENCIA: '18-23 dias'
+        },
+        PADRAO: {
+            CORREIOS: '15-20 dias',
+            RESIDENCIA: '23-28 dias'
+        }
+    };
+    // ----------------------------------------
 
     if (!token) {
         window.location.href = '../../login/HTML/login.html';
         return;
     }
+    
+    // --- VARIÁVEIS DE ESTADO E REFERÊNCIA ---
+    let selectedAddressId = null; 
+    let currentSubtotal = 0; 
 
-    // --- MANTENHA A CONFIGURAÇÃO DO apiClient ---
+    // --- ELEMENTOS DO DOM (INCLUINDO ORIGINAIS E NOVOS) ---
+    // Elementos originais
+    const checkoutForm = document.getElementById('checkoutForm'); // Assume que existe no HTML
+    const cartItemsContainer = document.getElementById('cart-items-container'); // Elemento para itens do carrinho (se usado fora do resumo)
+    const summarySubtotal = document.getElementById('summary-subtotal'); // Original (pode ser o mesmo que summarySubtotalElement)
+    const summaryTotal = document.getElementById('summary-total');     // Original (pode ser o mesmo que summaryTotalElement)
+    const checkoutButton = document.getElementById('checkout-button'); // Botão principal de checkout
+
+    // Elementos do Resumo do Pedido (Novos IDs ou renomeados)
+    const summaryItemsContainer = document.getElementById('summaryItemsContainer');
+    const summarySubtotalElement = document.getElementById('summarySubtotal');
+    const summaryTotalElement = document.getElementById('summaryTotal');
+    const taxaCaixaElement = document.getElementById('taxaCaixa');
+    const taxaPrioritariaElement = document.getElementById('taxaPrioritaria');
+    const comCaixaLine = document.querySelector('.com-caixa-line');
+    const prioritariaLine = document.querySelector('.prioritaria-line');
+    const prazoCorreiosElement = document.getElementById('prazoCorreios');
+    const prazoResidenciaElement = document.getElementById('prazoResidencia');
+
+    // Elementos de Endereço e Destinatário
+    const addressSelectionContainer = document.getElementById('address-selection'); 
+    const nomeDestinatarioEl = document.getElementById('nomeDestinatario');
+    const cpfDestinatarioEl = document.getElementById('cpfDestinatario');
+    const observacoesEl = document.getElementById('observacoes');
+    
+    // Elementos de Telefone e Validação
+    const telefoneInput = document.getElementById('telefoneDestinatario'); // Campo Telefone principal
+    const confirmacaoTelefoneInput = document.getElementById('confirmacaoTelefone'); // Campo de Confirmação
+    const phoneMatchMessage = document.getElementById('phone-match-message');
+
+    // Elementos de Opções
+    const opcoesCaixa = document.querySelectorAll('input[name="opcaoCaixa"]');
+    const opcoesPrioritaria = document.querySelectorAll('input[name="opcaoPrioritaria"]');
+
+
+    // --- CONFIGURAÇÃO DO apiClient ---
     const apiClient = axios.create({
         baseURL: 'http://localhost:8080/api',
         headers: {
@@ -30,22 +68,129 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- MANTENHA getCart, saveCart ---
+    // --- FUNÇÕES BÁSICAS DE CARRINHO ---
     const getCart = () => {
-        return JSON.parse(localStorage.getItem('japaUniverseCart')) || [];
+        return JSON.parse(localStorage.getItem('cart')) || []; 
     };
 
     const saveCart = (cart) => {
-        localStorage.setItem('japaUniverseCart', JSON.stringify(cart));
+        localStorage.setItem('cart', JSON.stringify(cart));
         renderCart();
         if (window.updateCartCounter) {
             window.updateCartCounter();
         }
     };
-    // --- FIM getCart, saveCart ---
 
-    // --- MANTENHA A FUNÇÃO: Buscar Endereços ---
-    const fetchUserAddresses = async () => {
+    // Funções utilitárias
+    const formatPrice = (price) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
+
+    // --- FUNÇÃO DE CÁLCULO DE PREÇO E PRAZOS ---
+    const updateOrderSummary = (subtotal) => {
+        if (subtotal === undefined) subtotal = currentSubtotal;
+
+        let finalTotal = subtotal;
+        let taxaCaixaValor = 0;
+        let taxaPrioritariaValor = 0;
+
+        const comCaixa = document.getElementById('comCaixa')?.checked || false;
+        const entregaPrioritaria = document.getElementById('entregaPrioritaria')?.checked || false;
+
+        // 1. Cálculo da Taxa Caixa (5% do subtotal)
+        if (comCaixa) {
+            taxaCaixaValor = subtotal * 0.05;
+            finalTotal += taxaCaixaValor;
+            comCaixaLine?.classList.remove('hidden');
+        } else {
+            comCaixaLine?.classList.add('hidden');
+        }
+
+        // 2. Cálculo da Taxa Prioritária (5% do subtotal)
+        if (entregaPrioritaria) {
+            taxaPrioritariaValor = subtotal * 0.05;
+            finalTotal += taxaPrioritariaValor;
+            prioritariaLine?.classList.remove('hidden');
+        } else {
+            prioritariaLine?.classList.add('hidden');
+        }
+        
+        finalTotal = parseFloat(finalTotal.toFixed(2));
+        taxaCaixaValor = parseFloat(taxaCaixaValor.toFixed(2));
+        taxaPrioritariaValor = parseFloat(taxaPrioritariaValor.toFixed(2));
+
+        // 3. Atualizar elementos de resumo
+        if (summarySubtotalElement) summarySubtotalElement.textContent = formatPrice(subtotal);
+        if (taxaCaixaElement) taxaCaixaElement.textContent = formatPrice(taxaCaixaValor);
+        if (taxaPrioritariaElement) taxaPrioritariaElement.textContent = formatPrice(taxaPrioritariaValor);
+        if (summaryTotalElement) summaryTotalElement.textContent = formatPrice(finalTotal);
+
+        // 4. Atualizar prazos de entrega
+        const prazo = entregaPrioritaria ? PRAZO_ENTREGA.PRIORITARIA : PRAZO_ENTREGA.PADRAO;
+        if (prazoCorreiosElement) prazoCorreiosElement.textContent = `Chegada no Brasil (Correios): ${prazo.CORREIOS}`;
+        if (prazoResidenciaElement) prazoResidenciaElement.textContent = `Entrega na Residência: ${prazo.RESIDENCIA}`;
+    };
+    
+    opcoesCaixa.forEach(input => input.addEventListener('change', () => updateOrderSummary(currentSubtotal)));
+    opcoesPrioritaria.forEach(input => input.addEventListener('change', () => updateOrderSummary(currentSubtotal)));
+    // ------------------------------------------------------------------
+
+
+    // --- VALIDAÇÃO DE TELEFONE EM TEMPO REAL ---
+    const validatePhoneMatch = () => {
+        const tel1 = telefoneInput?.value?.replace(/\D/g, '') || '';
+        const tel2 = confirmacaoTelefoneInput?.value?.replace(/\D/g, '') || '';
+
+        if (tel1 && tel2) {
+            if (tel1 === tel2) {
+                phoneMatchMessage.textContent = 'Telefone confirmado.';
+                phoneMatchMessage.style.color = 'var(--success-color, green)';
+                return true;
+            } else {
+                phoneMatchMessage.textContent = 'Os telefones não coincidem.';
+                phoneMatchMessage.style.color = 'var(--error-color, red)';
+                return false;
+            }
+        }
+        phoneMatchMessage.textContent = '';
+        return false;
+    };
+    
+    if(telefoneInput) telefoneInput.addEventListener('input', validatePhoneMatch);
+    if(confirmacaoTelefoneInput) confirmacaoTelefoneInput.addEventListener('input', validatePhoneMatch);
+    // -----------------------------------------------------
+
+    // --- renderCart ---
+     const renderCart = () => {
+        const cart = getCart();
+        if (!summaryItemsContainer || !checkoutButton) return;
+
+        if (cart.length === 0) {
+            summaryItemsContainer.innerHTML = `<div class="empty-cart"><h3>Seu carrinho está vazio.</h3><p>Adicione produtos do nosso catálogo.</p><a href="../../catalogo/HTML/catalogo.html" class="btn btn-primary">Ver produtos</a></div>`;
+            checkoutButton.disabled = true;
+            updateOrderSummary(0);
+            return;
+        }
+
+        checkoutButton.disabled = false;
+        summaryItemsContainer.innerHTML = cart.map((item, index) => `
+             <div class="summary-item">
+                <div class="summary-item-image">
+                    <img src="${item.image.startsWith('http') ? item.image : baseImageUrl + item.image}" alt="${item.name}">
+                </div>
+                <div class="summary-item-details">
+                    <h4>${item.name}</h4>
+                    <p>Tamanho: ${item.size}</p>
+                    <p>Qtd: ${item.quantity} x ${formatPrice(item.price)}</p>
+                    <p>Total: ${formatPrice(item.price * item.quantity)}</p>
+                </div>
+            </div>
+        `).join('');
+
+        currentSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        updateOrderSummary(currentSubtotal);
+    };
+
+    // --- FUNÇÕES DE ENDEREÇO E PRÉ-PREENCHIMENTO ---
+    const fetchUserAddresses = async () => { 
         try {
             const response = await apiClient.get('/usuario/meus-dados');
             return response.data.enderecos || [];
@@ -59,9 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return []; 
         }
     };
-    // --- FIM Buscar Endereços ---
-
-    // --- MANTENHA A FUNÇÃO: Renderizar Seleção de Endereço ---
+    
     const renderAddressSelection = (addresses) => {
         if (!addressSelectionContainer) {
             console.error("Elemento 'address-selection' não encontrado no HTML.");
@@ -89,211 +232,108 @@ document.addEventListener('DOMContentLoaded', () => {
             <a href="../../perfil/HTML/perfil.html" class="add-address-link">Gerenciar Endereços</a>
         `;
 
-        selectedAddressId = addresses[0].id; // Define o primeiro como padrão
-        console.log("Endereço inicial selecionado:", selectedAddressId);
-
+        selectedAddressId = addresses[0].id; 
         addressSelectionContainer.querySelectorAll('input[name="selectedAddress"]').forEach(radio => {
             radio.addEventListener('change', (event) => {
                 selectedAddressId = event.target.value; 
-                console.log("Novo endereço selecionado:", selectedAddressId);
             });
         });
     };
-    // --- FIM Renderizar Seleção ---
-
-    // --- MANTENHA renderCart, updateSummary, removeItemFromCart, updateQuantity, attachEventListeners ---
-     const renderCart = () => {
-        const cart = getCart();
-        if (!cartItemsContainer || !checkoutButton) return;
-
-        if (cart.length === 0) {
-            cartItemsContainer.innerHTML = `<div class="empty-cart"><h3>Seu carrinho está vazio.</h3><p>Adicione produtos do nosso catálogo.</p><a href="../../catalogo/HTML/catalogo.html" class="btn btn-primary">Ver produtos</a></div>`;
-            checkoutButton.disabled = true;
-            updateSummary(0);
-            return;
-        }
-
-        checkoutButton.disabled = false;
-        cartItemsContainer.innerHTML = cart.map((item, index) => `
-            <div class="cart-item">
-                <img src="${item.image}" alt="${item.name}" class="item-image">
-                <div class="item-details">
-                    <h3 class="item-name">${item.name}</h3>
-                    <p class="item-size">Tamanho: ${item.size}</p>
-                    <p class="item-price">R$ ${parseFloat(item.price).toFixed(2).replace('.', ',')}</p>
-                </div>
-                <div class="item-actions">
-                    <div class="quantity-control">
-                        <button class="quantity-btn decrease-qty" data-index="${index}" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
-                        <input type="number" value="${item.quantity}" class="item-quantity" data-index="${index}" readonly>
-                        <button class="quantity-btn increase-qty" data-index="${index}">+</button>
-                    </div>
-                     <button class="remove-item" data-index="${index}" title="Remover item"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            </div>
-        `).join('');
-
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        updateSummary(subtotal);
-        attachEventListeners(); 
-    };
-
-    const updateSummary = (subtotal) => {
-        const total = subtotal; // Frete Grátis
-        if (summarySubtotal) summarySubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-        if (summaryTotal) summaryTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-    };
-
-    const removeItemFromCart = (index) => {
-        let cart = getCart();
-        cart.splice(index, 1);
-        saveCart(cart); 
-    };
-
-    const updateQuantity = (index, change) => {
-        let cart = getCart();
-        if (cart[index]) {
-            cart[index].quantity += change;
-            if (cart[index].quantity <= 0) {
-                cart[index].quantity = 1; 
-            }
-            saveCart(cart); 
-        }
-    };
-
-    const attachEventListeners = () => {
-        // Remove listeners antigos para evitar duplicação
-        const oldListeners = cartItemsContainer.querySelectorAll('.quantity-btn, .remove-item');
-        oldListeners.forEach(el => {
-            const newEl = el.cloneNode(true);
-            el.parentNode.replaceChild(newEl, el);
-        });
-
-        cartItemsContainer.addEventListener('click', (e) => {
-            const target = e.target;
-            const button = target.closest('button'); 
-
-            if (!button) return; 
-
-            const index = button.dataset.index;
-            if (index === undefined) return; 
-
-            const itemIndex = parseInt(index);
-
-            if (button.classList.contains('remove-item')) {
-                removeItemFromCart(itemIndex);
-            } else if (button.classList.contains('decrease-qty')) {
-                updateQuantity(itemIndex, -1);
-            } else if (button.classList.contains('increase-qty')) {
-                updateQuantity(itemIndex, 1);
-            }
-        });
-    };
-    // --- FIM MANTER ---
-
-    // --- NOVA FUNÇÃO: Pré-preencher dados do destinatário ---
+    
     const preencherDadosDestinatario = async () => {
         try {
-            // Busca os dados do usuário logado
             const response = await apiClient.get('/usuario/meus-dados');
             const usuario = response.data;
             if (usuario) {
-                // Preenche os campos do novo formulário com os dados do usuário
                 if (usuario.nome && nomeDestinatarioEl) {
                     nomeDestinatarioEl.value = usuario.nome;
                 }
                 if (usuario.cpf && cpfDestinatarioEl) {
                     cpfDestinatarioEl.value = usuario.cpf;
                 }
-                if (usuario.telefone && telefoneDestinatarioEl) {
-                    telefoneDestinatarioEl.value = usuario.telefone;
+                if (usuario.telefone && telefoneInput) {
+                    telefoneInput.value = usuario.telefone;
                 }
             }
         } catch (error) {
             console.warn("Não foi possível pré-preencher os dados do destinatário.", error);
         }
     };
-    // --- FIM NOVA FUNÇÃO ---
+    // --- FIM FUNÇÕES DE ENDEREÇO E PRÉ-PREENCHIMENTO ---
 
-    // --- ATUALIZAÇÃO DA FUNÇÃO handleCheckout ---
-    const handleCheckout = async () => {
+
+    // --- FUNÇÃO DE CHECKOUT PRINCIPAL ---
+    const handleCheckout = async (e) => {
+        e.preventDefault();
+
         const cart = getCart();
         if (cart.length === 0) {
             alert("Seu carrinho está vazio.");
             return;
         }
 
-        // 1. Validação do Endereço
         if (!selectedAddressId) {
             alert('Por favor, selecione um endereço de entrega.');
             addressSelectionContainer?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return; 
         }
 
-        // --- 2. NOVO: Validação dos Dados do Destinatário ---
-        const nomeDestinatario = nomeDestinatarioEl.value.trim();
-        const cpfDestinatario = cpfDestinatarioEl.value.trim();
-        const telefoneDestinatario = telefoneDestinatarioEl.value.trim();
-        const observacoes = observacoesEl.value.trim();
+        const nomeDestinatario = nomeDestinatarioEl?.value?.trim() || '';
+        const cpfDestinatario = cpfDestinatarioEl?.value?.trim() || '';
+        const telefoneDestinatario = telefoneInput?.value?.trim() || ''; 
+        const observacoes = observacoesEl?.value?.trim() || '';
 
-        if (!nomeDestinatario) {
-            alert('Por favor, preencha o Nome Completo do destinatário.');
-            nomeDestinatarioEl.focus();
+        if (!nomeDestinatario || !cpfDestinatario) {
+            alert('Por favor, preencha o Nome Completo e o CPF do destinatário.');
+            nomeDestinatarioEl?.focus();
             return;
         }
-        if (!cpfDestinatario) { 
-            alert('Por favor, preencha o CPF do destinatário.');
-            cpfDestinatarioEl.focus();
+        if (!validatePhoneMatch()) { 
+            alert('Por favor, confirme seu telefone corretamente.');
+            telefoneInput?.focus();
             return;
         }
-        if (!telefoneDestinatario) { 
-            alert('Por favor, preencha o Telefone do destinatário.');
-            telefoneDestinatarioEl.focus();
-            return;
-        }
-        // --- FIM DA NOVA VALIDAÇÃO ---
 
-        // 3. Preparação dos Itens
         const pedidoItens = cart.map(item => ({
             produtoId: parseInt(item.id),
             quantidade: item.quantity,
             tamanho: item.size
         }));
 
-        // --- 4. NOVO: Objeto de Checkout completo ---
+        const comCaixa = document.getElementById('comCaixa')?.checked || false;
+        const entregaPrioritaria = document.getElementById('entregaPrioritaria')?.checked || false;
+
         const checkoutData = {
             itens: pedidoItens,
             enderecoEntregaId: parseInt(selectedAddressId),
-            // Adiciona os novos campos
+            // Campos esperados pelo backend
             nomeDestinatario: nomeDestinatario,
             cpfDestinatario: cpfDestinatario,
             telefoneDestinatario: telefoneDestinatario,
-            observacoes: observacoes
+            observacoes: observacoes,
+            
+            comCaixa: comCaixa,
+            entregaPrioritaria: entregaPrioritaria
         };
-        // --- FIM NOVO OBJETO ---
 
-        // 5. Envio para a API
         try {
-            checkoutButton.disabled = true;
-            checkoutButton.textContent = 'Processando...';
+            if(checkoutButton) {
+                checkoutButton.disabled = true;
+                checkoutButton.textContent = 'Processando...';
+            }
 
-            // Envia o 'checkoutData' completo
             const response = await apiClient.post('/pedidos', checkoutData);
-
             const novoPedido = response.data;
 
-            // Limpa o carrinho e atualiza o contador do header
-            localStorage.removeItem('japaUniverseCart');
+            localStorage.removeItem('cart'); 
             if (window.updateCartCounter) {
                 window.updateCartCounter();
             }
 
-            // Salva dados na sessão para a página de pagamento
             sessionStorage.setItem('ultimoPedidoId', novoPedido.id);
             sessionStorage.setItem('ultimoPedidoValor', novoPedido.valorTotal);
             sessionStorage.setItem('ultimoPedidoPixCode', novoPedido.pixCopiaECola);
 
-            // Redireciona para o pagamento
             window.location.href = `../../pagamento/HTML/pagamento.html`;
 
         } catch (error) {
@@ -307,29 +347,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = '../../login/HTML/login.html'; 
             }
             alert(errorMsg);
-            checkoutButton.disabled = false;
-            checkoutButton.textContent = 'Finalizar Compra';
+            if(checkoutButton) {
+                checkoutButton.disabled = false;
+                checkoutButton.textContent = 'Finalizar Compra';
+            }
         }
     };
-    // --- FIM handleCheckout ---
+    // --- FIM FUNÇÃO DE CHECKOUT PRINCIPAL ---
 
-     // --- ATUALIZAÇÃO DA LÓGICA DE INICIALIZAÇÃO ---
+
+    // --- LÓGICA DE INICIALIZAÇÃO ---
      const initializeCheckoutPage = async () => {
-        renderCart(); // Renderiza o carrinho
+        renderCart(); 
         
-        // Se o carrinho estiver vazio, não faz mais nada
         if (getCart().length === 0) {
             if(addressSelectionContainer) addressSelectionContainer.innerHTML = '<p>Adicione itens ao carrinho para continuar.</p>';
-            // Esconde o formulário de destinatário se o carrinho estiver vazio
-            const recipientCard = document.getElementById('recipient-info')?.closest('.checkout-card');
-            if (recipientCard) recipientCard.style.display = 'none';
             return; 
         }
 
-        // Se o carrinho não está vazio, busca dados
-        const userAddresses = await fetchUserAddresses(); // Busca endereços
-        renderAddressSelection(userAddresses); // Renderiza endereços (ou redireciona)
-        preencherDadosDestinatario(); // Pré-preenche o novo formulário
+        const userAddresses = await fetchUserAddresses(); 
+        renderAddressSelection(userAddresses); 
+        preencherDadosDestinatario();
     };
     // --- FIM INICIALIZAÇÃO ---
 
@@ -337,7 +375,5 @@ document.addEventListener('DOMContentLoaded', () => {
         checkoutButton.addEventListener('click', handleCheckout);
     }
 
-    // Chama a função de inicialização ao carregar a página
     initializeCheckoutPage();
-
 });

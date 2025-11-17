@@ -1,18 +1,14 @@
 package com.store.BACK.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // Import necessário
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
-@Getter
-@Setter
 public class Pedido {
 
     @Id
@@ -21,7 +17,7 @@ public class Pedido {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnore // CORREÇÃO: Ignora a referência Lazy-Loaded para evitar o erro ByteBuddyInterceptor
+    @JsonIgnore
     private Usuario usuario;
 
     @Column(nullable = false)
@@ -36,11 +32,11 @@ public class Pedido {
     @Column(columnDefinition = "TEXT")
     private String pixCopiaECola;
 
-    @ManyToOne(fetch = FetchType.EAGER) // EAGER para que venha com o pedido
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "endereco_id", nullable = false)
     private Endereco enderecoDeEntrega;
 
-    // --- NOVOS CAMPOS ADICIONADOS ---
+    // --- CAMPOS DE DESTINATÁRIO (Manter) ---
     @Column(name = "nome_destinatario")
     private String nomeDestinatario;
 
@@ -52,9 +48,130 @@ public class Pedido {
 
     @Column(name = "observacoes", columnDefinition = "TEXT")
     private String observacoes;
+
+    // --- NOVOS CAMPOS DE OPÇÕES (Adicionar) ---
+    private boolean comCaixa;
+    private boolean entregaPrioritaria;
     // --- FIM NOVOS CAMPOS ---
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("pedido-itens")
     private List<ItemPedido> itens;
+
+    // Getters e Setters Manuais (Para resolver os erros de método)
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public LocalDateTime getDataPedido() {
+        return dataPedido;
+    }
+
+    public void setDataPedido(LocalDateTime dataPedido) {
+        this.dataPedido = dataPedido;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public BigDecimal getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(BigDecimal valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public String getPixCopiaECola() {
+        return pixCopiaECola;
+    }
+
+    // ESTE MÉTODO ESTAVA DANDO ERRO NO SERVICE
+    public void setPixCopiaECola(String pixCopiaECola) {
+        this.pixCopiaECola = pixCopiaECola;
+    }
+
+    public Endereco getEnderecoDeEntrega() {
+        return enderecoDeEntrega;
+    }
+
+    // ESTE MÉTODO ESTAVA DANDO ERRO NO SERVICE
+    public void setEnderecoDeEntrega(Endereco enderecoDeEntrega) {
+        this.enderecoDeEntrega = enderecoDeEntrega;
+    }
+
+    public String getNomeDestinatario() {
+        return nomeDestinatario;
+    }
+
+    public void setNomeDestinatario(String nomeDestinatario) {
+        this.nomeDestinatario = nomeDestinatario;
+    }
+
+    public String getTelefoneDestinatario() {
+        return telefoneDestinatario;
+    }
+
+    public void setTelefoneDestinatario(String telefoneDestinatario) {
+        this.telefoneDestinatario = telefoneDestinatario;
+    }
+
+    public String getCpfDestinatario() {
+        return cpfDestinatario;
+    }
+
+    public void setCpfDestinatario(String cpfDestinatario) {
+        this.cpfDestinatario = cpfDestinatario;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public List<ItemPedido> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
+    }
+
+    // Getters e Setters dos NOVOS campos
+    public boolean isComCaixa() {
+        return comCaixa;
+    }
+
+    public void setComCaixa(boolean comCaixa) {
+        this.comCaixa = comCaixa;
+    }
+
+    public boolean isEntregaPrioritaria() {
+        return entregaPrioritaria;
+    }
+
+    public void setEntregaPrioritaria(boolean entregaPrioritaria) {
+        this.entregaPrioritaria = entregaPrioritaria;
+    }
 }
