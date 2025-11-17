@@ -294,15 +294,23 @@ document.addEventListener("DOMContentLoaded", () => {
   })();
 
   /**
-   * *** NOVO MÓDULO: Quick View ***
-   * (Adaptado de catalogo.js para funcionar globalmente)
+   * *** MÓDULO Quick View CORRIGIDO PARA MATCH CSS ***
+   * (Usando classes corretas: .quickview- ao invés de .quick-view-)
    */
   const QuickViewModule = (() => {
+    // =========================================================================
+    // VETOR IX: CORREÇÃO DE URL CRÍTICA
+    // Define a URL base para a API, consistente com o ambiente de DEV (localhost)
+    // =========================================================================
+    const API_BASE = 'http://localhost:8080/api'; 
+    // =========================================================================
+
     // Elementos do DOM
     const quickViewElements = {
         overlay: document.getElementById('quickViewModal'),
         content: document.getElementById('quickViewContent'),
-        closeBtn: document.getElementById('closeQuickViewBtn')
+        // O botão de fechar externo já é referenciado corretamente
+        closeBtn: document.getElementById('closeQuickViewBtn') 
     };
 
     // Estado local do modal
@@ -310,13 +318,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedSize = null;
 
     // Dependências (funções globais ou do CartModule)
-    const formatPrice = CartModule.formatPrice; // Reutiliza a função do CartModule
-    const getImageUrl = CartModule.getImageUrl; // Reutiliza a função do CartModule
+    const formatPrice = CartModule.formatPrice;
+    const getImageUrl = CartModule.getImageUrl;
 
-    // Sistema de Notificações (copiado de catalogo.js)
+    // Sistema de Notificações
     const showNotification = (message, type = 'success') => {
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
+        // Usa a classe .notification
+        notification.className = `notification notification-${type}`; 
         notification.innerHTML = `
             <div class="notification-content">
                 <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation' : 'info'}"></i>
@@ -334,88 +343,82 @@ document.addEventListener("DOMContentLoaded", () => {
     // Lógica principal do Quick View
     const quickViewSystem = {
         openQuickView: async (productId) => {
-            quickViewProduct = null; // Reseta produto atual
-            selectedSize = null; // Reseta tamanho selecionado
+            quickViewProduct = null;
+            selectedSize = null;
             
-            // Verifica se o overlay do modal existe no HTML
             if (!quickViewElements.overlay) {
                 console.error("Elemento do modal Quick View (#quickViewModal) não encontrado.");
-                showNotification("Erro ao abrir detalhes do produto.", "error"); // Notifica o usuário
+                showNotification("Erro ao abrir detalhes do produto.", "error");
                 return;
             }
 
-            // Mostra skeleton e abre o modal
+            // Adiciona a classe que o CSS do catálogo espera no overlay
+            quickViewElements.overlay.classList.add('quickview-modal-overlay'); 
             quickViewSystem.showSkeleton();
             quickViewElements.overlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Impede scroll do fundo
+            document.body.style.overflow = 'hidden';
 
             try {
-                // *** ALTERAÇÃO PRINCIPAL: Busca o produto direto na API ***
-                const response = await axios.get(`https://api.japauniverse.com.br/api/produtos/${productId}`);
+                const response = await axios.get(`${API_BASE}/produtos/${productId}`);
                 const product = response.data;
 
-                // Verifica se o produto foi encontrado na API
                 if (!product) {
                     quickViewSystem.showError('Produto não encontrado na base de dados.');
                     return;
                 }
 
-                quickViewProduct = product; // Armazena os dados do produto atual
-                // 'loadProductDetails' simula um tempo de carga e adiciona dados mocados (descrição, etc.)
+                quickViewProduct = product;
                 await quickViewSystem.loadProductDetails(product); 
 
             } catch (error) {
                 console.error('Erro ao carregar detalhes do produto via API:', error);
-                quickViewSystem.showError('Erro ao buscar informações do produto.'); // Mensagem genérica para o usuário
+                quickViewSystem.showError('Erro ao buscar informações do produto.');
             }
         },
 
         // Mostra a estrutura do modal com placeholders enquanto carrega
         showSkeleton: () => {
+             // Utilizando as classes DE SKELETON CORRETAS do catalogo.css
              quickViewElements.content.innerHTML = `
-                <div class="quickview-skeleton">
-                    <div class="quickview-skeleton-image skeleton"></div>
-                    <div class="quickview-skeleton-details">
-                        <div class="quickview-skeleton-text short skeleton"></div>
-                        <div class="quickview-skeleton-text long skeleton"></div>
-                        <div class="quickview-skeleton-text medium skeleton"></div>
-                        <div class="quickview-skeleton-price skeleton"></div>
-                        <div class="quickview-skeleton-text long skeleton"></div>
-                        <div class="quickview-skeleton-text long skeleton"></div>
-                        <div class="quickview-skeleton-text long skeleton"></div>
-                        <div class="quickview-skeleton-button skeleton"></div>
+                <div class="quickview-modal-content">
+                    <button class="close-button" id="closeQuickViewBtn2">&times;</button>
+                    <div class="quickview-content">
+                        <div class="quickview-gallery quickview-skeleton-image"></div>
+                        <div class="quickview-details">
+                            <div class="quickview-brand quickview-skeleton-text short"></div>
+                            <h1 class="quickview-title quickview-skeleton-text long"></h1>
+                            <div class="quickview-price quickview-skeleton-price"></div>
+                            <div class="quickview-shipping quickview-skeleton-text medium"></div>
+                            <p class="quickview-description quickview-skeleton-text long"></p>
+                            <p class="quickview-description quickview-skeleton-text medium"></p>
+                            <div class="quickview-size-section quickview-skeleton-text long"></div>
+                            <div class="quickview-actions quickview-skeleton-button"></div>
+                            <div class="quickview-features quickview-skeleton-text medium"></div>
+                        </div>
                     </div>
                 </div>
             `;
         },
 
-        // Simula uma carga e adiciona dados mocados (descrição, features, tamanhos)
         loadProductDetails: async (product) => {
             return new Promise((resolve) => {
-                // Simula um tempo de espera (ex: 800ms)
                 setTimeout(() => { 
-                    // Cria um objeto com detalhes completos, adicionando dados que não vêm da API
                     const productDetails = {
-                        ...product, // Copia todos os dados da API
-                        // Adiciona uma descrição padrão se não houver na API
-                        description: product.descricao || "Descrição detalhada do produto não disponível no momento. Este tênis combina estilo e conforto...", 
-                        // Simula múltiplas imagens (poderia buscar de outra fonte se necessário)
+                        ...product,
+                        description: product.descricao || "Descrição detalhada do produto não disponível no momento. Este tênis combina estilo e conforto, sendo perfeito para uso diário.", 
                         images: [ product.imagemUrl, product.imagemUrl, product.imagemUrl ], 
-                        // Adiciona características fixas (poderiam ser dinâmicas)
                         features: [
                             { icon: 'fas fa-shoe-prints', text: 'Amortecimento Avançado' },
                             { icon: 'fas fa-wind', text: 'Material Respirável' },
                             { icon: 'fas fa-weight-hanging', text: 'Leveza Garantida' },
                             { icon: 'fas fa-award', text: 'Qualidade Premium' }
                         ],
-                        // Gera tamanhos disponíveis (simulado)
                         sizes: quickViewSystem.generateAvailableSizes(product) 
                     };
                     
-                    // Renderiza o modal com os detalhes completos
                     quickViewSystem.renderProductDetails(productDetails);
-                    resolve(productDetails); // Finaliza a Promise
-                }, 500); // Reduzido para 500ms
+                    resolve(productDetails);
+                }, 500);
             });
         },
 
@@ -423,89 +426,90 @@ document.addEventListener("DOMContentLoaded", () => {
         renderProductDetails: (product) => {
             const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
             const discountPercent = hasDiscount ? 
-                Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0; // CORREÇÃO APLICADA AQUI
+                Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
 
-            // Gera o HTML do conteúdo do modal
+            // Utilizando as classes CORRETAS do catalogo.css
             quickViewElements.content.innerHTML = `
-                <div class="quickview-content">
-                    <div class="quickview-gallery">
-                        <img src="${getImageUrl(product.images[0])}" 
-                             alt="${product.nome}" 
-                             class="quickview-main-image"
-                             id="quickviewMainImage">
-                        <div class="quickview-thumbnails">
-                            ${product.images.map((image, index) => `
-                                <img src="${getImageUrl(image)}" 
-                                     alt="${product.nome} - Imagem ${index + 1}"
-                                     class="quickview-thumbnail ${index === 0 ? 'active' : ''}"
-                                     data-image-index="${index}">
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="quickview-details">
-                        <div class="quickview-brand">${product.marca?.nome || 'Marca Desconhecida'}</div>
-                        <h1 class="quickview-title">${product.nome}</h1>
-                        <div class="quickview-price">
-                            <span class="quickview-current-price">${formatPrice(product.preco)}</span>
-                            ${hasDiscount ? `
-                                <span class="quickview-original-price">${formatPrice(product.precoOriginal)}</span>
-                                <span class="quickview-discount">-${discountPercent}%</span> 
-                            ` : ''}
-                        </div>
-                        <div class="quickview-shipping">
-                            <i class="fas fa-shipping-fast"></i>
-                            <span>Frete Grátis</span>
-                        </div>
-                        <p class="quickview-description">${product.description}</p>
-                        <div class="quickview-size-section">
-                            <div class="quickview-size-title">Selecione o Tamanho:</div>
-                            <div class="quickview-size-options" id="quickviewSizeOptions">
-                                ${Object.keys(product.sizes).map(size => {
-                                    const quantity = product.sizes[size];
-                                    const isDisabled = quantity <= 0;
-                                    return `
-                                        <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
-                                             data-size="${size}">
-                                            ${size}
-                                            ${!isDisabled ? `<small style="display: block; font-size: 0.7em; opacity: 0.7;">${quantity} un</small>` : ''}
-                                        </div>
-                                    `;
-                                }).join('')}
+                <div class="quickview-modal-content">
+                    <button class="close-button" id="closeQuickViewBtn2">&times;</button>
+                    <div class="quickview-content">
+                        <div class="quickview-gallery">
+                            <img src="${getImageUrl(product.images[0])}" 
+                                 alt="${product.nome}" 
+                                 class="quickview-main-image"
+                                 id="quickViewMainImage">
+                            <div class="quickview-thumbnails">
+                                ${product.images.map((image, index) => `
+                                    <img src="${getImageUrl(image)}" 
+                                         alt="${product.nome} - Imagem ${index + 1}"
+                                         class="quickview-thumbnail ${index === 0 ? 'active' : ''}"
+                                         data-image-index="${index}">
+                                `).join('')}
                             </div>
                         </div>
-                        <div class="quickview-actions">
-                            <button class="btn btn-primary quickview-add-to-cart" 
-                                    id="quickviewAddToCart"
-                                    disabled> 
-                                <i class="fas fa-shopping-bag"></i>
-                                Adicionar ao Carrinho
-                            </button>
-                        </div>
-                        <div class="quickview-features">
-                            ${product.features.map(feature => `
-                                <div class="quickview-feature">
-                                    <i class="${feature.icon}"></i>
-                                    <span>${feature.text}</span>
+                        <div class="quickview-details">
+                            <div class="quickview-brand">${product.marca?.nome || 'Marca Desconhecida'}</div>
+                            <h1 class="quickview-title">${product.nome}</h1>
+                            <div class="quickview-price">
+                                <span class="quickview-current-price">${formatPrice(product.preco)}</span>
+                                ${hasDiscount ? `
+                                    <span class="quickview-original-price">${formatPrice(product.precoOriginal)}</span>
+                                    <span class="quickview-discount">-${discountPercent}%</span> 
+                                ` : ''}
+                            </div>
+                            <div class="quickview-shipping">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span>Frete Grátis</span>
+                            </div>
+                            <p class="quickview-description">${product.description}</p>
+                            <div class="quickview-size-section">
+                                <div class="quickview-size-title">Selecione o Tamanho:</div>
+                                <div class="quickview-size-options" id="quickViewSizeOptions">
+                                    ${Object.keys(product.sizes).map(size => {
+                                        const quantity = product.sizes[size];
+                                        const isDisabled = quantity <= 0;
+                                        return `
+                                            <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
+                                                 data-size="${size}">
+                                                ${size}
+                                            </div>
+                                        `;
+                                    }).join('')}
                                 </div>
-                            `).join('')}
+                            </div>
+                            <div class="quickview-actions">
+                                <button class="btn btn-primary quickview-add-to-cart" 
+                                        id="quickViewAddToCart"
+                                        disabled> 
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Adicionar ao Carrinho
+                                </button>
+                            </div>
+                            <div class="quickview-features">
+                                ${product.features.map(feature => `
+                                    <div class="quickview-feature">
+                                        <i class="${feature.icon}"></i>
+                                        <span>${feature.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
 
-            // Adiciona listeners para a galeria de imagens e botões internos do modal
             quickViewSystem.addGalleryEventListeners();
-            quickViewSystem.addModalEventListeners(); 
+            quickViewSystem.addModalEventListeners();
+            document.getElementById('closeQuickViewBtn2').addEventListener('click', quickViewSystem.closeQuickView);
         },
 
-        // Adiciona listeners às miniaturas da galeria
+        // Funções de evento... (usando as novas classes)
         addGalleryEventListeners: () => {
             const thumbnails = document.querySelectorAll('.quickview-thumbnail');
-            const mainImage = document.getElementById('quickviewMainImage');
+            const mainImage = document.getElementById('quickViewMainImage');
             
             thumbnails.forEach(thumb => {
                 thumb.addEventListener('click', () => {
-                    // Remove 'active' de todas, adiciona na clicada e atualiza imagem principal
                     thumbnails.forEach(t => t.classList.remove('active'));
                     thumb.classList.add('active');
                     mainImage.src = thumb.src;
@@ -513,104 +517,85 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         },
 
-        // Adiciona listeners aos botões de tamanho e ao botão "Adicionar ao Carrinho"
         addModalEventListeners: () => {
-            // Adiciona listener aos botões de tamanho (que não estão desabilitados)
             const sizeOptions = document.querySelectorAll('.quickview-size-option:not(.disabled)');
             sizeOptions.forEach(option => {
                 option.addEventListener('click', () => {
-                    quickViewSystem.selectSize(option); // Chama a função que marca o tamanho
+                    quickViewSystem.selectSize(option);
                 });
             });
 
-            // Adiciona listener ao botão principal "Adicionar ao Carrinho"
-            const addToCartBtn = document.getElementById('quickviewAddToCart');
+            const addToCartBtn = document.getElementById('quickViewAddToCart');
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', () => {
-                    quickViewSystem.addToCartFromQuickView(); // Chama a função de adicionar
+                    quickViewSystem.addToCartFromQuickView();
                 });
             }
         },
 
-        // Marca o tamanho selecionado e habilita o botão de adicionar
         selectSize: (element) => {
-            // Desmarca todos os outros tamanhos
             document.querySelectorAll('.quickview-size-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
-            // Marca o clicado
             element.classList.add('selected');
-            // Guarda o tamanho selecionado na variável global do modal
             selectedSize = element.dataset.size;
-            // Habilita o botão "Adicionar ao Carrinho"
-            document.getElementById('quickviewAddToCart').disabled = false;
+            document.getElementById('quickViewAddToCart').disabled = false;
         },
 
-        // Função chamada ao clicar no botão "Adicionar ao Carrinho" do modal
         addToCartFromQuickView: () => {
-            // Valida se um tamanho foi selecionado
             if (!selectedSize) {
                 showNotification('Por favor, selecione um tamanho.', 'error');
                 return;
             }
-            // Valida se os dados do produto estão carregados
             if (!quickViewProduct) {
                 showNotification('Erro: Detalhes do produto não carregados.', 'error');
                 return;
             }
 
-            // Verifica se a função global 'addToCart' (do CartModule) existe
             if (typeof window.addToCart === 'function') {
-                // Monta o objeto do produto no formato esperado pelo carrinho
                 const productToAdd = {
                     id: quickViewProduct.id.toString(),
                     name: quickViewProduct.nome,
                     price: quickViewProduct.preco,
                     image: getImageUrl(quickViewProduct.imagemUrl),
                     size: selectedSize,
-                    quantity: 1 // Adiciona sempre 1 unidade por vez pelo Quick View
+                    quantity: 1
                 };
                 
-                // Chama a função global para adicionar ao carrinho
                 window.addToCart(productToAdd); 
-                quickViewSystem.closeQuickView(); // Fecha o modal Quick View
-                // Mostra notificação de sucesso
+                quickViewSystem.closeQuickView();
                 showNotification(`${quickViewProduct.nome} (Tamanho: ${selectedSize}) adicionado!`);
             } else {
-                // Se a função global não for encontrada (erro de script)
                 console.error("Função window.addToCart não encontrada. Verifique se CartModule está inicializado.");
-                quickViewSystem.closeQuickView(); // Fecham o modal mesmo assim
+                quickViewSystem.closeQuickView();
                 showNotification('Erro interno ao adicionar ao carrinho.', 'error');
             }
         },
 
-        // Gera tamanhos aleatórios com estoque simulado (usado em loadProductDetails)
         generateAvailableSizes: (product) => {
             const sizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
             const availableSizes = {};
-            // Usa o estoque real do produto vindo da API
             const totalStock = product.estoque || 0; 
-            // Distribui aleatoriamente o estoque entre os tamanhos (simulação)
             sizes.forEach(size => {
-                 // Define estoque aleatório (1 a 5) se houver estoque total, senão 0
                 availableSizes[size] = totalStock > 0 ? Math.floor(Math.random() * 5) + 1 : 0;
             });
             return availableSizes;
         },
 
-        // Fecha o modal Quick View e reseta variáveis
         closeQuickView: () => {
             if (quickViewElements.overlay) {
                 quickViewElements.overlay.classList.remove('active');
+                // Remove a classe overlay do CSS do catalogo
+                quickViewElements.overlay.classList.remove('quickview-modal-overlay'); 
             }
-            quickViewProduct = null; // Limpa dados do produto
-            selectedSize = null; // Limpa tamanho selecionado
-            document.body.style.overflow = ''; // Libera scroll do fundo
+            quickViewProduct = null;
+            selectedSize = null;
+            document.body.style.overflow = '';
         },
 
-        // Mostra uma mensagem de erro dentro do modal
         showError: (message) => {
-            if (!quickViewElements.content) return; // Segurança extra
+            if (!quickViewElements.content) return;
+            // Usando a classe .quickview-error
             quickViewElements.content.innerHTML = `
                 <div class="quickview-error">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -621,7 +606,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                 </div>
             `;
-            // Adiciona listener ao botão de fechar da tela de erro
             const errorCloseBtn = document.getElementById('quickViewErrorCloseBtn');
             if (errorCloseBtn) {
                  errorCloseBtn.addEventListener('click', quickViewSystem.closeQuickView);
@@ -631,18 +615,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Função de inicialização do Módulo QuickView
     const init = () => {
-        // Adiciona listeners globais para fechar o modal
-        if (quickViewElements.closeBtn) {
+        // Listener para o botão de fechar (X) do DOM estático
+        if (quickViewElements.closeBtn) { 
             quickViewElements.closeBtn.addEventListener('click', quickViewSystem.closeQuickView);
         }
+        
+        // Listener para fechar clicando no overlay
         if (quickViewElements.overlay) {
-            // Fecha se clicar fora do conteúdo
             quickViewElements.overlay.addEventListener('click', (e) => {
-                if (e.target === quickViewElements.overlay) {
+                // Checa se o clique foi *diretamente* no overlay (e não no modal-content)
+                const isOverlayClick = e.target.classList.contains('quickview-modal-overlay') || e.target === quickViewElements.overlay;
+                if (isOverlayClick) {
                     quickViewSystem.closeQuickView();
                 }
             });
         }
+        
         // Fecha com a tecla ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && quickViewElements.overlay?.classList.contains('active')) {
@@ -650,14 +638,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Expõe globalmente as funções necessárias para outros scripts
+        // Expõe globalmente as funções
         window.quickViewApp = {
             openQuickView: quickViewSystem.openQuickView,
-            showNotification: showNotification // Expor notificação se necessário
+            showNotification: showNotification
         };
     };
     
-    // Retorna a função de inicialização para ser chamada pelo AppModule
     return { init };
 
   })();

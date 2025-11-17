@@ -9,10 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const updatesModalBody = document.getElementById('updates-modal-body');
     const imageLightboxModal = document.getElementById('image-lightbox-modal');
     const lightboxImage = document.getElementById('lightbox-image');
-    
+
     // 🌟 CORREÇÃO FINAL: Ajuste da BASE_URL. 
     // Como o JSON já inclui "uploads/...", usamos apenas a raiz do backend.
-    const BASE_URL = 'http://localhost:8080/'; 
+    const BASE_URL = 'http://localhost:8080/';
+
+    // =========================================================================
+    // VETOR IX: NOVA FUNÇÃO DE FORMATACAO DE TEXTO (SOLUCAO OTIMIZADA)
+    // Complexidade Temporal: O(L)
+    // =========================================================================
+    /**
+     * Converte caracteres de quebra de linha (\n) em tags HTML <br> 
+     * para garantir a renderização correta de parágrafos em ambientes web.
+     * @param {string} text - O texto do aviso (PedidoAviso.mensagem).
+     * @returns {string} O texto formatado com tags <br>.
+     */
+    const formatMessage = (text) => {
+        if (!text) return '';
+        // Substituição global e eficiente de \n por <br>
+        return text.replace(/\n/g, '<br>');
+    };
+    // =========================================================================
+    // FIM DA NOVA FUNÇÃO
+    // =========================================================================
 
     const openDetailsModal = (orderId) => {
         const order = currentOrders.find(o => o.id == orderId);
@@ -78,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updatesModalBody.innerHTML = avisos.map(aviso => `
                     <div class="update-item">
                         <p><strong>${new Date(aviso.dataAviso).toLocaleString('pt-BR')}</strong></p>
-                        <p>${aviso.mensagem}</p>
+                        <p>${formatMessage(aviso.mensagem)}</p>
                         ${aviso.imagemUrl ? `<img src="${BASE_URL}${aviso.imagemUrl}" alt="Imagem do aviso" class="update-image">` : ''}
                     </div>
                 `).join('');
@@ -155,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ordersHTML = orders.map(order => {
             const statusClass = order.status ? order.status.toLowerCase() : '';
-            
+
             // Formatação da data e valor
             const rawDate = new Date(order.dataPedido);
             const formattedDate = rawDate.toLocaleDateString('pt-BR'); 
@@ -173,11 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="order-body">
                     ${order.itens ? order.itens.map(item => {
-                        
+
                         // 🌟 CORREÇÃO FINAL: Acessando item.produto.imagemUrl
                         // A checagem robusta é mantida, mas a chave foi alterada
                         const imageFileName = item.produto && item.produto.imagemUrl && item.produto.imagemUrl.trim() !== '' ? item.produto.imagemUrl : null;
-                        
+
                         // Cria o HTML da imagem
                         const imageHtml = imageFileName
                             ? `<img src="${BASE_URL}${imageFileName}" alt="${item.produto.nome}" class="order-item-image">`
