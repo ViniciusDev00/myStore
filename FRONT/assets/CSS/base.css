@@ -1,5 +1,5 @@
 /* ===================================================================
-    ARQUIVO DE ESTILO BASE - TN DO JAPA
+    ARQUIVO DE ESTILO BASE - TN DO JAPA (MODIFICADO)
    =================================================================== */
 
 /* ===== HYPE-TECH FUSION DESIGN SYSTEM ===== */
@@ -279,16 +279,16 @@ button {
         display: flex;
         align-items: center;
     }
-    /* MUDANÇA 3: Restaura o padding para a versão mobile */
+    /* MUDANÇA 3: Restaura o padding para o desktop */
     .container {
         padding: 0 var(--space-lg);
     }
 }
 
 @media (max-width: 768px) {
-    /* MUDANÇA 4: Garante que o padding mobile é menor */
+    /* MODIFICAÇÃO CRÍTICA PARA RESPONSIVIDADE: REDUZ O PADDING DE 1.5rem PARA 1rem */
     .container {
-        padding: 0 var(--space-md);
+        padding: 0 1rem;
     }
 }
 
@@ -1105,8 +1105,9 @@ input[type=number]::-webkit-outer-spin-button {
     --space-xxl: 3rem;
   }
 
+  /* Redefine o padding do container na media query mais específica */
   .container {
-    padding: 0 1rem;
+    padding: 0 0.5rem; /* Ajuste para maximizar o espaço */
     width: 100%;
     max-width: 100%;
   }
@@ -1579,10 +1580,11 @@ input[type=number]::-webkit-outer-spin-button {
     overflow-x: hidden !important;
   }
 
+  /* Aplica o novo padding nas telas menores */
   .container {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0 1rem !important;
+    padding: 0 0.5rem !important;
   }
 
   .main-header {

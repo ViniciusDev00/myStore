@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             new Swiper(containerClass, {
-                slidesPerView: "auto", // Mostra quantos slides couberem
+                slidesPerView: "auto", // A configuração 'auto' original
                 spaceBetween: 24, // Espaçamento entre slides
                 freeMode: false, // Desliza livremente, sem travar em posições fixas
                 scrollbar: {
@@ -79,8 +79,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     nextEl: navNextClass, // Seletor botão "próximo"
                     prevEl: navPrevClass, // Seletor botão "anterior"
                 },
-                breakpoints: { // Ajustes para diferentes tamanhos de tela (opcional, mas bom)
-                    // Mobile pequeno já coberto pelo 'auto'
+                breakpoints: { // Ajustes para diferentes tamanhos de tela
+                    // === MODIFICAÇÃO PARA MOSTRAR 2.2 PRODUTOS NO MOBILE ===
+                    320: { // Para a maioria dos celulares (larguras >= 320px)
+                        slidesPerView: 2.2,
+                        spaceBetween: 16, // Reduz o espaço para caber melhor
+                    },
+                    // =======================================================
                     640: { // Tablets
                         slidesPerView: 2,
                         spaceBetween: 20,

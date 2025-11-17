@@ -378,24 +378,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Mostra a estrutura do modal com placeholders enquanto carrega
         showSkeleton: () => {
-             // Utilizando as classes DE SKELETON CORRETAS do catalogo.css
+             // Removido o envolucro e botão duplicado.
              quickViewElements.content.innerHTML = `
-                <div class="quickview-modal-content">
-                    <button class="close-button" id="closeQuickViewBtn2">&times;</button>
-                    <div class="quickview-content">
-                        <div class="quickview-gallery quickview-skeleton-image"></div>
-                        <div class="quickview-details">
-                            <div class="quickview-brand quickview-skeleton-text short"></div>
-                            <h1 class="quickview-title quickview-skeleton-text long"></h1>
-                            <div class="quickview-price quickview-skeleton-price"></div>
-                            <div class="quickview-shipping quickview-skeleton-text medium"></div>
-                            <p class="quickview-description quickview-skeleton-text long"></p>
-                            <p class="quickview-description quickview-skeleton-text medium"></p>
-                            <div class="quickview-size-section quickview-skeleton-text long"></div>
-                            <div class="quickview-actions quickview-skeleton-button"></div>
-                            <div class="quickview-features quickview-skeleton-text medium"></div>
-                        </div>
-                    </div>
+                <div class="quickview-gallery quickview-skeleton-image"></div>
+                <div class="quickview-details">
+                    <div class="quickview-brand quickview-skeleton-text short"></div>
+                    <h1 class="quickview-title quickview-skeleton-text long"></h1>
+                    <div class="quickview-price quickview-skeleton-price"></div>
+                    <div class="quickview-shipping quickview-skeleton-text medium"></div>
+                    <p class="quickview-description quickview-skeleton-text long"></p>
+                    <p class="quickview-description quickview-skeleton-text medium"></p>
+                    <div class="quickview-size-section quickview-skeleton-text long"></div>
+                    <div class="quickview-actions quickview-skeleton-button"></div>
+                    <div class="quickview-features quickview-skeleton-text medium"></div>
                 </div>
             `;
         },
@@ -428,79 +423,73 @@ document.addEventListener("DOMContentLoaded", () => {
             const discountPercent = hasDiscount ? 
                 Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
 
-            // Utilizando as classes CORRETAS do catalogo.css
+            // Removido o envolucro extra (.quickview-modal-content) e o botão de fechar duplicado
             quickViewElements.content.innerHTML = `
-                <div class="quickview-modal-content">
-                    <button class="close-button" id="closeQuickViewBtn2">&times;</button>
-                    <div class="quickview-content">
-                        <div class="quickview-gallery">
-                            <img src="${getImageUrl(product.images[0])}" 
-                                 alt="${product.nome}" 
-                                 class="quickview-main-image"
-                                 id="quickViewMainImage">
-                            <div class="quickview-thumbnails">
-                                ${product.images.map((image, index) => `
-                                    <img src="${getImageUrl(image)}" 
-                                         alt="${product.nome} - Imagem ${index + 1}"
-                                         class="quickview-thumbnail ${index === 0 ? 'active' : ''}"
-                                         data-image-index="${index}">
-                                `).join('')}
-                            </div>
-                        </div>
-                        <div class="quickview-details">
-                            <div class="quickview-brand">${product.marca?.nome || 'Marca Desconhecida'}</div>
-                            <h1 class="quickview-title">${product.nome}</h1>
-                            <div class="quickview-price">
-                                <span class="quickview-current-price">${formatPrice(product.preco)}</span>
-                                ${hasDiscount ? `
-                                    <span class="quickview-original-price">${formatPrice(product.precoOriginal)}</span>
-                                    <span class="quickview-discount">-${discountPercent}%</span> 
-                                ` : ''}
-                            </div>
-                            <div class="quickview-shipping">
-                                <i class="fas fa-shipping-fast"></i>
-                                <span>Frete Grátis</span>
-                            </div>
-                            <p class="quickview-description">${product.description}</p>
-                            <div class="quickview-size-section">
-                                <div class="quickview-size-title">Selecione o Tamanho:</div>
-                                <div class="quickview-size-options" id="quickViewSizeOptions">
-                                    ${Object.keys(product.sizes).map(size => {
-                                        const quantity = product.sizes[size];
-                                        const isDisabled = quantity <= 0;
-                                        return `
-                                            <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
-                                                 data-size="${size}">
-                                                ${size}
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                            <div class="quickview-actions">
-                                <button class="btn btn-primary quickview-add-to-cart" 
-                                        id="quickViewAddToCart"
-                                        disabled> 
-                                    <i class="fas fa-shopping-bag"></i>
-                                    Adicionar ao Carrinho
-                                </button>
-                            </div>
-                            <div class="quickview-features">
-                                ${product.features.map(feature => `
-                                    <div class="quickview-feature">
-                                        <i class="${feature.icon}"></i>
-                                        <span>${feature.text}</span>
+                <div class="quickview-gallery">
+                    <img src="${getImageUrl(product.images[0])}" 
+                         alt="${product.nome}" 
+                         class="quickview-main-image"
+                         id="quickViewMainImage">
+                    <div class="quickview-thumbnails">
+                        ${product.images.map((image, index) => `
+                            <img src="${getImageUrl(image)}" 
+                                 alt="${product.nome} - Imagem ${index + 1}"
+                                 class="quickview-thumbnail ${index === 0 ? 'active' : ''}"
+                                 data-image-index="${index}">
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="quickview-details">
+                    <div class="quickview-brand">${product.marca?.nome || 'Marca Desconhecida'}</div>
+                    <h1 class="quickview-title">${product.nome}</h1>
+                    <div class="quickview-price">
+                        <span class="quickview-current-price">${formatPrice(product.preco)}</span>
+                        ${hasDiscount ? `
+                            <span class="quickview-original-price">${formatPrice(product.precoOriginal)}</span>
+                            <span class="quickview-discount">-${discountPercent}%</span> 
+                        ` : ''}
+                    </div>
+                    <div class="quickview-shipping">
+                        <i class="fas fa-shipping-fast"></i>
+                        <span>Frete Grátis</span>
+                    </div>
+                    <p class="quickview-description">${product.description}</p>
+                    <div class="quickview-size-section">
+                        <div class="quickview-size-title">Selecione o Tamanho:</div>
+                        <div class="quickview-size-options" id="quickViewSizeOptions">
+                            ${Object.keys(product.sizes).map(size => {
+                                const quantity = product.sizes[size];
+                                const isDisabled = quantity <= 0;
+                                return `
+                                    <div class="quickview-size-option ${isDisabled ? 'disabled' : ''}" 
+                                         data-size="${size}">
+                                        ${size}
                                     </div>
-                                `).join('')}
-                            </div>
+                                `;
+                            }).join('')}
                         </div>
+                    </div>
+                    <div class="quickview-actions">
+                        <button class="btn btn-primary quickview-add-to-cart" 
+                                id="quickViewAddToCart"
+                                disabled> 
+                            <i class="fas fa-shopping-bag"></i>
+                            Adicionar ao Carrinho
+                        </button>
+                    </div>
+                    <div class="quickview-features">
+                        ${product.features.map(feature => `
+                            <div class="quickview-feature">
+                                <i class="${feature.icon}"></i>
+                                <span>${feature.text}</span>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
 
             quickViewSystem.addGalleryEventListeners();
             quickViewSystem.addModalEventListeners();
-            document.getElementById('closeQuickViewBtn2').addEventListener('click', quickViewSystem.closeQuickView);
         },
 
         // Funções de evento... (usando as novas classes)
@@ -588,9 +577,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Remove a classe overlay do CSS do catalogo
                 quickViewElements.overlay.classList.remove('quickview-modal-overlay'); 
             }
+            
+            // Tenta limpar o conteúdo para remover qualquer artefato visual
+            setTimeout(() => {
+                if (quickViewElements.content) {
+                    quickViewElements.content.innerHTML = ''; 
+                }
+            }, 300); // Espera a transição de fechamento do modal
+
             quickViewProduct = null;
             selectedSize = null;
-            document.body.style.overflow = '';
+            // GARANTE que o scroll da página seja reativado
+            document.body.style.overflow = ''; 
         },
 
         showError: (message) => {
