@@ -48,7 +48,7 @@ public class FileStorageService {
       String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
 
       Files.copy(file.getInputStream(), this.root.resolve(uniqueFilename));
-      return uniqueFilename; // Retorna o nome único
+      return "uploads/" + uniqueFilename; // Retorna "uploads/arquivo.jpg"
     } catch (Exception e) {
       if (e instanceof FileAlreadyExistsException) {
         // Embora improvável com UUID, mantemos a exceção
