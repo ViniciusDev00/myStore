@@ -9,9 +9,9 @@ import java.math.RoundingMode;
 public class PixPayloadService {
 
     // --- CONFIGURE SEUS DADOS AQUI ---
-    private final String PIX_KEY = "japauniversestore@gmail.com"; // !! TROCAR ISSO !! (Chave aleatória, email, cpf, etc)
-    private final String MERCHANT_NAME = "Japa Universe"; // Nome da loja (max 25)
-    private final String MERCHANT_CITY = "SAO CARLOS"; // !! TROCAR ISSO !! (max 15, sem acento)
+    private final String PIX_KEY = "japauniversestore@gmail.com"; // !! TROCAR PELO SEU PIX REAL !!
+    private final String MERCHANT_NAME = "Japa Universe"; // Nome da loja (max 25 caracteres)
+    private final String MERCHANT_CITY = "SAO CARLOS"; // !! TROCAR PELA SUA CIDADE !! (max 15, sem acento)
     // ---------------------------------
 
     /**
@@ -31,9 +31,29 @@ public class PixPayloadService {
             String nomeLimitado = (MERCHANT_NAME.length() > 25) ? MERCHANT_NAME.substring(0, 25) : MERCHANT_NAME;
             String cidadeLimitada = (MERCHANT_CITY.length() > 15) ? MERCHANT_CITY.substring(0, 15) : MERCHANT_CITY;
 
-            // Formata os campos do PIX (ID + Tamanho + Valor)
+            // --- NOVA LÓGICA DE DESCRIÇÃO ---
+            // 1. Pega o nome e o ID (tratando nulos e tamanho)
+            String nomeCliente = (pedido.getUsuario() != null && pedido.getUsuario().getNome() != null)
+                    ? pedido.getUsuario().getNome()
+                    : "Cliente";
+
+            // Limita o nome a 15 caracteres para não estourar o QR Code
+            if (nomeCliente.length() > 15) {
+                nomeCliente = nomeCliente.substring(0, 15);
+            }
+
+            // 2. Cria a descrição (Ex: "Ped 105 Vinicius")
+            // Remove acentos e caracteres especiais para garantir compatibilidade bancária
+            String descricaoPix = "Ped " + pedido.getId() + " " + nomeCliente;
+            descricaoPix = descricaoPix.replaceAll("[^a-zA-Z0-9 ]", "");
+
+            // 3. Monta os dados da conta INCLUINDO a descrição (Campo 02)
+            String merchantAccount = formatField("00", "br.gov.bcb.pix")
+                                    + formatField("01", PIX_KEY)
+                                    + formatField("02", descricaoPix); // <--- O SEGREDO: Campo de descrição
+            
+            // Formata os demais campos do PIX (ID + Tamanho + Valor)
             String payloadFormat = formatField("00", "01");
-            String merchantAccount = formatField("00", "br.gov.bcb.pix") + formatField("01", PIX_KEY);
             String merchantAccountInfo = formatField("26", merchantAccount);
             String merchantCategory = formatField("52", "0000");
             String transactionCurrency = formatField("53", "986");
