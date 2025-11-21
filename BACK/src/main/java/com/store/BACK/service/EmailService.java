@@ -80,7 +80,7 @@ public class EmailService {
             helper.setTo(to);
             helper.setSubject("JapaUniverse - Redefinição de Senha");
             helper.setText(htmlContent, true);
-            helper.setFrom("nao-responda@japauniverse.com.br");
+            helper.setFrom("japauniversestore@gmail.com");
 
             mailSender.send(message);
         } catch (MessagingException e) {
