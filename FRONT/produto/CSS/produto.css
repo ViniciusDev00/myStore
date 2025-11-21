@@ -1,5 +1,5 @@
 /* ===================================================
-    CSS/produto.css - Estilos Específicos do Produto
+    CSS/produto.css - Estilos Específicos do Produto (Corrigido)
    =================================================== */
 
 body {
@@ -41,6 +41,7 @@ main.container {
     padding-bottom: var(--space-xs);
 }
 
+/* --- CORREÇÃO NAS MINIATURAS --- */
 .thumbnail-item {
     width: 70px;
     height: 70px;
@@ -50,6 +51,7 @@ main.container {
     overflow: hidden;
     transition: border-color var(--transition-fast);
     flex-shrink: 0;
+    background-color: #fff; /* Fundo branco para destacar */
 }
 
 .thumbnail-item:hover, .thumbnail-item.active {
@@ -59,20 +61,30 @@ main.container {
 .thumbnail-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* CONTAIN: Garante que a miniatura nunca corte */
+    object-fit: contain !important; 
 }
 
+/* --- CORREÇÃO NA IMAGEM PRINCIPAL --- */
 .main-image-container {
     flex: 1;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     position: relative;
+    background-color: #fff; /* Fundo branco */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px; /* Altura mínima garantida */
 }
 
 .main-image-container img {
     width: 100%;
     height: auto;
+    max-height: 500px; /* Limite de altura */
+    /* CONTAIN: Imagem inteira, sem cortes */
+    object-fit: contain !important; 
     display: block;
     transition: transform 0.3s ease;
 }
@@ -232,18 +244,27 @@ a.related-product-card {
     transform: translateY(-5px);
 }
 
+/* --- CORREÇÃO NOS PRODUTOS RELACIONADOS --- */
 .related-product-image-wrapper {
     position: relative;
-    background-color: #f0f0f0;
+    background-color: #f5f5f5; /* Fundo claro */
     border-radius: 6px;
     overflow: hidden;
     margin-bottom: var(--space-md);
+    height: 200px; /* Altura fixa */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .related-product-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* CONTAIN: Sem cortes */
+    object-fit: contain !important;
+    padding: 10px; /* Pequeno respiro */
 }
+
 .related-discount-badge {
     position: absolute;
     top: 10px;
@@ -319,7 +340,7 @@ a.related-product-card {
         height: 80px;
     }
     .main-image-container:hover img {
-        transform: scale(2);
+        transform: scale(1.5); /* Zoom suave */
     }
     .product-info h1 {
         font-size: 2.8rem;
