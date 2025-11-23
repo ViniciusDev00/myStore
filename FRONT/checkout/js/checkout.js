@@ -25,15 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedAddressId = null; 
     let currentSubtotal = 0; 
 
-    // --- ELEMENTOS DO DOM (INCLUINDO ORIGINAIS E NOVOS) ---
-    // Elementos originais
-    const checkoutForm = document.getElementById('checkoutForm'); // Assume que existe no HTML
-    const cartItemsContainer = document.getElementById('cart-items-container'); // Elemento para itens do carrinho (se usado fora do resumo)
-    const summarySubtotal = document.getElementById('summary-subtotal'); // Original (pode ser o mesmo que summarySubtotalElement)
-    const summaryTotal = document.getElementById('summary-total');     // Original (pode ser o mesmo que summaryTotalElement)
-    const checkoutButton = document.getElementById('checkout-button'); // Botão principal de checkout
+    // --- ELEMENTOS DO DOM ---
+    const checkoutForm = document.getElementById('checkoutForm');
+    const checkoutButton = document.getElementById('checkout-button'); 
 
-    // Elementos do Resumo do Pedido (Novos IDs ou renomeados)
     const summaryItemsContainer = document.getElementById('summaryItemsContainer');
     const summarySubtotalElement = document.getElementById('summarySubtotal');
     const summaryTotalElement = document.getElementById('summaryTotal');
@@ -44,18 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const prazoCorreiosElement = document.getElementById('prazoCorreios');
     const prazoResidenciaElement = document.getElementById('prazoResidencia');
 
-    // Elementos de Endereço e Destinatário
     const addressSelectionContainer = document.getElementById('address-selection'); 
     const nomeDestinatarioEl = document.getElementById('nomeDestinatario');
     const cpfDestinatarioEl = document.getElementById('cpfDestinatario');
     const observacoesEl = document.getElementById('observacoes');
     
-    // Elementos de Telefone e Validação
-    const telefoneInput = document.getElementById('telefoneDestinatario'); // Campo Telefone principal
-    const confirmacaoTelefoneInput = document.getElementById('confirmacaoTelefone'); // Campo de Confirmação
+    const telefoneInput = document.getElementById('telefoneDestinatario'); 
+    const confirmacaoTelefoneInput = document.getElementById('confirmacaoTelefone'); 
     const phoneMatchMessage = document.getElementById('phone-match-message');
 
-    // Elementos de Opções
     const opcoesCaixa = document.querySelectorAll('input[name="opcaoCaixa"]');
     const opcoesPrioritaria = document.querySelectorAll('input[name="opcaoPrioritaria"]');
 
@@ -68,14 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- FUNÇÕES BÁSICAS DE CARRINHO ---
+    // --- FUNÇÕES BÁSICAS DE CARRINHO (REINTRODUZIDAS NO CHECKOUT.JS PARA GARANTIR LEITURA) ---
+    // Mesmo que cart-utils.js exista, redefinimos getCart/saveCart aqui para evitar falha de scope.
     const getCart = () => {
         return JSON.parse(localStorage.getItem('cart')) || []; 
     };
 
     const saveCart = (cart) => {
         localStorage.setItem('cart', JSON.stringify(cart));
+        // Apenas chamamos renderCart localmente para atualizar o resumo
         renderCart();
+        // Chamamos a função global de atualização do header, se existir
         if (window.updateCartCounter) {
             window.updateCartCounter();
         }
@@ -160,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- renderCart ---
      const renderCart = () => {
-        const cart = getCart();
+        const cart = getCart(); // Chama a função local recém-definida
         if (!summaryItemsContainer || !checkoutButton) return;
 
         if (cart.length === 0) {
@@ -266,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleCheckout = async (e) => {
         e.preventDefault();
 
-        const cart = getCart();
+        const cart = getCart(); // Chama a função local recém-definida
         if (cart.length === 0) {
             alert("Seu carrinho está vazio.");
             return;
@@ -325,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await apiClient.post('/pedidos', checkoutData);
             const novoPedido = response.data;
 
+            // Remove o carrinho localmente. Note que não usamos a saveCart() aqui pois queremos remover tudo.
             localStorage.removeItem('cart'); 
             if (window.updateCartCounter) {
                 window.updateCartCounter();
@@ -360,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
      const initializeCheckoutPage = async () => {
         renderCart(); 
         
-        if (getCart().length === 0) {
+        if (getCart().length === 0) { // Chama a função local recém-definida
             if(addressSelectionContainer) addressSelectionContainer.innerHTML = '<p>Adicione itens ao carrinho para continuar.</p>';
             return; 
         }
