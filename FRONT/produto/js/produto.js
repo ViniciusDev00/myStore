@@ -1,167 +1,147 @@
-// myStore/FRONT/produto/js/produto.js - CÓDIGO CORRIGIDO COMPLETO
-
 document.addEventListener('DOMContentLoaded', () => {
-    const productId = new URLSearchParams(window.location.search).get('id');
+    const productDetailContainer = document.getElementById('product-detail-container');
     const API_URL = 'http://localhost:8080/api/produtos';
-    const baseImageUrl = 'http://localhost:8080/'; 
+
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
 
     if (!productId) {
-        document.getElementById('product-detail-container').innerHTML = '<p class="error-message">ID do produto não especificado.</p>';
+        productDetailContainer.innerHTML = '<p class="loading-message">Produto inválido ou não encontrado.</p>';
         return;
     }
 
-    const getImageUrl = (url) => {
-        if (!url || url.startsWith('http')) {
-            return url;
+    const formatPrice = (price) => `R$ ${price.toFixed(2).replace('.', ',')}`;
+
+    const getImageUrl = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http')) {
+            return path;
         }
-        return baseImageUrl + url;
+        return `http://localhost:8080/${path}`;
     };
 
-    const formatPrice = (price) => `R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`;
-
-    const renderProductDetails = (product) => {
-        const container = document.getElementById('product-detail-container');
-        if (!container) return;
-
-        const mainImage = getImageUrl(product.imagemUrl);
-        const description = product.descricao || 'Nenhuma descrição disponível.';
-
-        container.innerHTML = `
-            <div class="product-images">
-                <img src="${mainImage}" alt="${product.nome}" id="main-product-image">
-                <div class="thumbnail-container" id="thumbnail-container">
-                    ${product.imagensExtras && product.imagensExtras.length > 0 ? product.imagensExtras.map(img => `
-                        <img src="${getImageUrl(img.url)}" alt="${product.nome} miniatura" class="thumbnail" data-full-image="${getImageUrl(img.url)}">
-                    `).join('') : ''}
-                </div>
-            </div>
-            <div class="product-info">
-                <p class="product-category">${product.categoria.nome}</p>
-                <h1 class="product-title">${product.nome}</h1>
-                <p class="product-price">${formatPrice(product.preco)}</p>
-                <p class="product-description">${description}</p>
-                
-                <div class="size-selection">
-                    <h3 class="size-title">Selecione o Tamanho:</h3>
-                    <div class="size-buttons" id="size-buttons-container">
-                        ${['P', 'M', 'G', 'GG'].map(size => `
-                            <button class="size-btn" data-size="${size}">${size}</button>
-                        `).join('')}
-                    </div>
-                    <p id="size-error" class="error-message" style="display: none;">Por favor, selecione um tamanho.</p>
-                </div>
-                
-                <button class="btn btn-primary add-to-cart-btn" id="addToCartBtn">Adicionar ao Carrinho</button>
-                
-                <div class="delivery-info">
-                    <p><i class="fas fa-truck"></i> Envio internacional direto do fornecedor.</p>
-                    <p><i class="fas fa-box"></i> Prazo de entrega: 15-35 dias úteis.</p>
-                </div>
-            </div>
-        `;
-
-        addEventListeners(product);
-    };
-
-    const fetchProduct = async () => {
+    const fetchProductData = async () => {
         try {
             const response = await axios.get(`${API_URL}/${productId}`);
-            renderProductDetails(response.data);
-            fetchRelatedProducts(response.data.categoria.id);
+            const product = response.data;
+            renderProduct(product);
+            fetchRelatedProducts(product.categoria.id, product.id);
         } catch (error) {
-            console.error('Erro ao buscar produto:', error);
-            document.getElementById('product-detail-container').innerHTML = '<p class="error-message">Produto não encontrado ou erro na conexão.</p>';
+            console.error('Erro ao buscar detalhes do produto:', error);
+            productDetailContainer.innerHTML = '<p class="loading-message">Erro ao carregar o produto. Tente novamente mais tarde.</p>';
         }
     };
 
-    const addEventListeners = (product) => {
-        const sizeButtons = document.querySelectorAll('.size-btn');
-        const buyButton = document.getElementById('addToCartBtn');
-        const sizeError = document.getElementById('size-error');
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        const mainImageEl = document.getElementById('main-product-image');
+    const renderProduct = (product) => {
+        document.title = `${product.nome} | Japa Universe`;
 
-        sizeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                sizeButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                if (sizeError) sizeError.style.display = 'none';
-            });
-        });
+        const originalPriceHTML = product.precoOriginal ? `<span class="price-original">${formatPrice(product.precoOriginal)}</span>` : '';
+        const discount = product.precoOriginal ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
+        const discountTagHTML = discount > 0 ? `<span class="discount-tag">-${discount}%</span>` : '';
 
-        thumbnails.forEach(thumb => {
-            thumb.addEventListener('click', () => {
-                if (mainImageEl) {
-                    mainImageEl.src = thumb.dataset.fullImage;
-                }
-            });
-        });
+        const imageUrl = getImageUrl(product.imagemUrl);
 
-        if (buyButton) {
-            buyButton.addEventListener('click', async () => {
-                const selectedSizeEl = document.querySelector('.size-btn.active');
-                
-                if (!selectedSizeEl) {
-                    if (sizeError) sizeError.style.display = 'block';
-                    return;
-                }
-                
-                const size = selectedSizeEl.textContent;
-                
-                // --- PONTO CRÍTICO: Garantir o formato numérico do preço ---
-                const productToAdd = {
-                    id: product.id.toString(),
-                    name: product.nome,
-                    price: parseFloat(product.preco), // <--- CORREÇÃO AQUI: Garante que é um número (float)
-                    image: getImageUrl(product.imagemUrl),
-                    size: size,
-                    quantity: 1
-                };
-                
-                // A função addToCart é definida em cart-utils.js, que DEVE ser carregado antes deste script.
-                if (window.addToCart) {
-                    window.addToCart(productToAdd);
-                } else {
-                    console.error("Função addToCart não encontrada. Verifique se cart-utils.js foi carregado corretamente.");
-                    alert("Erro interno: Função de carrinho não carregada. Tente novamente.");
-                }
-            });
-        }
+        const productHTML = `
+            <div class="product-detail-grid">
+                <div class="product-images">
+                    <div class="thumbnail-gallery">
+                        <div class="thumbnail-item active">
+                            <img src="${imageUrl}" alt="Thumbnail de ${product.nome}">
+                        </div>
+                    </div>
+                    <div class="main-image-container">
+                        <img src="${imageUrl}" alt="${product.nome}" id="main-product-image">
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <div class="breadcrumbs">
+                        <a href="/index.html">Página Inicial</a> / <a href="/FRONT/catalogo/HTML/catalogo.html">Catálogo</a> / <span>${product.nome}</span>
+                    </div>
+                    <h1>${product.nome}</h1>
+
+                    <div class="price-box">
+                        ${originalPriceHTML}
+                        <div>
+                            <span class="price-current">${formatPrice(product.preco)}</span>
+                            ${discountTagHTML}
+                        </div>
+                        <span class="price-installments">ou em até 10x de ${formatPrice(product.preco / 10)} sem juros</span>
+                    </div>
+
+                    <div class="shipping-tag" style="margin-bottom: 20px;">Frete Grátis</div>
+
+                    <div class="size-selector">
+                        <h3>Tamanho do calçado:</h3>
+                        <div class="size-options">
+                            <button class="size-btn">38</button>
+                            <button class="size-btn active">39</button>
+                            <button class="size-btn">40</button>
+                            <button class="size-btn">41</button>
+                            <button class="size-btn">42</button>
+                            <button class="size-btn">43</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary buy-button">Adicionar ao Carrinho</button>
+                </div>
+            </div>
+
+            <div class="product-description">
+                <h2>Descrição</h2>
+                <p>${product.descricao}</p>
+            </div>
+        `;
+        productDetailContainer.innerHTML = productHTML;
+        addEventListeners();
     };
 
-    // Função auxiliar para carregar produtos relacionados
-    const fetchRelatedProducts = async (categoryId) => {
+    const fetchRelatedProducts = async (categoryId, currentProductId) => {
         try {
-            const response = await axios.get(`${API_URL}/categoria/${categoryId}/relacionados?excludeId=${productId}&limit=10`);
-            renderRelatedProducts(response.data);
+            const response = await axios.get(`${API_URL}?categoriaId=${categoryId}`);
+            const relatedProducts = response.data.filter(p => p.id != currentProductId);
+            renderRelatedProducts(relatedProducts);
         } catch (error) {
-            console.warn('Não foi possível carregar produtos relacionados.', error);
+            console.error('Erro ao buscar produtos relacionados:', error);
         }
     };
 
     const renderRelatedProducts = (products) => {
-        const container = document.getElementById('related-products-grid');
-        if (!container) return;
-
-        if (products.length === 0) {
-            container.innerHTML = '<p style="padding: 20px;">Nenhum produto relacionado encontrado.</p>';
+        const grid = document.getElementById('related-products-grid');
+        if (!products || products.length === 0) {
+            if(document.querySelector('.related-products-section')) {
+                document.querySelector('.related-products-section').style.display = 'none';
+            }
             return;
         }
 
-        container.innerHTML = products.map(product => `
-            <div class="swiper-slide product-card">
-                <a href="produto.html?id=${product.id}">
-                    <img src="${getImageUrl(product.imagemUrl)}" alt="${product.nome}">
-                    <div class="product-card-info">
-                        <p class="product-card-category">${product.categoria.nome}</p>
-                        <h4 class="product-card-title">${product.nome}</h4>
-                        <p class="product-card-price">${formatPrice(product.preco)}</p>
+        grid.innerHTML = products.map(product => {
+            const hasDiscount = product.precoOriginal && product.precoOriginal > product.preco;
+            const discountPercentage = hasDiscount ? Math.round(((product.precoOriginal - product.preco) / product.precoOriginal) * 100) : 0;
+            
+            const imageUrl = getImageUrl(product.imagemUrl);
+            const productUrl = `/FRONT/produto/HTML/produto.html?id=${product.id}`;
+
+            return `
+            <div class="swiper-slide">
+                <a href="${productUrl}" class="related-product-card">
+                    <div class="related-product-image-wrapper">
+                        <img src="${imageUrl}" alt="${product.nome}">
+                        ${hasDiscount ? `<div class="related-discount-badge"><i class="fas fa-arrow-down"></i> ${discountPercentage}%</div>` : ''}
+                    </div>
+                    <div class="related-product-info">
+                        <p class="related-product-name">${product.nome}</p>
+                        <div class="related-price-line">
+                            <span class="related-price-current">${formatPrice(product.preco)}</span>
+                            ${hasDiscount ? `<span class="related-price-original">${formatPrice(product.precoOriginal)}</span>` : ''}
+                        </div>
+                        <div class="shipping-tag">FRETE GRÁTIS</div>
                     </div>
                 </a>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
-        // Inicializa o Swiper para os produtos relacionados
         new Swiper('.related-products-swiper', {
             slidesPerView: 2,
             spaceBetween: 10,
@@ -170,17 +150,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 prevEl: '.swiper-button-prev',
             },
             breakpoints: {
-                768: {
-                    slidesPerView: 3,
-                    spaceBetween: 20,
-                },
-                1024: {
-                    slidesPerView: 4,
-                    spaceBetween: 30,
-                },
+                640: { slidesPerView: 3, spaceBetween: 20 },
+                1024: { slidesPerView: 4, spaceBetween: 30 },
             }
         });
     };
+    
+    const addEventListeners = () => {
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sizeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
 
-    fetchProduct();
+        const buyButton = document.querySelector('.buy-button');
+        if(buyButton) {
+            buyButton.addEventListener('click', async () => {
+                const selectedSizeEl = document.querySelector('.size-btn.active');
+                if (!selectedSizeEl) {
+                    alert('Por favor, selecione um tamanho.');
+                    return;
+                }
+                const size = selectedSizeEl.textContent;
+                
+                const response = await axios.get(`${API_URL}/${productId}`);
+                const product = response.data;
+    
+                const productToAdd = {
+                    id: product.id.toString(),
+                    name: product.nome,
+                    price: product.preco,
+                    image: getImageUrl(product.imagemUrl),
+                    size: size,
+                    quantity: 1
+                };
+    
+                if (window.addToCart) {
+                    window.addToCart(productToAdd);
+                } else {
+                    console.error("Função addToCart não encontrada.");
+                }
+            });
+        }
+
+        const mainImageContainer = document.querySelector('.main-image-container');
+        const mainImage = document.getElementById('main-product-image');
+        if (mainImageContainer && mainImage) {
+            mainImageContainer.addEventListener('mousemove', (e) => {
+                const { left, top, width, height } = mainImageContainer.getBoundingClientRect();
+                const x = (e.clientX - left) / width * 100;
+                const y = (e.clientY - top) / height * 100;
+                mainImage.style.transformOrigin = `${x}% ${y}%`;
+            });
+        }
+    };
+
+    fetchProductData();
 });
