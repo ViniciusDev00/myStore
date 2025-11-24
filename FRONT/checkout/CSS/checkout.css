@@ -1,299 +1,423 @@
-/* Estrutura Básica e Responsividade */
+:root {
+    --primary: #ff7a00;
+    --primary-hover: #e06b00;
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --bg-input: #2a2a2a;
+    --text-main: #ffffff;
+    --text-muted: #a0a0a0;
+    --border-color: #333333;
+    --success: #00c853;
+    --error: #ff3d00;
+    --font-title: 'Bebas Neue', cursive;
+    --font-body: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-body);
+}
+
 .checkout-container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
+.page-title {
+    font-family: var(--font-title);
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+/* --- Layout Grid (Desktop) --- */
 .checkout-layout {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 40px;
-    margin-top: 30px;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 30px;
 }
 
-/* Formulário de Seções */
-.checkout-form-section h2 {
-    font-size: 2.2rem;
-    color: var(--primary-color);
-    margin-bottom: 20px;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 5px;
+/* --- Cards Gerais --- */
+.checkout-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 25px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-.checkout-form-section h3.section-subtitle {
-    font-size: 1.5rem;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    color: var(--text-primary);
-}
-
-.form-group-row {
+.card-header {
+    background-color: rgba(255, 255, 255, 0.03);
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-header i {
+    color: var(--primary);
+    font-size: 1.4rem;
+}
+
+.card-header h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* --- Formulários --- */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
-.form-group, .form-group-row .form-group {
-    margin-bottom: 15px;
-    flex: 1;
-}
-
-.form-group label {
+label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    background-color: var(--input-bg);
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: border-color 0.3s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    border-color: var(--primary-color);
-    outline: none;
-}
-
-.form-group textarea {
-    resize: vertical;
-}
-
-.form-group-row .one-third { flex: 0 0 30%; }
-.form-group-row .two-thirds { flex: 0 0 65%; }
-.form-group-row .full-width { flex: 1 1 100%; }
-
-/* --- NOVOS ESTILOS PARA OPÇÕES E VALIDAÇÃO --- */
-.validation-message {
+    margin-bottom: 8px;
     font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1);
+}
+
+.validation-message {
+    font-size: 0.85rem;
     margin-top: 5px;
-    height: 1.2rem; /* Reserva espaço para evitar CLS */
+    min-height: 20px;
 }
 
-#phone-match-message {
-    color: var(--error-color);
+/* --- Seleção de Endereço --- */
+.address-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.02);
 }
 
-.options-group {
+.address-option:hover {
+    border-color: #555;
+}
+
+.address-option:has(input:checked) {
+    border-color: var(--primary);
+    background-color: rgba(255, 122, 0, 0.05);
+}
+
+.address-option input[type="radio"] {
+    margin-top: 5px;
+    accent-color: var(--primary);
+    transform: scale(1.2);
+}
+
+.address-details strong {
+    color: var(--text-main);
+    display: block;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+.address-details p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* --- Confirmação Obrigatória --- */
+.address-confirmation-box {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 12px;
+    user-select: none;
+}
+
+.checkbox-container input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.checkbox-text {
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* --- Preferências (Cards Radio) --- */
+.pref-title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.radio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.radio-card {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.option-card {
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
-    background-color: var(--bg-secondary);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.option-card h3 {
-    font-size: 1.4rem;
-    color: var(--text-primary);
-    margin-bottom: 10px;
-}
-
-.option-card p.option-description {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    margin-bottom: 15px;
-}
-
-.radio-options label {
-    display: block;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
     cursor: pointer;
-    padding: 8px 0;
-    font-weight: 500;
-    color: var(--text-primary);
+    transition: all 0.2s;
+    position: relative;
 }
 
-.radio-options input[type="radio"] {
-    margin-right: 8px;
-    accent-color: var(--primary-color);
-}
-/* --- FIM NOVOS ESTILOS PARA OPÇÕES E VALIDAÇÃO --- */
+.radio-card input { display: none; }
 
-/* Resumo do Pedido */
-.order-summary-section {
-    background-color: var(--bg-secondary);
-    padding: 30px;
-    border-radius: var(--border-radius-lg);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    align-self: flex-start;
-    position: sticky;
-    top: 20px; /* Mantém o resumo visível ao rolar */
+.radio-card.selected {
+    border-color: var(--primary);
+    background-color: rgba(255, 122, 0, 0.08);
 }
 
-.order-summary-section h2 {
+.radio-title {
+    font-weight: 700;
+    color: var(--text-main);
+}
+.radio-card.selected .radio-title { color: var(--primary); }
+
+.radio-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 20px 0;
+}
+
+/* --- Pagamento Fixo --- */
+.payment-method-fixed {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, rgba(50, 205, 50, 0.1), rgba(0, 0, 0, 0));
+    border: 1px solid var(--success);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.payment-icon i {
     font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: 25px;
+    color: var(--success); /* Cor do Pix */
 }
 
-.summary-items {
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    max-height: 400px;
-    overflow-y: auto;
+.payment-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--success);
 }
+
+.payment-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.payment-check {
+    margin-left: auto;
+    color: var(--success);
+    font-size: 1.5rem;
+}
+
+/* --- Sidebar (Resumo) --- */
+.checkout-sidebar {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+.order-summary-card {
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 25px;
+}
+
+.order-summary-card h2 {
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.summary-items-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+/* Scrollbar fina para a lista */
+.summary-items-list::-webkit-scrollbar { width: 5px; }
+.summary-items-list::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
 
 .summary-item {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 15px;
     padding-bottom: 15px;
-    border-bottom: 1px solid rgba(var(--border-rgb), 0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.summary-item-details {
-    flex-grow: 1;
-}
-
-.summary-item-details h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.summary-item-details p {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 3px;
-}
-
-.summary-item-image {
+.summary-item img {
     width: 60px;
     height: 60px;
-    overflow: hidden;
-    border-radius: var(--border-radius-sm);
-}
-
-.summary-item-image img {
-    width: 100%;
-    height: 100%;
+    border-radius: 6px;
     object-fit: cover;
 }
 
-.summary-details {
-    margin-top: 20px;
-    padding-top: 10px;
+.summary-item h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
 }
 
-.summary-line {
+.summary-item p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.total-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 10px;
     font-size: 1rem;
-    color: var(--text-primary);
+    color: var(--text-muted);
 }
 
-.summary-line.option-line {
-    font-size: 0.9rem;
-    color: var(--accent-color);
-}
+.option-row { color: var(--primary); }
 
-.summary-line.total-line {
-    border-top: 2px solid var(--border-color);
-    padding-top: 15px;
+.final-total {
     margin-top: 15px;
-    font-size: 1.4rem;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--text-main);
 }
+.final-total span:last-child { color: var(--primary); }
 
-.summary-line.total-line h3 {
-    font-size: 1.4rem;
-}
-
-.btn-checkout {
-    width: 100%;
-    margin-top: 20px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* --- ESTILOS PARA PRAZO DE ENTREGA --- */
-.delivery-info {
-    margin-top: 20px;
+.delivery-estimates {
+    background-color: rgba(255,255,255,0.03);
+    border-radius: 8px;
     padding: 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    background-color: var(--input-bg);
+    margin: 20px 0;
 }
 
-.delivery-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 10px;
-}
-
-.delivery-line {
+.estimate-item {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    color: var(--text-secondary);
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.estimate-item:last-child { margin-bottom: 0; }
+.estimate-item i { color: var(--primary); }
+
+.btn-finish-checkout {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
-.delivery-line i {
-    margin-right: 10px;
-    color: var(--accent-color);
+.btn-finish-checkout:hover {
+    background-color: var(--primary-hover);
 }
 
-.delivery-note {
+.btn-finish-checkout:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+}
+
+.secure-badge {
+    text-align: center;
+    color: var(--success);
     font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-top: 10px;
-    font-style: italic;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
-/* --- FIM ESTILOS PARA PRAZO DE ENTREGA --- */
 
+.hidden { display: none; }
 
-/* Responsividade para telas menores */
-@media (max-width: 1024px) {
+/* Mobile Responsive */
+@media (max-width: 900px) {
     .checkout-layout {
         grid-template-columns: 1fr;
-        gap: 20px;
     }
-    
-    .order-summary-section {
-        position: static;
-        top: auto;
+    .form-row {
+        grid-template-columns: 1fr;
     }
-}
-
-@media (max-width: 768px) {
-    .form-group-row {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .form-group-row .form-group {
-        flex: 1 1 100%;
-    }
-    
-    .form-group-row .one-third, .form-group-row .two-thirds {
-        flex: 1 1 100%;
-    }
-    
-    .options-group {
-        flex-direction: column;
+    .radio-grid {
+        grid-template-columns: 1fr;
     }
 }

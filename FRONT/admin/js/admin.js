@@ -103,7 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (path.startsWith('http')) {
             return path;
         }
-        // LINHA CORRIGIDA
         return `${apiUrl}/uploads/${path}`;
     };
 
@@ -146,8 +145,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const renderPedidos = (pedidos) => {
         pedidos.sort((a, b) => new Date(b.dataPedido) - new Date(a.dataPedido));
         pedidosTableBody.innerHTML = pedidos.map(pedido => {
-            // Nota: O log indica que Pedido.usuario está LAZY. No Admin, talvez seja melhor
-            // A API agora retorna PedidoAdminResponse, que já tem o campo 'nomeCliente'.
             const nomeCliente = pedido.nomeCliente || 'Usuário Desconhecido';
             const valorFormatado = pedido.valorTotal ? `R$ ${pedido.valorTotal.toFixed(2).replace('.', ',')}` : 'R$ --,--';
             const dataFormatada = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleDateString('pt-BR') : '--/--/----';
@@ -176,7 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         `}).join('');
     };
 
-     // FUNÇÃO CORRIGIDA: REMOÇÃO DOS COMENTÁRIOS JS NA TEMPLATE STRING
      const renderProdutos = (produtos) => {
         produtosTableBody.innerHTML = produtos.map(produto => `
             <tr>
@@ -198,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const renderMensagens = (mensagens) => {
-        adminMessages = mensagens; // Guarda as mensagens para o modal
+        adminMessages = mensagens;
         mensagens.sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio));
         mensagensTableBody.innerHTML = mensagens.map(msg => `
             <tr>
@@ -216,7 +212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const fetchPedidos = async () => {
         try {
-            const response = await apiClient.get('/pedidos'); // Usa apiClient autenticado
+            const response = await apiClient.get('/pedidos'); 
             renderPedidos(response.data);
         } catch (error) {
             console.error("Erro ao buscar pedidos:", error);
@@ -231,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const fetchProdutos = async () => {
         try {
-            const response = await apiClient.get('/produtos'); // Usa apiClient autenticado
+            const response = await apiClient.get('/produtos');
             renderProdutos(response.data);
         } catch (error) {
             console.error("Erro ao buscar produtos:", error);
@@ -246,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const fetchMensagens = async () => {
         try {
-            const response = await apiClient.get('/contatos'); // Usa apiClient autenticado
+            const response = await apiClient.get('/contatos');
             renderMensagens(response.data);
         } catch (error) {
             console.error("Erro ao buscar mensagens:", error);
@@ -278,7 +274,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             navMensagens.classList.add('active');
             fetchMensagens();
         }
-         // Fecha o sidebar mobile ao trocar de aba
+         
          if (sidebar && overlay && sidebar.classList.contains('active')) {
              sidebar.classList.remove('active');
              overlay.classList.remove('active');
@@ -289,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     navProdutos.addEventListener('click', (e) => { e.preventDefault(); switchView('produtos'); });
     navMensagens.addEventListener('click', (e) => { e.preventDefault(); switchView('mensagens'); });
 
-    // Abre o modal de produto (para adicionar ou editar)
+    // Abre o modal de produto
      const openProductModal = (produto = null) => {
         resetForm(); 
         imagemInput.required = !produto; 
@@ -343,8 +339,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         avisoModal.classList.remove('active');
     };
 
+    // --- FUNÇÃO ATUALIZADA: Detalhes do Pedido com Preferências ---
     const openDetailsModal = (pedido) => {
         detailsModalTitle.textContent = `Detalhes do Pedido #${String(pedido.id).padStart(6, '0')}`;
+
+        // === NOVA LÓGICA: Badges de Preferências ===
+        const caixaBadge = pedido.comCaixa 
+            ? '<span style="background: #2ecc71; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">COM CAIXA (+5%)</span>' 
+            : '<span style="background: #444; color: #ccc; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Padrão (Sem Caixa)</span>';
+        
+        const prioridadeBadge = pedido.entregaPrioritaria 
+            ? '<span style="background: #e67e22; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">PRIORITÁRIA (+5%)</span>' 
+            : '<span style="background: #444; color: #ccc; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Normal</span>';
+        // ===========================================
 
         const itensHtml = pedido.itens.map(item => `
             <div class="order-item">
@@ -360,15 +367,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
         `).join('');
 
-        // Renderização dos Avisos e Imagens
         const avisosHtml = (pedido.avisos || [])
-            .sort((a, b) => new Date(b.dataAviso) - new Date(a.dataAviso)) // Mais recentes primeiro
+            .sort((a, b) => new Date(b.dataAviso) - new Date(a.dataAviso))
             .map(aviso => {
                 const dataFormatada = new Date(aviso.dataAviso).toLocaleString('pt-BR');
                 let imagemHtml = '';
 
                 if (aviso.imagemUrl) {
-                    // Constrói o URL completo usando a função getImageUrl
                     const imageUrl = getImageUrl(aviso.imagemUrl);
                     imagemHtml = `<div class="aviso-image-container"><img src="${imageUrl}" alt="Imagem do Aviso" style="max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px;"></div>`;
                 }
@@ -388,7 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="detail-card">
                     <h5>Cliente</h5>
                     <p><strong>Nome:</strong> ${pedido.nomeDestinatario}</p>
-                    <p><strong>CPF:</strong> ${pedido.cpfDestinatario}</p>
+                    <p><strong>CPF:</strong> ${pedido.cpfDestinatario || 'Não informado'}</p>
                     <p><strong>Telefone:</strong> ${pedido.telefoneDestinatario}</p>
                 </div>
                 <div class="detail-card">
@@ -398,7 +403,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p><strong>Cidade:</strong> ${pedido.enderecoDeEntrega.cidade} - ${pedido.enderecoDeEntrega.estado}</p>
                     <p><strong>CEP:</strong> ${pedido.enderecoDeEntrega.cep}</p>
                 </div>
-            </div>
+                
+                <div class="detail-card" style="grid-column: 1 / -1; border: 1px solid #ff7a00;">
+                    <h5 style="color: #ff7a00;"><i class="fas fa-truck-loading"></i> Logística & Preferências</h5>
+                    <p style="margin-bottom: 8px;"><strong>Embalagem:</strong> ${caixaBadge}</p>
+                    <p style="margin-bottom: 8px;"><strong>Envio:</strong> ${prioridadeBadge}</p>
+                    ${pedido.observacoes ? `<p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;"><strong>Observações do Cliente:</strong> ${pedido.observacoes}</p>` : ''}
+                </div>
+                </div>
             <div class="detail-card">
                 <h5>Itens do Pedido</h5>
                 <div class="order-items-container">${itensHtml}</div>

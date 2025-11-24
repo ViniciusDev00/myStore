@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Japa Universe</title>
+    <title>Finalizar Compra | Japa Universe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="../../assets/CSS/base.css">
     <link rel="stylesheet" href="../CSS/checkout.css">
@@ -16,167 +16,194 @@
     
     <div class="page-wrapper">
         <main class="checkout-container">
-            <h1>Finalizar Pedido</h1>
+            <h1 class="page-title"><i class="fas fa-lock"></i> Checkout Seguro</h1>
             
             <form id="checkoutForm" class="checkout-layout">
-                <section class="checkout-form-section">
-                    <h2>Detalhes Pessoais e Endereço</h2>
+                
+                <div class="checkout-main-content">
                     
-                    <div class="form-group">
-                        <label for="nomeCompleto">Nome Completo</label>
-                        <input type="text" id="nomeCompleto" required>
-                    </div>
-                    
-                    <div class="form-group-row">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" required>
+                    <section class="checkout-card">
+                        <div class="card-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h2>Dados Pessoais</h2>
                         </div>
-                        <div class="form-group">
-                            <label for="telefone">Telefone (WhatsApp)</label>
-                            <input type="text" id="telefone" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group-row">
-                        <div class="form-group full-width">
-                            <label for="confirmacaoTelefone">Confirmar Telefone</label>
-                            <input type="text" id="confirmacaoTelefone" required>
-                            <div id="phone-match-message" class="validation-message"></div>
-                        </div>
-                    </div>
-                    <h3 class="section-subtitle">Endereço de Entrega</h3>
-                    <div class="form-group-row">
-                        <div class="form-group">
-                            <label for="cep">CEP</label>
-                            <input type="text" id="cep" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="estado">Estado</label>
-                            <input type="text" id="estado" required readonly>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group-row">
-                        <div class="form-group">
-                            <label for="cidade">Cidade</label>
-                            <input type="text" id="cidade" required readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="bairro">Bairro</label>
-                            <input type="text" id="bairro" required readonly>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group-row">
-                        <div class="form-group two-thirds">
-                            <label for="rua">Rua/Avenida</label>
-                            <input type="text" id="rua" required readonly>
-                        </div>
-                        <div class="form-group one-third">
-                            <label for="numero">Número</label>
-                            <input type="text" id="numero" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="complemento">Complemento (Opcional)</label>
-                        <input type="text" id="complemento">
-                    </div>
-                    
-                    <h2>Opções do Pedido e Envio</h2>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="nomeCompleto">Nome Completo</label>
+                                <input type="text" id="nomeCompleto" placeholder="Ex: João da Silva" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cpfDestinatario">CPF (Para Nota Fiscal)</label>
+                                <input type="text" id="cpfDestinatario" placeholder="000.000.000-00" required>
+                            </div>
 
-                    <div class="options-group">
-                        <div class="option-card">
-                            <h3 class="option-title">Embalagem (Caixa Original)</h3>
-                            <p class="option-description">Escolha se deseja receber o produto na caixa original do fabricante. Adiciona 5% ao valor total.</p>
-                            <div class="radio-options">
-                                <label><input type="radio" name="opcaoCaixa" value="comCaixa" id="comCaixa"> Com Caixa (+5%)</label>
-                                <label><input type="radio" name="opcaoCaixa" value="semCaixa" id="semCaixa" checked> Sem Caixa (Padrão)</label>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">E-mail</label>
+                                    <input type="email" id="email" placeholder="seu@email.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telefone">WhatsApp</label>
+                                    <input type="text" id="telefone" placeholder="(00) 00000-0000" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmacaoTelefone">Confirmar WhatsApp</label>
+                                <input type="text" id="confirmacaoTelefone" placeholder="Repita o número" required>
+                                <div id="phone-match-message" class="validation-message"></div>
                             </div>
                         </div>
-
-                        <div class="option-card">
-                            <h3 class="option-title">Entrega Prioritária</h3>
-                            <p class="option-description">Processamento mais rápido e envio expresso. Adiciona 5% ao valor total e reduz o prazo de entrega.</p>
-                            <div class="radio-options">
-                                <label><input type="radio" name="opcaoPrioritaria" value="prioritaria" id="entregaPrioritaria"> Prioritária (+5%)</label>
-                                <label><input type="radio" name="opcaoPrioritaria" value="padrao" id="entregaPadrao" checked> Padrão (Padrão)</label>
-                            </div>
-                        </div>
-                    </div>
-                    <h2>Observações e Pagamento</h2>
-                    
-                    <div class="form-group">
-                        <label for="observacoes">Observações do Pedido (Opcional)</label>
-                        <textarea id="observacoes" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="metodoPagamento">Método de Pagamento</label>
-                        <select id="metodoPagamento" required>
-                            <option value="" disabled selected>Selecione o método de pagamento</option>
-                            <option value="PIX">PIX</option>
-                            <option value="CARTAO">Cartão de Crédito</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-checkout">Continuar para Pagamento</button>
-                </section>
-
-                <section class="order-summary-section">
-                    <h2>Resumo do Pedido</h2>
-                    
-                    <div class="summary-items" id="summaryItemsContainer">
-                        </div>
-                    
-                    <div class="summary-details">
-                        <div class="summary-line">
-                            <span>Subtotal:</span>
-                            <span id="summarySubtotal">R$ 0,00</span>
-                        </div>
-                        <div class="summary-line option-line com-caixa-line hidden">
-                            <span>Taxa Caixa (+5%):</span>
-                            <span id="taxaCaixa">R$ 0,00</span>
-                        </div>
-                        <div class="summary-line option-line prioritaria-line hidden">
-                            <span>Taxa Prioritária (+5%):</span>
-                            <span id="taxaPrioritaria">R$ 0,00</span>
-                        </div>
-                        <div class="summary-line total-line">
-                            <h3>Total a Pagar:</h3>
-                            <h3 id="summaryTotal">R$ 0,00</h3>
-                        </div>
-                    </div>
-
-                    <div class="delivery-info">
-                        <h4 class="delivery-title">Previsão de Entrega</h4>
-                        <div class="delivery-line">
-                            <i class="fas fa-truck"></i>
-                            <span id="prazoCorreios">Chegada no Brasil (Correios): </span>
-                        </div>
-                        <div class="delivery-line">
-                            <i class="fas fa-home"></i>
-                            <span id="prazoResidencia">Entrega na Residência: </span>
-                        </div>
-                        <p class="delivery-note">Os prazos são estimativas e podem variar devido a fiscalização alfandegária.</p>
-                    </div>
                     </section>
+
+                    <section class="checkout-card">
+                        <div class="card-header">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h2>Endereço de Entrega</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="address-selection" class="address-list-container">
+                                <p class="loading-text">Carregando seus endereços...</p>
+                            </div>
+
+                            <div class="address-confirmation-box">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="confirmaEndereco" required>
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">Confirmo que o endereço selecionado acima está correto e atualizado.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="checkout-card preferences-section">
+                        <div class="card-header">
+                            <i class="fas fa-box-open"></i>
+                            <h2>Preferências de Envio</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="preference-group">
+                                <h3 class="pref-title">Embalagem</h3>
+                                <div class="radio-grid">
+                                    <label class="radio-card selected">
+                                        <input type="radio" name="opcaoCaixa" value="false" checked onchange="updatePreferenceUI(this)">
+                                        <div class="radio-content">
+                                            <span class="radio-title">Padrão</span>
+                                            <span class="radio-desc">Saco de envio seguro (Grátis)</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="opcaoCaixa" value="true" onchange="updatePreferenceUI(this)">
+                                        <div class="radio-content">
+                                            <span class="radio-title">Caixa Original</span>
+                                            <span class="radio-desc">+5% do valor</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="preference-group">
+                                <h3 class="pref-title">Velocidade</h3>
+                                <div class="radio-grid">
+                                    <label class="radio-card selected">
+                                        <input type="radio" name="opcaoPrioritaria" value="false" checked onchange="updatePreferenceUI(this)">
+                                        <div class="radio-content">
+                                            <span class="radio-title">Normal</span>
+                                            <span class="radio-desc">Prazo padrão</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="opcaoPrioritaria" value="true" onchange="updatePreferenceUI(this)">
+                                        <div class="radio-content">
+                                            <span class="radio-title">Prioritária</span>
+                                            <span class="radio-desc">Envio Expresso (+5%)</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="checkout-card">
+                        <div class="card-header">
+                            <i class="fas fa-wallet"></i>
+                            <h2>Pagamento</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="payment-method-fixed">
+                                <div class="payment-icon">
+                                    <i class="fa-brands fa-pix"></i>
+                                </div>
+                                <div class="payment-info">
+                                    <h3>PIX (Aprovação Imediata)</h3>
+                                    <p>Use o app do seu banco para escanear o QR Code na próxima tela.</p>
+                                </div>
+                                <div class="payment-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label for="observacoes">Observações (Opcional)</label>
+                                <textarea id="observacoes" rows="2" placeholder="Algum detalhe extra sobre a entrega?"></textarea>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="checkout-sidebar">
+                    <div class="order-summary-card">
+                        <h2>Resumo do Pedido</h2>
+                        
+                        <div class="summary-items-list" id="cart-items-container"></div>
+                        
+                        <div class="summary-totals">
+                            <div class="total-row">
+                                <span>Subtotal</span>
+                                <span id="summary-subtotal">R$ 0,00</span>
+                            </div>
+                            <div class="total-row option-row hidden" id="row-taxa-caixa">
+                                <span>Caixa Original (+5%)</span>
+                                <span id="taxaCaixa">R$ 0,00</span>
+                            </div>
+                            <div class="total-row option-row hidden" id="row-taxa-prioridade">
+                                <span>Entrega Prioritária (+5%)</span>
+                                <span id="taxaPrioritaria">R$ 0,00</span>
+                            </div>
+                            <div class="total-row final-total">
+                                <span>Total</span>
+                                <span id="summary-total">R$ 0,00</span>
+                            </div>
+                        </div>
+
+                        <div class="delivery-estimates">
+                            <div class="estimate-item">
+                                <i class="fas fa-plane-arrival"></i>
+                                <span id="prazoCorreios">Brasil: 15-20 dias</span>
+                            </div>
+                            <div class="estimate-item">
+                                <i class="fas fa-home"></i>
+                                <span id="prazoResidencia">Sua Casa: 23-28 dias</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-finish-checkout" id="checkout-button">
+                            Finalizar Compra <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <p class="secure-badge"><i class="fas fa-shield-alt"></i> Compra 100% Segura</p>
+                    </div>
+                </aside>
             </form>
         </main>
         
-        <footer class="main-footer" style="margin-top: 50px;">
-            </footer>
-    </div>
-
-    <div class="message-modal" id="messageModal">
-        <div class="modal-content">
-            <p id="modalMessage"></p>
-            <button class="btn btn-primary" onclick="closeModal()">OK</button>
-        </div>
+        <footer class="main-footer" style="margin-top: 50px;"></footer>
     </div>
     
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../../assets/js/header.js"></script>
     <script src="../../assets/js/cart-utils.js"></script> 
     <script src="../js/checkout.js"></script>

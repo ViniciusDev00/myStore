@@ -1,91 +1,105 @@
 document.addEventListener('DOMContentLoaded', () => {
     const ordersContainer = document.getElementById('orders-container');
-    const token = localStorage.getItem("jwtToken");
-    let currentOrders = [];
-
+    // REVERTIDO PARA A CHAVE CORRETA QUE MANTÉM O LOGIN
+    const token = localStorage.getItem('jwtToken');
+    
+    // Elementos do DOM
     const detailsModal = document.getElementById('details-modal');
     const detailsModalBody = document.getElementById('details-modal-body');
     const updatesModal = document.getElementById('updates-modal');
     const updatesModalBody = document.getElementById('updates-modal-body');
     const imageLightboxModal = document.getElementById('image-lightbox-modal');
     const lightboxImage = document.getElementById('lightbox-image');
+    const closeButtons = document.querySelectorAll('.close-modal-btn');
 
-    // 🌟 CORREÇÃO FINAL: Ajuste da BASE_URL. 
-    // Como o JSON já inclui "uploads/...", usamos apenas a raiz do backend.
+    // URL Base
     const BASE_URL = 'http://localhost:8080/';
 
-    // =========================================================================
-    // VETOR IX: NOVA FUNÇÃO DE FORMATACAO DE TEXTO (SOLUCAO OTIMIZADA)
-    // Complexidade Temporal: O(L)
-    // =========================================================================
-    /**
-     * Converte caracteres de quebra de linha (\n) em tags HTML <br> 
-     * para garantir a renderização correta de parágrafos em ambientes web.
-     * @param {string} text - O texto do aviso (PedidoAviso.mensagem).
-     * @returns {string} O texto formatado com tags <br>.
-     */
+    // Variável para armazenar pedidos carregados
+    let currentOrders = [];
+
+    // Formatação de texto (quebra de linha)
     const formatMessage = (text) => {
         if (!text) return '';
-        // Substituição global e eficiente de \n por <br>
         return text.replace(/\n/g, '<br>');
     };
-    // =========================================================================
-    // FIM DA NOVA FUNÇÃO
-    // =========================================================================
 
+    // --- ABRIR MODAL DE DETALHES (ATUALIZADO) ---
     const openDetailsModal = (orderId) => {
         const order = currentOrders.find(o => o.id == orderId);
         if (!order) return;
 
-        const formattedDate = new Date(order.dataPedido).toLocaleString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        const formattedDate = new Date(order.dataPedido).toLocaleString('pt-BR');
+        
+        // Tratamento de endereço seguro
+        let enderecoCompleto = 'Endereço não informado';
+        if (order.enderecoDeEntrega) {
+            const end = order.enderecoDeEntrega;
+            enderecoCompleto = `${end.rua}, ${end.numero}${end.complemento ? ` - ${end.complemento}` : ''}<br>
+                                ${end.bairro} - ${end.cidade}/${end.estado}<br>
+                                CEP: ${end.cep}`;
+        }
 
-        const endereco = order.enderecoDeEntrega;
-        const enderecoCompleto = endereco ? `${endereco.rua}, ${endereco.numero}${endereco.complemento ? `, ${endereco.complemento}` : ''} - ${endereco.cidade}, ${endereco.estado} - CEP: ${endereco.cep}` : 'Endereço não informado';
+        // Lógica para mostrar Preferências de Envio
+        const temCaixa = order.comCaixa 
+            ? '<span style="color:var(--primary); font-weight:bold;">Sim (+5%)</span>' 
+            : 'Não (Padrão)';
+        
+        const temPrioridade = order.entregaPrioritaria 
+            ? '<span style="color:var(--primary); font-weight:bold;">Sim (+5%)</span>' 
+            : 'Não (Padrão)';
 
         detailsModalBody.innerHTML = `
             <div class="modal-section">
                 <h4>Resumo do Pedido</h4>
                 <p><strong>ID do Pedido:</strong> #${order.id}</p>
-                <p><strong>Data do Pedido:</strong> ${formattedDate}</p>
-                <p><strong>Status:</strong> <span class="order-status-modal ${order.status.toLowerCase()}">${order.status}</span></p>
-                <p><strong>Valor Total:</strong> ${order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                <p><strong>Data:</strong> ${formattedDate}</p>
+                <p><strong>Status:</strong> <span class="order-status-modal ${order.status ? order.status.toLowerCase() : ''}">${order.status}</span></p>
+                <p><strong>Total:</strong> ${order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+            </div>
+
+            <div class="modal-section" style="border: 1px dashed var(--border-color);">
+                <h4><i class="fas fa-truck-loading"></i> Preferências de Envio</h4>
+                <p><strong>Embalagem com Caixa Original:</strong> ${temCaixa}</p>
+                <p><strong>Entrega Prioritária:</strong> ${temPrioridade}</p>
             </div>
 
             <div class="modal-section">
                 <h4>Endereço de Entrega</h4>
-                <p><strong>Destinatário:</strong> ${order.nomeDestinatario}</p>
-                <p><strong>CPF:</strong> ${order.cpfDestinatario}</p>
-                <p><strong>Telefone:</strong> ${order.telefoneDestinatario}</p>
-                <p><strong>Endereço:</strong> ${enderecoCompleto}</p>
+                <p><strong>Destinatário:</strong> ${order.nomeDestinatario || 'Não informado'}</p>
+                <p><strong>Endereço:</strong><br>${enderecoCompleto}</p>
                 ${order.observacoes ? `<p><strong>Observações:</strong> ${order.observacoes}</p>` : ''}
             </div>
 
             <div class="modal-section">
                 <h4>Itens do Pedido</h4>
-                ${order.itens.map(item => `
+                ${order.itens.map(item => {
+                    const imagePath = item.produto && item.produto.imagemUrl ? `${BASE_URL}${item.produto.imagemUrl}` : null;
+                    return `
                     <div class="order-item-modal">
-                        <img src="${BASE_URL}${item.produto.imagemUrl}" alt="${item.produto.nome}" class="order-item-image-modal">
+                        ${imagePath 
+                            ? `<img src="${imagePath}" alt="${item.produto.nome}" class="order-item-image-modal">` 
+                            : `<div style="width:80px;height:80px;background:#eee;"></div>`}
+                        
                         <div class="order-item-details-modal">
                             <h5>${item.produto.nome}</h5>
                             <p>Tamanho: ${item.tamanho || 'N/A'}</p>
                             <p>Quantidade: ${item.quantidade}</p>
-                            <p>Preço Unitário: ${item.precoUnitario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                            <p>Valor Unit.: ${item.precoUnitario.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
                         </div>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
         `;
         detailsModal.classList.add('active');
     };
 
+    // --- ABRIR MODAL DE ATUALIZAÇÕES ---
     const openUpdatesModal = async (orderId) => {
         try {
+            updatesModalBody.innerHTML = '<p>Carregando atualizações...</p>';
+            updatesModal.classList.add('active');
+
             const response = await axios.get(`http://localhost:8080/api/pedidos/${orderId}/avisos`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -103,67 +117,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 `).join('');
             }
 
+            // Marca como lido
             await axios.post(`http://localhost:8080/api/pedidos/${orderId}/avisos/mark-as-read`, {}, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
+            // Remove badge visualmente
             const orderCard = ordersContainer.querySelector(`.order-card[data-order-id='${orderId}']`);
             if (orderCard) {
                 const badge = orderCard.querySelector('.notification-badge');
-                if (badge) {
-                    badge.classList.add('hidden');
-                }
+                if (badge) badge.classList.add('hidden');
             }
 
-            updatesModal.classList.add('active');
         } catch (error) {
             console.error('Erro ao buscar atualizações:', error);
-            updatesModalBody.innerHTML = '<p>Não foi possível carregar as atualizações.</p>';
-            updatesModal.classList.add('active');
+            updatesModalBody.innerHTML = '<p>Erro ao carregar atualizações.</p>';
         }
     };
 
+    // --- CHECAR AVISOS NÃO LIDOS ---
     const checkUnreadAvisos = async (orderId) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/pedidos/${orderId}/avisos`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const avisos = response.data;
-            const hasUnread = avisos.some(aviso => !aviso.lido);
-
-            const orderCard = ordersContainer.querySelector(`.order-card[data-order-id='${orderId}']`);
-            if (orderCard) {
-                const badge = orderCard.querySelector('.notification-badge');
-                if (badge && hasUnread) {
-                    badge.classList.remove('hidden');
-                }
+            const hasUnread = response.data.some(aviso => !aviso.lido);
+            
+            if (hasUnread) {
+                const badge = document.querySelector(`.order-card[data-order-id='${orderId}'] .notification-badge`);
+                if (badge) badge.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error('Erro ao checar avisos não lidos:', error);
-        }
+        } catch (e) { /* Silêncio em erro de check */ }
     };
 
+    // --- BUSCAR PEDIDOS ---
     const fetchOrders = async () => {
         if (!token) {
-            ordersContainer.innerHTML = '<p>Você precisa estar logado para ver seus pedidos.</p>';
+            ordersContainer.innerHTML = '<p>Você precisa estar logado.</p>';
             return;
         }
-
         ordersContainer.innerHTML = '<p>Carregando pedidos...</p>';
 
         try {
             const response = await axios.get('http://localhost:8080/api/pedidos', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             renderOrders(response.data);
         } catch (error) {
             console.error('Erro ao buscar pedidos:', error);
-            ordersContainer.innerHTML = '<p>Não foi possível carregar seus pedidos. Tente novamente mais tarde.</p>';
+            ordersContainer.innerHTML = '<p>Não foi possível carregar seus pedidos.</p>';
         }
     };
 
+    // --- RENDERIZAR LISTA DE PEDIDOS ---
     const renderOrders = async (orders) => {
         if (!orders || orders.length === 0) {
             ordersContainer.innerHTML = '<p>Você ainda não fez nenhum pedido.</p>';
@@ -172,48 +178,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentOrders = orders;
 
-        const ordersHTML = orders.map(order => {
+        ordersContainer.innerHTML = orders.map(order => {
             const statusClass = order.status ? order.status.toLowerCase() : '';
-
-            // Formatação da data e valor
-            const rawDate = new Date(order.dataPedido);
-            const formattedDate = rawDate.toLocaleDateString('pt-BR'); 
+            const formattedDate = new Date(order.dataPedido).toLocaleDateString('pt-BR');
             const formattedTotal = order.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
             return `
             <div class="order-card" data-order-id="${order.id}">
                 <div class="order-header">
                     <span class="order-id">Pedido #${order.id}</span>
-                    <span class="order-date">Data: ${formattedDate}</span> 
+                    <span class="order-date">Data: ${formattedDate}</span>
                     <span class="order-status ${statusClass}">${order.status}</span>
                 </div>
                 <div class="order-details-summary">
-                    <strong>Valor Total: ${formattedTotal}</strong>
+                    <strong>Total: ${formattedTotal}</strong>
                 </div>
                 <div class="order-body">
                     ${order.itens ? order.itens.map(item => {
-
-                        // 🌟 CORREÇÃO FINAL: Acessando item.produto.imagemUrl
-                        // A checagem robusta é mantida, mas a chave foi alterada
-                        const imageFileName = item.produto && item.produto.imagemUrl && item.produto.imagemUrl.trim() !== '' ? item.produto.imagemUrl : null;
-
-                        // Cria o HTML da imagem
-                        const imageHtml = imageFileName
-                            ? `<img src="${BASE_URL}${imageFileName}" alt="${item.produto.nome}" class="order-item-image">`
-                            : `<div class="order-item-placeholder" style="width: 80px; height: 80px; background-color: #eee; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 10px; text-align: center;">SEM IMAGEM</div>`;
-
+                        const imgUrl = item.produto && item.produto.imagemUrl ? `${BASE_URL}${item.produto.imagemUrl}` : null;
                         return `
                         <div class="order-item">
-                            ${imageHtml}
+                            ${imgUrl 
+                                ? `<img src="${imgUrl}" class="order-item-image">` 
+                                : `<div class="order-item-placeholder">SEM FOTO</div>`}
                             <div class="order-item-details">
                                 <h4>${item.produto.nome}</h4>
-                                <p>Tamanho: ${item.tamanho || 'N/A'}</p> 
-                                <p>Quantidade: ${item.quantidade}</p>
-                                <p>Preço Unitário: R$ ${item.precoUnitario.toFixed(2)}</p>
+                                <p>Tamanho: ${item.tamanho || 'N/A'}</p>
+                                <p>Qtd: ${item.quantidade}</p>
                             </div>
-                        </div>
-                    `;
-                    }).join('') : '<p>Itens do pedido não disponíveis.</p>'}
+                        </div>`;
+                    }).join('') : '<p>Itens indisponíveis.</p>'}
                 </div>
                 <div class="order-footer">
                     <button class="btn btn-secondary view-details-btn">Ver Detalhes</button>
@@ -225,41 +219,43 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `}).join('');
 
-        ordersContainer.innerHTML = ordersHTML;
-
-        await Promise.all(orders.map(order => checkUnreadAvisos(order.id)));
+        // Checa notificações para cada pedido
+        orders.forEach(order => checkUnreadAvisos(order.id));
     };
 
-    fetchOrders();
-
-    ordersContainer.addEventListener('click', async (event) => {
+    // Listeners de Clique (Delegação)
+    ordersContainer.addEventListener('click', (event) => {
         const target = event.target;
         const orderCard = target.closest('.order-card');
         if (!orderCard) return;
-
+        
         const orderId = orderCard.dataset.orderId;
 
         if (target.classList.contains('view-details-btn')) {
             openDetailsModal(orderId);
         }
-
-        if (target.classList.contains('view-updates-btn')) {
-            await openUpdatesModal(orderId);
+        if (target.classList.contains('view-updates-btn') || target.closest('.view-updates-btn')) {
+            openUpdatesModal(orderId);
         }
     });
 
-    [detailsModal, updatesModal, imageLightboxModal].forEach(modal => {
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal || event.target.classList.contains('close-modal-btn')) {
-                modal.classList.remove('active');
-            }
+    // Fechar Modais
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            detailsModal.classList.remove('active');
+            updatesModal.classList.remove('active');
+            imageLightboxModal.classList.remove('active');
         });
     });
 
-    updatesModalBody.addEventListener('click', (event) => {
-        if (event.target.classList.contains('update-image')) {
-            lightboxImage.src = event.target.src;
+    // Lightbox de imagem
+    updatesModalBody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('update-image')) {
+            lightboxImage.src = e.target.src;
             imageLightboxModal.classList.add('active');
         }
     });
+
+    // Inicializa
+    fetchOrders();
 });
