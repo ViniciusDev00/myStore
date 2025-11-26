@@ -1,0 +1,169 @@
+/*
+    =================================================
+    FRONT/legal/CSS/legal.css
+    Estilos para Termos de Uso e Política de Privacidade
+    =================================================
+*/
+
+/* 1. Variáveis da Nova Paleta de Cores */
+:root {
+  --background: #0a0a0a;
+  --surface: #141414;
+  --primary: #ff7a00;
+  --text-primary: #eaeaea;
+  --text-secondary: #a0a0a0;
+  --success: #00c853;
+  --border: #2a2a2a;
+  --hover: #ff8c2a;
+}
+
+/* 2. Estrutura e Container Principal */
+.legal-container {
+  max-width: 960px;
+  margin: 40px auto;
+  padding: 40px 30px;
+  background-color: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+/* 3. Tipografia e Legibilidade */
+.legal-container p, 
+.legal-container li {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  text-align: justify;
+}
+
+/* Títulos Principais */
+.legal-container h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 4px solid var(--primary);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* Subtítulos (Seções) */
+.legal-container h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--primary);
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-left: 5px solid var(--primary);
+  padding-left: 15px;
+  line-height: 1.2;
+  background: linear-gradient(90deg, rgba(255, 122, 0, 0.1) 0%, rgba(255, 122, 0, 0) 100%);
+  padding: 15px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Data de Atualização */
+.date {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 30px;
+  padding-left: 5px;
+  text-align: center;
+}
+
+/* 4. Listas (Direitos, Obrigações) */
+.legal-container ul {
+  padding-left: 40px;
+  margin-bottom: 25px;
+}
+
+.legal-container ul li {
+  list-style-type: none;
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+.legal-container ul li::before {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: var(--success);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+/* Destaque para elementos importantes */
+.legal-container strong {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Links de Navegação */
+.legal-container .nav-link {
+  display: block;
+  margin-top: 50px;
+  padding: 15px;
+  text-align: center;
+  color: var(--text-primary);
+  background-color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.legal-container .nav-link:hover {
+  background-color: var(--hover);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 122, 0, 0.3);
+}
+
+.legal-container .nav-link i {
+  margin-left: 8px;
+}
+
+/* 5. Responsividade */
+@media (max-width: 768px) {
+  .legal-container {
+    margin: 20px;
+    padding: 20px 15px;
+  }
+  .legal-container h1 {
+    font-size: 2.2rem;
+  }
+  .legal-container h2 {
+    font-size: 1.4rem;
+  }
+  .legal-container p, .legal-container li {
+    font-size: 1rem;
+    text-align: left;
+  }
+  .legal-container ul {
+    padding-left: 20px;
+  }
+  .legal-container ul li {
+    padding-left: 15px;
+  }
+}
+
+/* 6. Estilos para o corpo da página */
+body {
+  background-color: var(--background);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
