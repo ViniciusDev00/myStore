@@ -97,14 +97,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Funções Auxiliares ---
 
-    // Função auxiliar para obter URL da imagem
+    // === CORREÇÃO AQUI: Função para gerar URL correta da imagem ===
     const getImageUrl = (path) => {
         if (!path) return 'placeholder.png'; 
         if (path.startsWith('http')) {
             return path;
         }
-        return `${apiUrl}/uploads/${path}`;
+        
+        // Remove barra inicial se houver para evitar duplo //
+        if (path.startsWith('/')) {
+            path = path.substring(1);
+        }
+
+        // O backend já salva como "uploads/nome.png", então só concatenamos a API URL
+        return `${apiUrl}/${path}`;
     };
+    // ==============================================================
 
     const resetForm = () => {
         addProdutoForm.reset();
@@ -339,86 +347,74 @@ document.addEventListener('DOMContentLoaded', async () => {
         avisoModal.classList.remove('active');
     };
 
-    // --- FUNÇÃO ATUALIZADA: Detalhes do Pedido com Preferências ---
+    // --- RENDERIZAÇÃO DE DETALHES DO PEDIDO ---
     const openDetailsModal = (pedido) => {
         detailsModalTitle.textContent = `Detalhes do Pedido #${String(pedido.id).padStart(6, '0')}`;
 
-        // === NOVA LÓGICA: Badges de Preferências ===
+        // Badges de Preferência (Logística)
         const caixaBadge = pedido.comCaixa 
-            ? '<span style="background: #2ecc71; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">COM CAIXA (+5%)</span>' 
-            : '<span style="background: #444; color: #ccc; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Padrão (Sem Caixa)</span>';
+            ? `<span style="background:#28a745; color:white; padding:6px 10px; border-radius:4px; font-weight:bold; display:inline-block; margin-right:5px;">COM CAIXA ORIGINAL</span>` 
+            : `<span style="background:#6c757d; color:white; padding:6px 10px; border-radius:4px; font-size:0.9em; opacity:0.8;">Sem Caixa (Padrão)</span>`;
         
         const prioridadeBadge = pedido.entregaPrioritaria 
-            ? '<span style="background: #e67e22; color: #fff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">PRIORITÁRIA (+5%)</span>' 
-            : '<span style="background: #444; color: #ccc; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">Normal</span>';
-        // ===========================================
+            ? `<span style="background:#ffc107; color:black; padding:6px 10px; border-radius:4px; font-weight:bold; display:inline-block;">ENTREGA PRIORITÁRIA</span>` 
+            : `<span style="background:#6c757d; color:white; padding:6px 10px; border-radius:4px; font-size:0.9em; opacity:0.8;">Entrega Normal</span>`;
 
         const itensHtml = pedido.itens.map(item => `
-            <div class="order-item">
-                <img src="${getImageUrl(item.produto.imagemUrl)}" alt="${item.produto.nome}" class="item-image">
-                <div class="item-details">
-                    <p class="item-name">${item.produto.nome}</p>
-                    <p>Tamanho: ${item.tamanho}</p>
-                    <p>Qtd: ${item.quantidade}</p>
+            <div class="order-item" style="display:flex; gap:15px; align-items:center; padding:10px 0; border-bottom:1px solid #eee;">
+                <img src="${getImageUrl(item.produto.imagemUrl)}" alt="${item.produto.nome}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                <div style="flex:1;">
+                    <p style="margin:0; font-weight:bold;">${item.produto.nome}</p>
+                    <p style="margin:0; font-size:0.9em;">Tam: ${item.tamanho} | Qtd: ${item.quantidade}</p>
                 </div>
-                <div class="item-price">
+                <div style="font-weight:bold;">
                     R$ ${(item.precoUnitario * item.quantidade).toFixed(2).replace('.', ',')}
                 </div>
             </div>
         `).join('');
 
-        const avisosHtml = (pedido.avisos || [])
-            .sort((a, b) => new Date(b.dataAviso) - new Date(a.dataAviso))
-            .map(aviso => {
-                const dataFormatada = new Date(aviso.dataAviso).toLocaleString('pt-BR');
-                let imagemHtml = '';
-
-                if (aviso.imagemUrl) {
-                    const imageUrl = getImageUrl(aviso.imagemUrl);
-                    imagemHtml = `<div class="aviso-image-container"><img src="${imageUrl}" alt="Imagem do Aviso" style="max-width: 100%; height: auto; border-radius: 4px; margin-top: 10px;"></div>`;
-                }
-
-                return `
-                    <div class="aviso-item-details">
-                        <p class="aviso-date-message"><strong>${dataFormatada}:</strong></p>
-                        <p>${aviso.mensagem}</p>
-                        ${imagemHtml}
-                        <hr>
-                    </div>
-                `;
-            }).join('');
+        const avisosHtml = (pedido.avisos || []).map(aviso => `
+            <div class="aviso-item" style="margin-bottom:10px; padding:10px; background:#f8f9fa; border-radius:4px;">
+                <p style="margin:0; font-size:0.85em; color:#666;">${new Date(aviso.dataAviso).toLocaleString('pt-BR')}</p>
+                <p style="margin:5px 0;">${aviso.mensagem}</p>
+                ${aviso.imagemUrl ? `<img src="${getImageUrl(aviso.imagemUrl)}" style="max-width:100px; border-radius:4px;">` : ''}
+            </div>
+        `).join('');
 
         detailsModalBody.innerHTML = `
-            <div class="order-details-grid">
+            <div style="background: rgba(255, 122, 0, 0.15); border: 2px solid var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top:0; color:var(--primary); margin-bottom:15px;"><i class="fas fa-exclamation-circle"></i> Atenção Logística</h4>
+                <div style="margin-bottom: 10px;">
+                    ${caixaBadge}
+                    ${prioridadeBadge}
+                </div>
+                ${pedido.observacoes ? `<p style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1);"><strong>Observações do Cliente:</strong> ${pedido.observacoes}</p>` : ''}
+            </div>
+
+            <div class="order-details-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
                 <div class="detail-card">
                     <h5>Cliente</h5>
                     <p><strong>Nome:</strong> ${pedido.nomeDestinatario}</p>
-                    <p><strong>CPF:</strong> ${pedido.cpfDestinatario || 'Não informado'}</p>
+                    <p><strong>CPF:</strong> ${pedido.cpfDestinatario || 'Não inf.'}</p>
                     <p><strong>Telefone:</strong> ${pedido.telefoneDestinatario}</p>
                 </div>
                 <div class="detail-card">
                     <h5>Entrega</h5>
-                    <p><strong>Endereço:</strong> ${pedido.enderecoDeEntrega.rua}, ${pedido.enderecoDeEntrega.numero}</p>
-                    <p><strong>Bairro:</strong> ${pedido.enderecoDeEntrega.bairro}</p>
-                    <p><strong>Cidade:</strong> ${pedido.enderecoDeEntrega.cidade} - ${pedido.enderecoDeEntrega.estado}</p>
-                    <p><strong>CEP:</strong> ${pedido.enderecoDeEntrega.cep}</p>
+                    <p>${pedido.enderecoDeEntrega.rua}, ${pedido.enderecoDeEntrega.numero}</p>
+                    <p>${pedido.enderecoDeEntrega.bairro} - ${pedido.enderecoDeEntrega.cidade}/${pedido.enderecoDeEntrega.estado}</p>
+                    <p>CEP: ${pedido.enderecoDeEntrega.cep}</p>
                 </div>
-                
-                <div class="detail-card" style="grid-column: 1 / -1; border: 1px solid #ff7a00;">
-                    <h5 style="color: #ff7a00;"><i class="fas fa-truck-loading"></i> Logística & Preferências</h5>
-                    <p style="margin-bottom: 8px;"><strong>Embalagem:</strong> ${caixaBadge}</p>
-                    <p style="margin-bottom: 8px;"><strong>Envio:</strong> ${prioridadeBadge}</p>
-                    ${pedido.observacoes ? `<p style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #444;"><strong>Observações do Cliente:</strong> ${pedido.observacoes}</p>` : ''}
-                </div>
-                </div>
+            </div>
+
             <div class="detail-card">
                 <h5>Itens do Pedido</h5>
                 <div class="order-items-container">${itensHtml}</div>
             </div>
-            <div class="detail-card">
-                <h5>Atualizações do Pedido</h5>
+
+            <div class="detail-card" style="margin-top:20px;">
+                <h5>Histórico de Avisos</h5>
                 <div class="order-avisos-container">
-                    ${avisosHtml.length > 0 ? avisosHtml : '<p>Nenhum aviso ou atualização para este pedido.</p>'}
+                    ${avisosHtml.length ? avisosHtml : '<p>Nenhum aviso enviado.</p>'}
                 </div>
             </div>
         `;

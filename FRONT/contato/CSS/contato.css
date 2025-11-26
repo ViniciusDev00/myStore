@@ -1,123 +1,374 @@
 /* ===================================================
-    CSS/contato.css - Estilos Específicos do Contato
+    CSS/contato.css - Modal Compacto e Centralizado
    =================================================== */
 
-/* ===== ESTILOS ESPECÍFICOS DO CONTATO ===== */
+:root {
+    --primary: #ff7a00;
+    --primary-hover: #e06b00;
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --bg-input: #2a2a2a;
+    --text-main: #ffffff;
+    --text-muted: #a0a0a0;
+    --border-color: #333333;
+    --success: #00c853;
+    --font-title: 'Bebas Neue', cursive;
+    --font-body: 'Inter', sans-serif;
+    
+    --header-height: 80px;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+}
+
+.contato-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* --- Cabeçalho da Página --- */
 .page-header {
     background-color: var(--surface);
     text-align: center;
     border-bottom: 1px solid var(--border-color);
-    padding-top: calc(var(--header-height) + var(--space-xl));
-    padding-bottom: var(--space-xl);
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding-top: calc(var(--header-height) + 2rem);
+    padding-bottom: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
+
 .page-title {
-    font-size: 3rem;
+    font-size: clamp(2.5rem, 8vw, 4rem); 
+    font-family: var(--font-title);
     color: var(--primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    line-height: 1;
 }
+
 .page-subtitle {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: var(--text-muted);
     max-width: 600px;
-    margin: 0.5rem auto 0;
+    margin: 0 auto;
+    line-height: 1.5;
 }
 
 .contact-section {
-    padding-top: var(--space-xl);
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 }
+
+/* --- Grid Principal --- */
 .contact-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    grid-template-columns: 1fr 1.5fr; 
+    gap: 40px;
+    align-items: start;
 }
-.contact-info-wrapper {
-    grid-row: 1;
+
+/* --- Cards de Informação --- */
+.contact-info {
+    background-color: var(--bg-card);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
+
+.contact-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-title);
+    color: var(--text-main);
+    letter-spacing: 1px;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.contact-info-item:last-child {
+    border-bottom: none;
+}
+
+.contact-info-item i {
+    font-size: 1.4rem;
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 122, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.contact-info-item span {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.contact-info-item p {
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text-main);
+}
+
+/* --- Redes Sociais --- */
+.social-links-contact {
+    display: flex;
+    gap: 15px;
+    margin-top: 2rem;
+}
+
+.social-links-contact a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.social-links-contact a:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+/* --- Formulário --- */
 .contact-form-wrapper {
-    grid-row: 2;
+    background-color: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
+
 .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
+
 .form-group label {
     display: block;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
+
 .contact-form input,
+.contact-form select,
 .contact-form textarea {
     width: 100%;
-    padding: 0.9rem;
-    background-color: var(--surface);
+    padding: 1rem;
+    background-color: var(--bg-input);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    color: var(--text-primary);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-body);
     font-size: 1rem;
-    transition: border-color var(--transition-fast);
+    transition: all 0.3s ease;
 }
+
 .contact-form input:focus,
+.contact-form select:focus,
 .contact-form textarea:focus {
     outline: none;
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1);
 }
-#form-message {
-    margin-top: var(--space-md);
+
+.btn-full {
+    width: 100%;
     padding: 1rem;
-    border-radius: 4px;
-    font-weight: 600;
-    transition: opacity 0.3s;
-}
-.contact-info {
-    background-color: var(--surface);
-    padding: var(--space-xl);
+    font-size: 1.1rem;
+    font-weight: 700;
     border-radius: 8px;
-}
-.contact-info h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1.75rem;
-}
-.contact-info-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: 1.75rem;
-}
-.contact-info-item i {
-    font-size: 1.5rem;
-    color: var(--primary);
-    width: 30px;
-    text-align: center;
-}
-.contact-info-item span {
-    font-size: 0.8rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
     text-transform: uppercase;
-    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-top: 10px;
 }
-.contact-info-item p {
+
+.btn-full:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-full:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+}
+
+#form-message {
+    margin-top: 15px;
+    text-align: center;
     font-weight: 600;
-    margin: 0;
+    min-height: 24px;
 }
 
-/* ===================================
-    RESPONSIVIDADE - PÁGINA DE CONTATO
-   =================================== */
+/* =========================================
+   MODAL COMPACTO E QUADRADO
+   ========================================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+}
 
-/* Tablet e maiores */
-@media (min-width: 992px) {
-    .page-title {
-        font-size: 4rem;
-    }
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    height:260px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 320px;
+    width: 100%;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    
+    /* Centralização absoluta */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.active .modal-content {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.modal-icon {
+    font-size: 2.5rem;
+    color: var(--success);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.modal-content h2 {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.modal-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+}
+
+.btn-modal-close {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-modal-close:hover {
+    background-color: var(--primary-hover);
+}
+
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+@media (max-width: 900px) {
     .contact-grid {
-        grid-template-columns: 1.2fr 1fr;
-        align-items: flex-start;
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
-    .contact-info-wrapper {
-        grid-row: auto;
+}
+
+@media (max-width: 480px) {
+    .contato-container {
+        padding: 0 15px;
     }
-    .contact-form-wrapper {
-        grid-row: auto;
+    .page-header {
+        padding-top: calc(var(--header-height) + 1rem);
+    }
+    .contact-form-wrapper, .contact-info {
+        padding: 1.5rem;
+    }
+    
+    /* Modal mobile compacto */
+    .modal-content {
+        height: 240px;
+        max-width: 280px;
+        padding: 1.5rem;
+    }
+    
+    .modal-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .modal-content p {
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .btn-modal-close {
+        padding: 8px 20px;
+        font-size: 0.85rem;
     }
 }

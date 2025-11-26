@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     
     <link rel="stylesheet" href="../../../FRONT/assets/CSS/base.css">
@@ -18,110 +18,109 @@
     <header class="main-header" data-basepath="../../.."></header>
 
     <main>
-        <section class="page-header section-padding">
+        <section class="page-header">
             <div class="container">
                 <h1 class="page-title">Fale Conosco</h1>
                 <p class="page-subtitle">Tem alguma dúvida ou sugestão? Preencha o formulário ou use um de nossos canais de atendimento.</p>
             </div>
         </section>
 
-        <section class="contact-section section-padding">
-            <div class="container">
+        <section class="contact-section">
+            <div class="contato-container">
                 <div class="contact-grid">
-                    <div class="contact-form-wrapper">
-                        <form id="contactForm" class="contact-form">
-                            <div class="form-group">
-                                <label for="name">Nome Completo</label>
-                                <input type="text" id="name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Seu Melhor E-mail</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="subject">Assunto</label>
-                                <input type="text" id="subject" name="subject" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Sua Mensagem</label>
-                                <textarea id="message" name="message" rows="6" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Enviar Mensagem <i class="fas fa-arrow-right"></i></button>
-                        </form>
-                        <div id="form-message"></div>
-                    </div>
+                    
                     <div class="contact-info-wrapper">
                         <div class="contact-info">
-                            <h3>Nossos Canais</h3>
+                            <h3>Canais de Atendimento</h3>
+                            
                             <div class="contact-info-item">
                                 <i class="fab fa-whatsapp"></i>
                                 <div>
                                     <span>WhatsApp</span>
-                                    <p>+55 (16) 99353-2283</p>
+                                    <p>(16) 99353-2283</p>
                                 </div>
                             </div>
+
                             <div class="contact-info-item">
-                                <i class="fas fa-envelope"></i>
+                                <i class="far fa-envelope"></i>
                                 <div>
                                     <span>E-mail</span>
-                                    <p>japauniverse@gmail.com</p>
+                                    <p>suporte@japauniverse.com</p>
                                 </div>
                             </div>
+
                             <div class="contact-info-item">
-                                <i class="fab fa-instagram"></i>
+                                <i class="far fa-clock"></i>
                                 <div>
-                                    <span>Instagram</span>
-                                    <p>@japauniverse</p>
+                                    <span>Horário</span>
+                                    <p>Seg - Sex: 9h às 18h</p>
                                 </div>
+                            </div>
+
+                            <div class="social-links-contact">
+                                <a href="https://www.instagram.com/japauniverse/"><i class="fab fa-instagram"></i></a>
+                                <a href="https://wa.me/5516993532283"><i class="fab fa-whatsapp"></i></a>
                             </div>
                         </div>
                     </div>
+
+                    <div class="contact-form-wrapper">
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Nome Completo</label>
+                                <input type="text" id="name" name="name" placeholder="Seu nome" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">E-mail</label>
+                                <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="subject">Assunto</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="" disabled selected>Selecione o assunto</option>
+                                    <option value="duvida_produto">Dúvida sobre Produto</option>
+                                    <option value="status_pedido">Status do Pedido</option>
+                                    <option value="troca_devolucao">Trocas e Devoluções</option>
+                                    <option value="sugestao">Sugestão / Elogio</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message">Mensagem</label>
+                                <textarea id="message" name="message" rows="5" placeholder="Como podemos ajudar?" required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-full" id="btn-submit">Enviar Mensagem</button>
+                            
+                            <div id="form-message"></div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </section>
     </main>
-    
+
     <footer class="main-footer">
         <div class="container">
-            <div class="footer-grid">
-                 <div class="footer-col">
-                    <h3 class="footer-logo">Japa <span> Universe</span></h3>
-                    <p>O seu par. O seu estilo.</p>
-                </div>
-                <div class="footer-col">
-                    <h3 class="footer-title">Categorias</h3>
-                    <ul>
-                        <li><a href="../../../FRONT/catalogo/HTML/catalogo.html">Todos os Tênis</a></li>
-                        <li><a href="#">Lançamentos</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h3 class="footer-title">Suporte</h3>
-                    <ul>
-                        <li><a href="./contato.html">Contato</a></li>
-                        <li><a href="#">Envios & Devoluções</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h3 class="footer-title">Legal</h3>
-                    <ul>
-                        <li><a href="#">Termos de Serviço</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                    </ul>
-                </div>
             </div>
-            <div class="footer-bottom">
-                <p>© <span id="currentYear"></span> Japa Universe. Todos os direitos reservados.</p>
-                <div class="footer-socials">
-                            <a href="https://www.instagram.com/japauniverse/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="https://wa.me/5516993532283" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-        </div>
     </footer>
+
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon-box">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Mensagem Enviada!</h2>
+            <p>Obrigado pelo contato. Recebemos sua mensagem e retornaremos em breve no e-mail informado.</p>
+            <button id="closeModalBtn" class="btn-modal-close">Entendido</button>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
     <script src="../../../FRONT/assets/js/header.js"></script>
     <script src="../js/contato.js"></script>
 </body>
