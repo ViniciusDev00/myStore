@@ -1,5 +1,5 @@
 /* ===================================================
-    CSS/catalogo.css - CATÁLOGO PROFISSIONAL JAPA UNIVERSE
+    CSS/catalogo.css - CATÁLOGO PROFISSIONAL JAPA UNIVERSE (CORRIGIDO)
    =================================================== */
 
 /* ===== VARIÁVEIS ADICIONAIS ===== */
@@ -233,13 +233,11 @@
 /* ===== GRID DE PRODUTOS AVANÇADO ===== */
 .products-grid {
     display: grid;
-    /* Padrão Mobile: 2 colunas */
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-sm);
     margin-bottom: var(--space-xl);
 }
 
-/* Quando em modo lista, volta para 1 coluna */
 .products-grid[data-view="list"] {
     grid-template-columns: 1fr;
     gap: var(--space-sm);
@@ -254,7 +252,7 @@
 .products-grid[data-view="list"] .product-image-wrapper {
     height: 80px;
     width: 100px;
-    background: transparent; /* Remove fundo no modo lista para ficar mais limpo */
+    background: transparent;
 }
 
 .products-grid[data-view="list"] .product-info {
@@ -311,33 +309,27 @@
 .badge.sale { background: var(--error-color); color: white; }
 .badge.limited { background: var(--warning-color); color: white; }
 
-/* --- CORREÇÃO DE IMAGENS (A SOLUÇÃO) --- */
+/* --- CORREÇÃO DE IMAGENS (SEM BORDA) --- */
 .product-image-wrapper {
     position: relative;
-    /* Fundo suave para destacar o produto e evitar o preto sobre preto */
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); 
-    /* Altura aumentada para dar respiro */
-    height: 220px; 
+    background: #fff; /* Fundo branco limpo */
+    height: 250px; /* Altura generosa */
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-md);
+    padding: 0; /* REMOVIDO PADDING - Tira a borda interna */
 }
 
 .product-image-wrapper img {
     width: 100%;
     height: 100%;
-    /* CONTAIN: Garante que o produto apareça INTEIRO */
-    object-fit: contain !important; 
-    object-position: center;
+    object-fit: contain; /* Mostra o produto inteiro */
     transition: transform 0.3s ease;
-    /* Sombra suave para dar profundidade */
-    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1)); 
 }
 
 .product-card:hover .product-image-wrapper img {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .product-actions { display: none; }
@@ -458,7 +450,7 @@
 .skeleton-text.short { width: 60%; }
 .skeleton-text.medium { width: 80%; }
 
-/* ===== QUICK VIEW MODAL ===== */
+/* ===== QUICK VIEW MODAL (IMAGENS MAXIMIZADAS) ===== */
 .quickview-modal-overlay {
     position: fixed;
     top: 0;
@@ -496,14 +488,8 @@
 }
 
 @keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .quickview-modal-content .close-button {
@@ -539,21 +525,21 @@
 
 .quickview-gallery {
     position: relative;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); /* Fundo claro para ver o produto */
+    background: #fff; /* Fundo branco para destacar o produto */
     border-radius: 20px 20px 0 0;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-lg);
-    min-height: 300px;
+    padding: 0; /* SEM PADDING NO MODAL */
+    min-height: 400px; /* Altura garantida */
 }
 
 .quickview-main-image {
     width: 100%;
-    max-height: 300px;
-    object-fit: contain !important; /* CORREÇÃO PARA QUICK VIEW */
-    transition: transform 0.3s ease;
+    height: 100%;
+    object-fit: contain !important; /* Mostra o produto inteiro */
+    max-height: 500px; /* Permite que a imagem fique grande */
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
 }
 
@@ -576,7 +562,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     object-fit: cover;
-    background: #fff; /* Fundo branco para miniaturas */
+    background: #fff;
 }
 
 .quickview-thumbnail:hover,
@@ -743,7 +729,7 @@
     .products-grid {
         gap: var(--space-xs);
     }
-    .product-image-wrapper { height: 180px; } /* Mantém altura razoável */
+    .product-image-wrapper { height: 180px; }
     .product-name { font-size: 0.8rem; height: 2.08em; }
     .current-price { font-size: 1rem; }
     .add-to-cart-btn { padding: 0.6rem; font-size: 0.7rem; }
@@ -753,11 +739,11 @@
     .view-controls { align-self: center; }
 }
 
-/* Mobile (até 768px) - CORREÇÃO DE IMAGEM */
+/* Mobile (até 768px) */
 @media (max-width: 768px) {
     .product-image-wrapper {
-        height: 180px; /* Um pouco menor no mobile */
-        padding: var(--space-sm);
+        height: 180px;
+        padding: 0; /* Sem padding no mobile também */
     }
 }
 

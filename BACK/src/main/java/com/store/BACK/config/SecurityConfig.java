@@ -33,15 +33,19 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(a -> a
-                        // CORREÇÃO: Rotas públicas (incluindo produtos e imagens)
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", "/FRONT/**").permitAll()
+                        // CORREÇÃO: Adicionado "/error" para evitar 403 em caso de 404 (arquivo não encontrado)
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/produtos/**", "/uploads/**", "/FRONT/**", "/error").permitAll()
+
                         // Rotas de Usuário (requerem ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/usuario/meus-dados").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/api/pedidos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         // Rota de Endereços (requer ROLE_USER ou ROLE_ADMIN)
                         .requestMatchers("/api/enderecos/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         // Rotas de Admin
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+
                         // Qualquer outra requisição deve ser autenticada
                         .anyRequest().authenticated()
                 )
