@@ -22,13 +22,13 @@ public class EnderecoController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Endereco> adicionarEndereco(@RequestBody Endereco endereco, @AuthenticationPrincipal Usuario usuarioLogado) {
-        // A falha de Jackson foi resolvida no modelo Usuario.java.
-        // O código agora deve prosseguir normalmente.
         try {
             Endereco novoEndereco = enderecoService.salvarEndereco(usuarioLogado, endereco);
             return ResponseEntity.ok(novoEndereco);
         } catch (Exception e) {
-            // Este bloco agora captura exceções de serviço (e não de deserialização)
+            // CORREÇÃO: Imprime o erro real no console para facilitar o debug
+            System.err.println("Erro ao salvar endereço: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
