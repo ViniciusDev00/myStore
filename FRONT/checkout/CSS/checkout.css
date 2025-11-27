@@ -26,10 +26,12 @@ body {
 }
 
 .page-title {
+    padding: 20px;
+    text-align: center;
     font-family: var(--font-title);
     font-size: 3rem;
     color: var(--primary);
-    margin-bottom: 30px;
+
     letter-spacing: 1px;
 }
 

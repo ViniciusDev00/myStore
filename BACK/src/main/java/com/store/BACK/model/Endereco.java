@@ -17,7 +17,7 @@ public class Endereco {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnore // <--- CORREÇÃO: Use JsonIgnore em vez de JsonBackReference para evitar erros de par
+    @JsonIgnore // <--- A SOLUÇÃO: Isso corta o ciclo infinito.
     private Usuario usuario;
 
     @Column(nullable = false)

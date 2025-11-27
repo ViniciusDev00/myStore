@@ -23,11 +23,17 @@ public class EnderecoController {
     @PostMapping
     public ResponseEntity<Endereco> adicionarEndereco(@RequestBody Endereco endereco, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
+            // Validação extra para garantir que o usuário chegou
+            if (usuarioLogado == null) {
+                System.out.println("ERRO: Usuário logado está vindo NULO no Controller");
+                return ResponseEntity.status(403).build();
+            }
+
             Endereco novoEndereco = enderecoService.salvarEndereco(usuarioLogado, endereco);
             return ResponseEntity.ok(novoEndereco);
         } catch (Exception e) {
-            // CORREÇÃO: Imprime o erro real no console para facilitar o debug
-            System.err.println("Erro ao salvar endereço: " + e.getMessage());
+            // ISSO É IMPORTANTE: Mostra o erro real no terminal do Java
+            System.err.println("--- ERRO AO SALVAR ENDEREÇO ---");
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
