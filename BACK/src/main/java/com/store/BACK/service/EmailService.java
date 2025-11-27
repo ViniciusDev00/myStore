@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async; // NOVO: Importação essencial para a execução assíncrona
 
 import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
@@ -33,9 +34,11 @@ public class EmailService {
     private final String COLOR_ERROR = "#f56565";
 
     public void enviarConfirmacaoPagamento(Pedido pedido) {
+        // Este método pode chamar o método assíncrono diretamente.
         enviarConfirmacaoDePedido(pedido);
     }
 
+    @Async // ANOTAÇÃO ADICIONADA: O envio do email será executado em uma nova thread.
     public void enviarConfirmacaoDePedido(Pedido pedido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -155,6 +158,7 @@ public class EmailService {
         }
     }
 
+    @Async // ANOTAÇÃO ADICIONADA: O envio do email será executado em uma nova thread.
     public void sendPasswordResetEmail(String to, String token) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -200,7 +204,7 @@ public class EmailService {
 
             // CORREÇÃO: Tratar UnsupportedEncodingException
             try {
-                helper.setFrom("japauniversestore@gmail.com", "𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀");
+                helper.setFrom("japauniversestore@gmail.com", "𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍 S E");
             } catch (UnsupportedEncodingException e) {
                 // Fallback: usar setFrom sem personalização
                 helper.setFrom("japauniversestore@gmail.com");
@@ -233,7 +237,7 @@ public class EmailService {
 
                 // ========== HEADER COM IMAGEM DE CAPA ==========
                 // Para usar imagem de capa, substitua TODO este bloco do header pelo código comentado abaixo:
-                "<!-- INÍCIO DO HEADER ATUAL (SEM IMAGEM) -->" +
+                "" +
                 "<tr>" +
                 "<td style='background: linear-gradient(135deg, #000000, #1a1a1a); padding: 40px 20px; text-align: center; position: relative; overflow: hidden;'>" +
                 // Efeito de brilho sutil
@@ -245,15 +249,12 @@ public class EmailService {
                 "</div>" +
                 "</td>" +
                 "</tr>" +
-                "<!-- FIM DO HEADER ATUAL (SEM IMAGEM) -->" +
+                "" +
 
-                "<!-- ========== COMENTE O HEADER ACIMA E DESCOMENTE ESTE PARA USAR IMAGEM DE CAPA ========== -->" +
-                "<!--" +
-                "<tr>" +
-                "<td style='background: #000000; padding: 0; text-align: center;'>" +
-                "<!-- IMAGEM DE CAPA - COLOQUE SUA URL AQUI -->" +
+                "" +
+                "" +
                 "<img src='SUA_URL_DA_IMAGEM_DE_CAPA_AQUI' alt='𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀' style='width: 100%; max-width: 600px; height: 200px; object-fit: cover; display: block;'>" +
-                "<!-- OVERLAY COM O NOME -->" +
+                "" +
                 "<div style='background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 20px; margin-top: -80px; position: relative;'>" +
                 "<h1 style='color: white; margin: 0; font-family: \"Bebas Neue\", sans-serif; letter-spacing: 4px; font-size: 42px; font-weight: 400; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);'>𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀</h1>" +
                 "<p style='color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px; letter-spacing: 2px; font-weight: 300; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);'>STYLE • CULTURE • IDENTITY</p>" +
