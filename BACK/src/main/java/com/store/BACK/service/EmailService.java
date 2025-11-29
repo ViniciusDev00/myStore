@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.scheduling.annotation.Async; // NOVO: Importação essencial para a execução assíncrona
+import org.springframework.scheduling.annotation.Async; // NOVO: Importação para a correção de performance
 
 import java.io.UnsupportedEncodingException;
 import java.time.format.DateTimeFormatter;
@@ -34,11 +34,11 @@ public class EmailService {
     private final String COLOR_ERROR = "#f56565";
 
     public void enviarConfirmacaoPagamento(Pedido pedido) {
-        // Este método pode chamar o método assíncrono diretamente.
+        // Este método não precisa ser Async, ele apenas chama o próximo.
         enviarConfirmacaoDePedido(pedido);
     }
 
-    @Async // ANOTAÇÃO ADICIONADA: O envio do email será executado em uma nova thread.
+    @Async // CORREÇÃO: Envia o e-mail em uma thread separada para evitar a demora de 20 segundos.
     public void enviarConfirmacaoDePedido(Pedido pedido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -90,13 +90,9 @@ public class EmailService {
             // Monta o corpo do e-mail profissional
             String bodyContent =
                     "<div style='text-align: center; margin-bottom: 30px;'>" +
-                            // ========== AQUI VOCÊ PODE COLOCAR UMA IMAGEM PERSONALIZADA NO CHECK ==========
-                            // Para usar imagem em vez do ✓, substitua as 3 linhas abaixo por:
-                            // "<img src='SUA_URL_DA_IMAGEM_DO_CHECK_AQUI' alt='Confirmado' style='width: 80px; height: 80px; margin-bottom: 15px;'>" +
                             "<div style='background: linear-gradient(135deg, " + COLOR_PRIMARY + ", " + COLOR_PRIMARY_LIGHT + "); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;'>" +
                             "<span style='color: white; font-size: 24px;'>✓</span>" +
                             "</div>" +
-                            // =================================================================================
                             "<h1 style='color: " + COLOR_TEXT + "; margin: 0 0 10px 0; font-size: 28px;'>Pedido Confirmado!</h1>" +
                             "<p style='color: " + COLOR_TEXT_LIGHT + "; margin: 0; font-size: 16px;'>Obrigado pela sua compra, " + pedido.getUsuario().getNome() + "!</p>" +
                             "</div>" +
@@ -139,12 +135,12 @@ public class EmailService {
             String finalHtml = getBaseTemplate(bodyContent, "Confirmação de Pedido #" + pedido.getId());
 
             helper.setTo(pedido.getUsuario().getEmail());
-            helper.setSubject("✅ Pedido Confirmado - 𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀 #" + pedido.getId());
+            helper.setSubject("✅ Pedido Confirmado - Japa Universe #" + pedido.getId());
             helper.setText(finalHtml, true);
 
             // CORREÇÃO: Tratar UnsupportedEncodingException
             try {
-                helper.setFrom("nao-responda@japauniverse.com.br", "𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀");
+                helper.setFrom("nao-responda@japauniverse.com.br", "Japa Universe");
             } catch (UnsupportedEncodingException e) {
                 // Fallback: usar setFrom sem personalização se houver erro de encoding
                 helper.setFrom("nao-responda@japauniverse.com.br");
@@ -158,7 +154,7 @@ public class EmailService {
         }
     }
 
-    @Async // ANOTAÇÃO ADICIONADA: O envio do email será executado em uma nova thread.
+    @Async // CORREÇÃO: Envia o e-mail em uma thread separada para evitar a demora de 20 segundos.
     public void sendPasswordResetEmail(String to, String token) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -168,13 +164,9 @@ public class EmailService {
 
             String bodyContent =
                     "<div style='text-align: center; margin-bottom: 30px;'>" +
-                            // ========== AQUI VOCÊ PODE COLOCAR UMA IMAGEM PERSONALIZADA NO CADEADO ==========
-                            // Para usar imagem em vez do 🔒, substitua as 3 linhas abaixo por:
-                            // "<img src='SUA_URL_DA_IMAGEM_DO_CADEADO_AQUI' alt='Redefinir Senha' style='width: 80px; height: 80px; margin-bottom: 15px;'>" +
                             "<div style='background: linear-gradient(135deg, " + COLOR_PRIMARY + ", " + COLOR_PRIMARY_LIGHT + "); width: 60px; height: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;'>" +
                             "<span style='color: white; font-size: 24px;'>🔒</span>" +
                             "</div>" +
-                            // =================================================================================
                             "<h1 style='color: " + COLOR_TEXT + "; margin: 0 0 10px 0; font-size: 28px;'>Redefinir Senha</h1>" +
                             "<p style='color: " + COLOR_TEXT_LIGHT + "; margin: 0; font-size: 16px; line-height: 1.5;'>Recebemos uma solicitação para redefinir a senha da sua conta.</p>" +
                             "</div>" +
@@ -199,12 +191,12 @@ public class EmailService {
             String finalHtml = getBaseTemplate(bodyContent, "Redefinição de Senha");
 
             helper.setTo(to);
-            helper.setSubject("🔐 Redefinição de Senha - 𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀");
+            helper.setSubject("🔐 Redefinição de Senha - Japa Universe");
             helper.setText(finalHtml, true);
 
             // CORREÇÃO: Tratar UnsupportedEncodingException
             try {
-                helper.setFrom("japauniversestore@gmail.com", "𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍 S E");
+                helper.setFrom("japauniversestore@gmail.com", "Japa Universe");
             } catch (UnsupportedEncodingException e) {
                 // Fallback: usar setFrom sem personalização
                 helper.setFrom("japauniversestore@gmail.com");
@@ -235,33 +227,13 @@ public class EmailService {
                 // Container Principal
                 "<table role='presentation' width='100%' max-width='600' cellspacing='0' cellpadding='0' border='0' style='background-color: " + COLOR_CARD + "; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid " + COLOR_BORDER + ";'>" +
 
-                // ========== HEADER COM IMAGEM DE CAPA ==========
-                // Para usar imagem de capa, substitua TODO este bloco do header pelo código comentado abaixo:
-                "" +
+                // Header Profissional
                 "<tr>" +
-                "<td style='background: linear-gradient(135deg, #000000, #1a1a1a); padding: 40px 20px; text-align: center; position: relative; overflow: hidden;'>" +
-                // Efeito de brilho sutil
-                "<div style='position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,122,0,0.1) 0%, transparent 70%); transform: rotate(45deg);'></div>" +
-                // Logo e Nome
-                "<div style='position: relative; z-index: 2;'>" +
-                "<h1 style='color: " + COLOR_PRIMARY + "; margin: 0 0 8px 0; font-family: \"Bebas Neue\", sans-serif; letter-spacing: 4px; font-size: 42px; font-weight: 400; text-transform: uppercase;'>𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀</h1>" +
-                "<p style='color: rgba(255,255,255,0.8); margin: 0; font-size: 14px; letter-spacing: 2px; font-weight: 300;'>STYLE • CULTURE • IDENTITY</p>" +
-                "</div>" +
+                "<td style='background: linear-gradient(135deg, #121212, #1a1a1a); padding: 30px 20px; text-align: center;'>" +
+                "<h1 style='color: " + COLOR_PRIMARY + "; margin: 0; font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px; font-size: 32px; font-weight: 400;'>JAPA UNIVERSE</h1>" +
+                "<p style='color: rgba(255,255,255,0.7); margin: 8px 0 0 0; font-size: 14px; letter-spacing: 1px;'>STYLE • CULTURE • IDENTITY</p>" +
                 "</td>" +
                 "</tr>" +
-                "" +
-
-                "" +
-                "" +
-                "<img src='SUA_URL_DA_IMAGEM_DE_CAPA_AQUI' alt='𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀' style='width: 100%; max-width: 600px; height: 200px; object-fit: cover; display: block;'>" +
-                "" +
-                "<div style='background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 20px; margin-top: -80px; position: relative;'>" +
-                "<h1 style='color: white; margin: 0; font-family: \"Bebas Neue\", sans-serif; letter-spacing: 4px; font-size: 42px; font-weight: 400; text-transform: uppercase; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);'>𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀</h1>" +
-                "<p style='color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px; letter-spacing: 2px; font-weight: 300; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);'>STYLE • CULTURE • IDENTITY</p>" +
-                "</div>" +
-                "</td>" +
-                "</tr>" +
-                "-->" +
 
                 // Conteúdo Dinâmico
                 "<tr>" +
@@ -277,14 +249,14 @@ public class EmailService {
                 "<tr>" +
                 "<td align='center'>" +
                 "<div style='margin-bottom: 15px;'>" +
-                "<a href='https://www.instagram.com/japauniverse' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px; transition: color 0.3s ease;'>Instagram</a>" +
+                "<a href='https://www.instagram.com/japauniverse' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px;'>Instagram</a>" +
                 "<span style='color: " + COLOR_BORDER + ";'>•</span>" +
-                "<a href='https://www.facebook.com/japauniverse' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px; transition: color 0.3s ease;'>Facebook</a>" +
+                "<a href='https://www.facebook.com/japauniverse' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px;'>Facebook</a>" +
                 "<span style='color: " + COLOR_BORDER + ";'>•</span>" +
-                "<a href='mailto:contato@japauniverse.com.br' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px; transition: color 0.3s ease;'>Contato</a>" +
+                "<a href='mailto:contato@japauniverse.com.br' style='display: inline-block; margin: 0 8px; color: " + COLOR_TEXT_LIGHT + "; text-decoration: none; font-size: 13px;'>Contato</a>" +
                 "</div>" +
                 "<p style='margin: 0; font-size: 12px; color: " + COLOR_TEXT_LIGHT + ";'>" +
-                "&copy; 2025 𝙅𝘼𝙋𝘼 𝙐𝙉𝙄𝙑𝙀𝙍𝙎𝙀. Todos os direitos reservados.<br>" +
+                "&copy; 2025 Japa Universe. Todos os direitos reservados.<br>" +
                 "São Carlos - SP • Brasil" +
                 "</p>" +
                 "</td>" +

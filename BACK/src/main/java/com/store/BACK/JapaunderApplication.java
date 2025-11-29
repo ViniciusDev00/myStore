@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-public class    JapaunderApplication {
+public class        JapaunderApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(JapaunderApplication.class, args);
